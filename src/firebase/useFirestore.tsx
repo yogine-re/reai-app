@@ -1,20 +1,20 @@
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { db } from "./config";
-const useFirestore = (collectionName = "gallery") => {
-  const [documents, setDocuments] = useState([]);
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { db } from './config';
+const useFirestore = (collectionName = 'gallery') => {
+  const [documents, setDocuments] = useState<{ id: string; data: any }[]>([]);
   const { setAlert } = useAuth();
   useEffect(
     () => {
       const q = query(
         collection(db, collectionName),
-        orderBy("timestamp", "desc")
+        orderBy('timestamp', 'desc')
       );
       const unsubscribe = onSnapshot(
         q,
         snapshot => {
-          const docs = [];
+          const docs: { id: string; data: any }[] = [];
           snapshot.forEach(doc => {
             docs.push({ id: doc.id, data: doc.data() });
           });
@@ -23,10 +23,10 @@ const useFirestore = (collectionName = "gallery") => {
         error => {
           setAlert({
             isAlert: true,
-            severity: "error",
+            severity: 'error',
             message: error.message,
             timeout: 8000,
-            location: "main"
+            location: 'main'
           });
           console.log(error);
         }
