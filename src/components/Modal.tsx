@@ -24,7 +24,7 @@ const Modal: React.FC = () => {
     }
   }, [modal?.isOpen]);
   return (
-    <Dialog open={modal.isOpen} onClose={handleClose}>
+    <Dialog open={modal.isOpen} onClose={handleClose} >
       <DialogTitle>
         {modal.title}
         <IconButton
