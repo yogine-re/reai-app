@@ -19,6 +19,37 @@ It integrates React, Vite, Express, and TypeScript. This setup provides a robust
 
 ### TODO:
 
+### Pre-requisites:
+
+
+
+### Pre-requisites:
+
+## Install Homebrew
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+## Install npm
+```
+brew install npm
+```
+
+## Install Visual Studio Code
+
+1. Open your web browser and go to the [Visual Studio Code download page](https://code.visualstudio.com/Download).
+2. Click on the "Mac" download button to download the `.dmg` file.
+3. Once the download is complete, open the `.dmg` file.
+4. Drag the Visual Studio Code application to the Applications folder.
+5. Open the Applications folder and double-click on Visual Studio Code to launch it.
+
+## Install GitHub Copilot Extension
+
+Follow the instructions at [GitHub Copilot Setup](https://code.visualstudio.com/docs/copilot/setup).
+
+see
+https://www.youtube.com/watch?v=jXp5D5ZnxGM
+
 ## Installation
 
 1. To get started, clone the repository and install the dependencies:
