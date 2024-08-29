@@ -1,5 +1,6 @@
 
 import * as React from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 // import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid2';
@@ -8,6 +9,8 @@ import useFirestore from '../../firebase/useFirestore';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import { Document } from 'react-pdf'
+
 
 // const Item = styled(Paper)(({ theme }) => ({
 //   backgroundColor: '#fff',
@@ -22,11 +25,13 @@ import ListItemText from '@mui/material/ListItemText';
 
 export default function Documents() {
   const { documents } = useFirestore('gallery');
+  const [documentUrl, setDocumentUrl] = useState<string | null>(null);
+
   
   const handleClick = (documentData: any) => {
     console.log(`Clicked on document: ${documentData.documentName}`);
     console.log(`document url: ${documentData.documentURL}`);
-
+    setDocumentUrl(documentData.documentURL)
   };
 
   return (
@@ -43,7 +48,7 @@ export default function Documents() {
           ))}
         </Grid>
         <Grid size="grow">
-          {/* <Item></Item> */}
+          <Document renderMode="canvas" file={documentUrl}/>
         </Grid>
       </Grid>
     </Box>
