@@ -14,14 +14,14 @@ import { getAuth } from 'firebase/auth';
 //   messagingSenderId: process.env.REACT_APP_messagingSenderId,
 //   appId: process.env.REACT_APP_appId,
 // };
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyAVehAAb-VjAj9GK3N0mtjQh5pRGB3Nctk',
-  authDomain: 'quickstart-1552678901710.firebaseapp.com',
-  projectId: 'quickstart-1552678901710',
-  storageBucket: 'quickstart-1552678901710.appspot.com',
-  messagingSenderId: '644581676766',
-  appId: '1:644581676766:web:d21a10bbf4360a1f41d44f'
+  apiKey: 'AIzaSyDfTXCAcT90y0Dy8JzPvxsfb8l3t0HdcHc',
+  authDomain: 'fir-demo-e5eec.firebaseapp.com',
+  databaseURL: 'https://fir-demo-e5eec.firebaseio.com',
+  projectId: 'fir-demo-e5eec',
+  storageBucket: 'fir-demo-e5eec.appspot.com',
+  messagingSenderId: '616954384014',
+  appId: '1:616954384014:web:f604eb29d2809a18c7c3df'
 };
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);

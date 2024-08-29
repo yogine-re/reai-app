@@ -8,6 +8,11 @@ import path from 'path';
 export default defineConfig({
   root: "./src",
   envDir: "../",
+  define: {
+    // By default, Vite doesn't include shims for NodeJS/
+    // necessary for segment analytics lib to work
+    global: {},
+  },
   plugins: [
     react(),
     eslint(),

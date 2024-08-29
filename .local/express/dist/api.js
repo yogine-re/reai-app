@@ -28258,10 +28258,11 @@ var require_browser5 = __commonJS({
       if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
         return false;
       }
+      let m;
       return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
       typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
       // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-      typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
+      typeof navigator !== "undefined" && navigator.userAgent && (m = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
       typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
     }
     function formatArgs(args) {
@@ -28621,9 +28622,9 @@ var require_src5 = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/agent-base/dist/helpers.js
+// node_modules/agent-base/dist/helpers.js
 var require_helpers = __commonJS({
-  "node_modules/gaxios/node_modules/agent-base/dist/helpers.js"(exports2) {
+  "node_modules/agent-base/dist/helpers.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -28691,9 +28692,9 @@ var require_helpers = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/agent-base/dist/index.js
+// node_modules/agent-base/dist/index.js
 var require_dist = __commonJS({
-  "node_modules/gaxios/node_modules/agent-base/dist/index.js"(exports2) {
+  "node_modules/agent-base/dist/index.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -28843,9 +28844,9 @@ var require_dist = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/https-proxy-agent/dist/parse-proxy-response.js
+// node_modules/https-proxy-agent/dist/parse-proxy-response.js
 var require_parse_proxy_response = __commonJS({
-  "node_modules/gaxios/node_modules/https-proxy-agent/dist/parse-proxy-response.js"(exports2) {
+  "node_modules/https-proxy-agent/dist/parse-proxy-response.js"(exports2) {
     "use strict";
     var __importDefault = exports2 && exports2.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
@@ -28939,9 +28940,9 @@ var require_parse_proxy_response = __commonJS({
   }
 });
 
-// node_modules/gaxios/node_modules/https-proxy-agent/dist/index.js
+// node_modules/https-proxy-agent/dist/index.js
 var require_dist2 = __commonJS({
-  "node_modules/gaxios/node_modules/https-proxy-agent/dist/index.js"(exports2) {
+  "node_modules/https-proxy-agent/dist/index.js"(exports2) {
     "use strict";
     var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
@@ -37786,18 +37787,25 @@ var package_default = {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.0.0",
-    "@mui/material": "^6.0.0",
+    "@mui/material": "^6.0.1",
     "@mui/styled-engine": "^6.0.0",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf/renderer": "^3.4.4",
+    "@toolpad/core": "^0.5.2",
     cors: "^2.8.5",
     express: "^4.19.2",
     firebase: "^10.13.0",
     googleapis: "^142.0.0",
     lodash: "^4.17.21",
+    moment: "^2.30.1",
     mui: "^0.0.1",
     "node-polyfill-webpack-plugin": "^4.0.0",
+    "pdfjs-dist": "^3.11.174",
     react: "^18.3.1",
+    "react-18-image-lightbox": "^5.1.4",
     "react-dom": "^18.3.1",
     "react-easy-crop": "^5.0.8",
+    "react-modal": "^3.16.1",
     "react-router": "^6.24.1",
     "react-router-dom": "^6.24.1",
     "react-toastify": "^10.0.5",
@@ -37811,6 +37819,7 @@ var package_default = {
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/react-modal": "^3.16.3",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",

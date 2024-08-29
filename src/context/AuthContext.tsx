@@ -108,6 +108,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export default AuthContextType;
 export const useAuth = (): AuthContextType => {
-  console.log('useAuth');
   return useContext(authContext);
 };

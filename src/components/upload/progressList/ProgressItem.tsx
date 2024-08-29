@@ -1,15 +1,17 @@
 import { CheckCircleOutline } from '@mui/icons-material';
-import { Box, ImageListItem } from '@mui/material';
+import { Box, ImageListItem, ImageListItemBar} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import CircularProgressWithLabel from './CircularProgressWithLabel';
 import { v4 as uuidv4 } from 'uuid';
 import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
+import pdfDocImage from '../../../img/pdf-doc-img.jpg';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
-  const [imageURL, setImageURL] = useState<null | string>(null);
+  const [documentURL, setdocumentURL] = useState<null | string>(null);
+  const [name, setName] = useState<string | null>(null);
   const { currentUser, setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
@@ -22,14 +24,16 @@ const ProgressItem = ({ file }: { file: File }) => {
           setProgress
         );
         const galleryDoc = {
-          imageURL: url,
+          documentURL: url,
+          documentName: file.name || '',
           uid: currentUser?.uid || '',
           uEmail: currentUser?.email || '',
           uName: currentUser?.displayName || '',
           uPhoto: currentUser?.photoURL || '',
         };
         await addDocument('gallery', galleryDoc, imageName);
-        setImageURL(null);
+        setdocumentURL(null);
+        setName(null);
       } catch (error) {
         setAlert({
           isAlert: true,
@@ -41,13 +45,15 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log(error);
       }
     };
-    setImageURL(URL.createObjectURL(file));
+    console.log('file name:', file.name);
+    setName(file.name);
+    setdocumentURL(URL.createObjectURL(file));
     uploadImage();
   }, [file]);
   return (
-    imageURL && (
+    documentURL && (
       <ImageListItem cols={1} rows={1}>
-        <img src={imageURL} alt="gallery" loading="lazy" />
+        <img src={pdfDocImage} alt="gallery" loading="lazy" />
         <Box sx={backDrop}>
           {progress < 100 ? (
             <CircularProgressWithLabel value={progress} />
@@ -57,6 +63,7 @@ const ProgressItem = ({ file }: { file: File }) => {
             />
           )}
         </Box>
+        <ImageListItemBar position="bottom" title={name} />
       </ImageListItem>
     )
   );

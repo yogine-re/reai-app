@@ -4,19 +4,24 @@ import SplashScreen from './components/SplashScreen';
 import Modal from './components/Modal';
 import Nav from './components/Nav';
 import Upload from './components/upload/Upload';
+import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { Container } from '@mui/material';
 
+
 const App: React.FC = () => {
   return (
+    <AuthProvider>
     <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
-      <AuthProvider>
         <SplashScreen />
         <Modal />
         <Nav />
         <Upload />
-      </AuthProvider >
     </Container>
+    <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
+        <Documents />
+    </Container>
+    </AuthProvider >
   );
 };
 
