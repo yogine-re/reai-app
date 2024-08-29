@@ -28,33 +28,14 @@ const theme = createTheme({
 //   }),
 // }));
 
-
-
-
 export default function Documents() {
   const { documents } = useFirestore('gallery');
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
 
-  const blobToURL = (blob: Blob): Promise<string | ArrayBuffer | null> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = function () {
-        const base64data = reader.result;
-        resolve(base64data);
-      };
-    });
-  };
-
   const handleClick = async (documentData: any) => {
     console.log(`Clicked on document: ${documentData.documentName}`);
     console.log(`document url: ${documentData.documentURL}`);
-    const arrayBuffer = await fetch(documentData.documentURL);
-    const blob = await arrayBuffer.blob();
-    blobToURL(blob).then((url) => {
-      console.log(`url: ${url}`);
-      setDocumentUrl(documentData.documentURL);
-    });
+    setDocumentUrl(documentData.documentURL);
   };
 
   return (
