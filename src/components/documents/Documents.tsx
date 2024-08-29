@@ -1,43 +1,49 @@
 
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+// import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid2';
-import { styled } from '@mui/material/styles';
+// import { styled } from '@mui/material/styles';
 import useFirestore from '../../firebase/useFirestore';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  ...theme.applyStyles('dark', {
-    backgroundColor: '#1A2027',
-  }),
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//   backgroundColor: '#fff',
+//   ...theme.typography.body2,
+//   padding: theme.spacing(1),
+//   textAlign: 'center',
+//   color: theme.palette.text.secondary,
+//   ...theme.applyStyles('dark', {
+//     backgroundColor: '#1A2027',
+//   }),
+// }));
 
 export default function Documents() {
   const { documents } = useFirestore('gallery');
   
+  const handleClick = (documentData: any) => {
+    console.log(`Clicked on document: ${documentData.documentName}`);
+    console.log(`document url: ${documentData.documentURL}`);
+
+  };
+
   return (
     <>
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={3}>
         <Grid size={6}>
           {documents.map((item) => (
-            <ListItem disablePadding>
-            <ListItemButton>
+            <ListItem disablePadding key={item?.id}>
+            <ListItemButton onClick={() => handleClick(item?.data)}>
               <ListItemText primary={item?.data.documentName} />
             </ListItemButton>
           </ListItem>
           ))}
         </Grid>
         <Grid size="grow">
-          <Item></Item>
+          {/* <Item></Item> */}
         </Grid>
       </Grid>
     </Box>
