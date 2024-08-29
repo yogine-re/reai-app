@@ -1,16 +1,21 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import Box from '@mui/material/Box';
 // import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid2';
 // import { styled } from '@mui/material/styles';
 import useFirestore from '../../firebase/useFirestore';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import { Document } from 'react-pdf'
+// import { Document } from 'react-pdf'
+import { Box, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 // const Item = styled(Paper)(({ theme }) => ({
 //   backgroundColor: '#fff',
@@ -23,21 +28,23 @@ import { Document } from 'react-pdf'
 //   }),
 // }));
 
+
+
+
 export default function Documents() {
   const { documents } = useFirestore('gallery');
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
 
-// utils
-  function blobToURL(blob: Blob) {
-   return new Promise((resolve) => {
+  const blobToURL = (blob: Blob): Promise<string | ArrayBuffer | null> => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = function () {
-         const base64data = reader.result;
-         resolve(base64data);
+        const base64data = reader.result;
+        resolve(base64data);
       };
-   });
-  }
+    });
+  };
 
   const handleClick = async (documentData: any) => {
     console.log(`Clicked on document: ${documentData.documentName}`);
@@ -46,33 +53,34 @@ export default function Documents() {
     const blob = await arrayBuffer.blob();
     blobToURL(blob).then((url) => {
       console.log(`url: ${url}`);
-      // setDocumentUrl(url as string);
-    });  
-    setDocumentUrl(documentData.documentURL);
-
+      setDocumentUrl(documentData.documentURL);
+    });
   };
 
-  
   return (
-    
-    <>
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={3}>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ flexGrow: 1 }}>
+        <Grid container spacing={3}>
         <Grid size={6}>
-          {documents.map((item) => (
-            <ListItem disablePadding key={item?.id}>
-            <ListItemButton onClick={() => handleClick(item?.data)}>
-              <ListItemText primary={item?.data.documentName} />
-            </ListItemButton>
-          </ListItem>
-          ))}
+            {documents.map((item) => (
+              <ListItem disablePadding key={item?.id}>
+                <ListItemButton onClick={() => handleClick(item?.data)}>
+                  <ListItemText primary={item?.data.documentName} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </Grid>
+          <Grid size='grow'>
+            {documentUrl && (
+              <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+                <Viewer fileUrl={documentUrl} />
+              </Worker>
+            )}
+          </Grid>
         </Grid>
-        <Grid size="grow">
-          <Document renderMode="canvas" file={documentUrl}/>
-        </Grid>
-      </Grid>
-    </Box>
-    </>
+      </Box>
+    </ThemeProvider>
+
   );
 }
 
