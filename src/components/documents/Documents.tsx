@@ -27,14 +27,34 @@ export default function Documents() {
   const { documents } = useFirestore('gallery');
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
 
-  
-  const handleClick = (documentData: any) => {
+// utils
+  function blobToURL(blob: Blob) {
+   return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = function () {
+         const base64data = reader.result;
+         resolve(base64data);
+      };
+   });
+  }
+
+  const handleClick = async (documentData: any) => {
     console.log(`Clicked on document: ${documentData.documentName}`);
     console.log(`document url: ${documentData.documentURL}`);
-    setDocumentUrl(documentData.documentURL)
+    const arrayBuffer = await fetch(documentData.documentURL);
+    const blob = await arrayBuffer.blob();
+    blobToURL(blob).then((url) => {
+      console.log(`url: ${url}`);
+      // setDocumentUrl(url as string);
+    });  
+    setDocumentUrl(documentData.documentURL);
+
   };
 
+  
   return (
+    
     <>
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={3}>
