@@ -16,6 +16,7 @@ const ProgressItem = ({ file }: { file: File }) => {
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
+      console.log('uploadImage: imageName:', imageName);
       try {
         const url = await uploadFileProgress(
           file,
@@ -31,6 +32,8 @@ const ProgressItem = ({ file }: { file: File }) => {
           uName: currentUser?.displayName || '',
           uPhoto: currentUser?.photoURL || '',
         };
+        console.log('adding document:', imageName);
+        console.log('galleryDoc:', galleryDoc);
         await addDocument('gallery', galleryDoc, imageName);
         setdocumentURL(null);
         setName(null);

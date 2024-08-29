@@ -24,12 +24,17 @@ export default function Documents() {
     setDocumentUrl(documentData.documentURL);
   };
 
+  // Remove duplicates based on document id
+const uniqueDocuments = documents.filter((item, index, self) =>
+  index === self.findIndex((t) => t.data?.documentName === item.data?.documentName)
+);
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={3}>
         <Grid size={6}>
-            {documents.map((item) => (
+            {uniqueDocuments.map((item) => (
               <ListItem disablePadding key={item?.id}>
                 <ListItemButton onClick={() => handleClick(item?.data)}>
                   <ListItemText primary={item?.data.documentName} />
