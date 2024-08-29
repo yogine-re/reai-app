@@ -1,11 +1,8 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-// import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid2';
-// import { styled } from '@mui/material/styles';
 import useFirestore from '../../firebase/useFirestore';
-// import { Document } from 'react-pdf'
 import { Box, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
@@ -16,17 +13,6 @@ const theme = createTheme({
     mode: 'dark',
   },
 });
-
-// const Item = styled(Paper)(({ theme }) => ({
-//   backgroundColor: '#fff',
-//   ...theme.typography.body2,
-//   padding: theme.spacing(1),
-//   textAlign: 'center',
-//   color: theme.palette.text.secondary,
-//   ...theme.applyStyles('dark', {
-//     backgroundColor: '#1A2027',
-//   }),
-// }));
 
 export default function Documents() {
   const { documents } = useFirestore('gallery');
