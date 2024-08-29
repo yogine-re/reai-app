@@ -5,6 +5,9 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid2';
 import { styled } from '@mui/material/styles';
 import useFirestore from '../../firebase/useFirestore';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: '#fff',
@@ -26,11 +29,15 @@ export default function Documents() {
       <Grid container spacing={3}>
         <Grid size={6}>
           {documents.map((item) => (
-            <Item>{item?.data.documentName}</Item> 
+            <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemText primary={item?.data.documentName} />
+            </ListItemButton>
+          </ListItem>
           ))}
         </Grid>
         <Grid size="grow">
-          <Item>size=grow</Item>
+          <Item></Item>
         </Grid>
       </Grid>
     </Box>

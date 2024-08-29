@@ -10,7 +10,7 @@ import deleteDocument from '../../firebase/deleteDocument';
 import deleteFile from '../../firebase/deleteFile';
 import { useAuth } from '../../context/AuthContext';
 
-export default function Options({ imageId, uid, imageURL }: { imageId: string, uid: string, imageURL: string }) {
+export default function Options({ imageId, uid, documentURL }: { imageId: string, uid: string, documentURL: string }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const { currentUser, setAlert } = useAuth();
@@ -38,7 +38,7 @@ export default function Options({ imageId, uid, imageURL }: { imageId: string, u
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(imageURL);
+      const response = await fetch(documentURL);
       const data = await response.blob();
       const blob = URL.createObjectURL(data);
       const link = document.createElement('a');

@@ -10,7 +10,7 @@ import pdfDocImage from '../../../img/pdf-doc-img.jpg';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
-  const [imageURL, setImageURL] = useState<null | string>(null);
+  const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
   const { currentUser, setAlert } = useAuth();
   useEffect(() => {
@@ -24,14 +24,15 @@ const ProgressItem = ({ file }: { file: File }) => {
           setProgress
         );
         const galleryDoc = {
-          imageURL: url,
+          documentURL: url,
+          documentName: file.name || '',
           uid: currentUser?.uid || '',
           uEmail: currentUser?.email || '',
           uName: currentUser?.displayName || '',
           uPhoto: currentUser?.photoURL || '',
         };
         await addDocument('gallery', galleryDoc, imageName);
-        setImageURL(null);
+        setdocumentURL(null);
         setName(null);
       } catch (error) {
         setAlert({
@@ -46,11 +47,11 @@ const ProgressItem = ({ file }: { file: File }) => {
     };
     console.log('file name:', file.name);
     setName(file.name);
-    setImageURL(URL.createObjectURL(file));
+    setdocumentURL(URL.createObjectURL(file));
     uploadImage();
   }, [file]);
   return (
-    imageURL && (
+    documentURL && (
       <ImageListItem cols={1} rows={1}>
         <img src={pdfDocImage} alt="gallery" loading="lazy" />
         <Box sx={backDrop}>
