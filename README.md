@@ -17,6 +17,11 @@ It integrates React, Vite, Express, and TypeScript. This setup provides a robust
 
 ## Notes
 
+To learn about react and material UI, please see the following tutorials:
+https://www.youtube.com/playlist?list=PLufbXXGswL_qTK6wu3yxprYXL42y9Nvh-
+
+The current code is based off of these tutorials.
+
 ## TODO:
 
 ## Pre-requisites:
