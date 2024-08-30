@@ -6,13 +6,13 @@ import useFirestore from '../../firebase/useFirestore';
 import { Box, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+// import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
+// const theme = createTheme({
+//   palette: {
+//     mode: 'dark',
+//   },
+// });
 
 export default function Documents() {
   const { documents } = useFirestore('gallery');
@@ -30,7 +30,7 @@ const uniqueDocuments = documents.filter((item, index, self) =>
 );
 
   return (
-    <ThemeProvider theme={theme}>
+    // <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={3}>
         <Grid size={6}>
@@ -51,7 +51,7 @@ const uniqueDocuments = documents.filter((item, index, self) =>
           </Grid>
         </Grid>
       </Box>
-    </ThemeProvider>
+    // </ThemeProvider>
 
   );
 }
