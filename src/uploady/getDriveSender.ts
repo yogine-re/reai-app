@@ -77,8 +77,11 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>): 
     });
   const send = (items: any[], url: string, sendOptions: any, onProgress: any) => {
     validateItems(items);
-    const sendResult: SendResult = xhrSend(items, "dummy", sendOptions, onProgress)
-    
+    const sendResult: SendResult & { send: any } = {
+      ...xhrSend(items, "dummy", sendOptions, onProgress),
+      send: undefined
+    };
+  
     sendResult.senderType = DRIVE_SENDER_TYPE;
     return sendResult;
   };
