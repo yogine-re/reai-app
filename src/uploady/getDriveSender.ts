@@ -1,4 +1,4 @@
-import { getXhrSend, SendResult } from "@rpldy/sender";
+import { getXhrSend, SendResult, OnProgress } from "@rpldy/sender";
 import {
   BatchItem,
   SendOptions,
@@ -21,7 +21,7 @@ const getUploadUrl = (queryParams: Record<string, string>): string => {
       .join("&");
   return `${DRIVE_UPLOAD_URL_MULTI}${paramsString ? "&" + paramsString : ""}`;
 };
-const getDriveSender = (authPromise: any, queryParams: Record<string, string>): void => {
+const getDriveSender = (authPromise: any, queryParams: Record<string, string>) => (items: BatchItem[], url: string, options: SendOptions, onProgress: OnProgress) => {
   const signInToDrive = (tokenClient: any): Promise<void> => 
     new Promise<void>(resolve => {
       tokenClient.requestToken((response: any) => {
@@ -39,7 +39,7 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>): 
       });
     });
   
-  const xhrSend = (items: any[], url: string, options: any, onProgress: any): SendResult => {
+  const xhrSend = (items: any[], url: string, options: SendOptions, onProgress: OnProgress): SendResult => {
     getXhrSend({
       getRequestData: (items: BatchItem[], options: SendOptions) => { return null; },
       preRequestHandler: (issueRequest: (requestUrl?: string, requestData?: unknown, requestOptions?: Record<string, any>) => Promise<XMLHttpRequest>) =>
@@ -75,7 +75,7 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>): 
             return result;
           })
     });
-  const send = (items: any[], url: string, sendOptions: any, onProgress: any) => {
+  const send = (items: BatchItem[], url: string, sendOptions: SendOptions, onProgress: OnProgress): SendResult => {    
     validateItems(items);
     const sendResult: SendResult & { send: any } = {
       ...xhrSend(items, "dummy", sendOptions, onProgress),
@@ -85,6 +85,7 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>): 
     sendResult.senderType = DRIVE_SENDER_TYPE;
     return sendResult;
   };
+
   return {
     send,
   };
