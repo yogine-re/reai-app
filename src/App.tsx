@@ -7,7 +7,7 @@ import Upload from './components/upload/Upload';
 import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { Container } from '@mui/material';
-
+import { DriveUpload } from './components/googledrive/DriveUpload';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +16,7 @@ const App: React.FC = () => {
         <SplashScreen />
         <Modal />
         <Nav />
+        <DriveUpload />
         <Upload />
     </Container>
     <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
