@@ -23,12 +23,7 @@ const getUploadUrl = (queryParams: Record<string, string>): string => {
 };
 
 interface DriveSender {
-  send: (
-    items: BatchItem[], 
-    url: string, 
-    sendOptions: SendOptions, 
-    onProgress: OnProgress
-  ) => SendResult;
+  send: SendMethod
 }
     
 const getDriveSender = (authPromise: any, queryParams: Record<string, string>): DriveSender => {      
