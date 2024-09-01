@@ -1,7 +1,7 @@
-import { getXhrSend, SendResult, OnProgress } from "@rpldy/sender";
+import { getXhrSend, SendResult, OnProgress, SendMethod } from "@rpldy/sender";
 import {
   BatchItem,
-  SendOptions,
+  SendOptions
 } from "@rpldy/shared";
 import { DRIVE_SENDER_TYPE, DRIVE_UPLOAD_URL_MULTI } from "./consts";
 
@@ -21,7 +21,12 @@ const getUploadUrl = (queryParams: Record<string, string>): string => {
       .join("&");
   return `${DRIVE_UPLOAD_URL_MULTI}${paramsString ? "&" + paramsString : ""}`;
 };
-const getDriveSender = (authPromise: any, queryParams: Record<string, string>) => (items: BatchItem[], url: string, options: SendOptions, onProgress: OnProgress) => {
+
+
+    
+const getDriveSender = (authPromise: any, queryParams: Record<string, string>) => SendMethod  => {      
+    
+  console.log("getDriveSender");
   const signInToDrive = (tokenClient: any): Promise<void> => 
     new Promise<void>(resolve => {
       tokenClient.requestToken((response: any) => {
@@ -38,7 +43,6 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>) =
         }
       });
     });
-  
   const xhrSend = (items: any[], url: string, options: SendOptions, onProgress: OnProgress): SendResult => {
     getXhrSend({
       getRequestData: (items: BatchItem[], options: SendOptions) => { return null; },
@@ -75,19 +79,26 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>) =
             return result;
           })
     });
-  const send = (items: BatchItem[], url: string, sendOptions: SendOptions, onProgress: OnProgress): SendResult => {    
-    validateItems(items);
-    const sendResult: SendResult & { send: any } = {
-      ...xhrSend(items, "dummy", sendOptions, onProgress),
-      send: undefined
+    
+    const createSendFunction = (): typeof send => {
+      const send = (
+        items: BatchItem[], 
+        url: string, 
+        sendOptions: SendOptions, 
+        onProgress: OnProgress
+      ): SendResult => {    
+        validateItems(items);
+        const sendResult: SendResult = {
+          ...xhrSend(items, "dummy", sendOptions, onProgress)
+        };
+      
+        sendResult.senderType = DRIVE_SENDER_TYPE;
+        return sendResult;
+      };
+      return send;
     };
-  
-    sendResult.senderType = DRIVE_SENDER_TYPE;
-    return sendResult;
-  };
+    const sendFunction = createSendFunction();
 
-  return {
-    send,
-  };
+    return sendFunction;
 };
 export default getDriveSender;
