@@ -22,9 +22,16 @@ const getUploadUrl = (queryParams: Record<string, string>): string => {
   return `${DRIVE_UPLOAD_URL_MULTI}${paramsString ? "&" + paramsString : ""}`;
 };
 
-
+interface DriveSender {
+  send: (
+    items: BatchItem[], 
+    url: string, 
+    sendOptions: SendOptions, 
+    onProgress: OnProgress
+  ) => SendResult;
+}
     
-const getDriveSender = (authPromise: any, queryParams: Record<string, string>) => SendMethod  => {      
+const getDriveSender = (authPromise: any, queryParams: Record<string, string>): DriveSender => {      
     
   console.log("getDriveSender");
   const signInToDrive = (tokenClient: any): Promise<void> => 
@@ -79,9 +86,7 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>) =
             return result;
           })
     });
-    
-    const createSendFunction = (): typeof send => {
-      const send = (
+  const send = (
         items: BatchItem[], 
         url: string, 
         sendOptions: SendOptions, 
@@ -95,10 +100,7 @@ const getDriveSender = (authPromise: any, queryParams: Record<string, string>) =
         sendResult.senderType = DRIVE_SENDER_TYPE;
         return sendResult;
       };
-      return send;
-    };
-    const sendFunction = createSendFunction();
-
-    return sendFunction;
+  const sender: DriveSender = { send };
+  return sender;
 };
 export default getDriveSender;

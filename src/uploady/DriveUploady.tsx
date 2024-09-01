@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import Uploady, { composeEnhancers } from "@rpldy/uploady";
-import getDriveEnhancer from "./getDriveEnhancer";
+import React, { useMemo } from 'react';
+import Uploady, { composeEnhancers } from '@rpldy/uploady';
+import getDriveEnhancer from '@rpldy/getDriveEnhancer';
 interface DriveUploadyProps extends React.PropsWithChildren<{}> {
   enhancer?: any;
   getToken?: () => string;
