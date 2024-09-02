@@ -37803,6 +37803,7 @@ var package_default = {
     express: "^4.19.2",
     firebase: "^10.13.0",
     "gapi-script": "^1.2.0",
+    "google-drive-uploader": "^0.2.3",
     googleapis: "^142.0.0",
     lodash: "^4.17.21",
     moment: "^2.30.1",
@@ -37820,6 +37821,7 @@ var package_default = {
     reactstrap: "^9.2.2"
   },
   devDependencies: {
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@types/cors": "^2.8.17",
     "@types/css-modules": "^1.0.5",
     "@types/express": "^4.17.21",
@@ -37841,12 +37843,14 @@ var package_default = {
     "jest-environment-jsdom": "^29.7.0",
     nodemon: "^3.1.4",
     prettier: "^3.3.2",
+    "react-error-overlay": "^6.0.9",
     rimraf: "^6.0.1",
     "ts-jest": "^29.2.2",
     "ts-node": "^10.9.2",
     typescript: "5.5.3",
     vite: "^5.3.3",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-pages": "^0.32.3",
     "wait-on": "^7.2.0"
   }

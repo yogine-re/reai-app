@@ -17,6 +17,7 @@ import { createContext } from 'react';
 import { auth } from '../firebase/config';
 import { /*googleLogout, */TokenResponse, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
+import { UUID } from 'crypto';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ModalType {
   isOpen: boolean;
@@ -24,15 +25,21 @@ export interface ModalType {
   content: any;
 }
 
-export interface OauthGoogleUserType {
+export interface UserOauthGoogle {
   authToken: TokenResponse;
   userInfo: any;
+  photoURL: string;
+  displayName: string;
+  uid: UUID;
+  email: string;
+  emailVerified: boolean;
+  phoneNumber: string;
 }
 
 // Define an interface for the context value
 export interface AuthContextType {
   currentUser: User | null;
-  currentOauthGoogleUser: OauthGoogleUserType | null;
+  currentUserOauthGoogle: UserOauthGoogle | null;
   signUp: (email: string, password: string) => Promise<UserCredential>;
   login: (email: string, password: string) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
@@ -75,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentOauthGoogleUser, setCurrentOauthGoogleUser] = useState<OauthGoogleUserType | null>(null);
+  const [currentOauthGoogleUser, setCurrentOauthGoogleUser] = useState<UserOauthGoogle | null>(null);
 
   const signUp = (email: string, password: string): Promise<UserCredential> => {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -90,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithOauthGoogle = useGoogleLogin({
     onSuccess: async (codeResponse) => {
       const tokenResponse: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'> = codeResponse;
-      const user: OauthGoogleUserType = {} as OauthGoogleUserType;
+      const user: UserOauthGoogle = {} as UserOauthGoogle;
       user.authToken = tokenResponse;
       // fetching userinfo can be done on the client or the server
       const userInfo = await axios
@@ -99,7 +106,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         })
         .then(res => res.data);
       user.userInfo = userInfo;
-      console.log(userInfo);
+      user.displayName = userInfo.name;
+      user.email = userInfo.email;
+      user.emailVerified = userInfo.email_verified;
+      user.phoneNumber = userInfo.phone_number;
+      user.photoURL = userInfo.picture;
+      user.uid = userInfo.sub;
+      console.log('user oauth google:', user);
       setCurrentOauthGoogleUser(user);
     },
     onError: (error) => console.log('Login Failed:', error)
@@ -112,6 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return sendPasswordResetEmail(auth, email);
   };
   useEffect(() => {
+    console.log('AuthContext::useEffect');
     const unsubscribe = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
       console.log('user status changed: ', user);
@@ -120,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
   const data: AuthContextType = {
     currentUser,
-    currentOauthGoogleUser,
+    currentUserOauthGoogle: currentOauthGoogleUser,
     signUp,
     login,
     logout,
@@ -143,6 +157,7 @@ export const useAuth = (): AuthContextType => {
   console.log('authContext:', authContext);
   const result = useContext(authContext);
   console.log('result.currentUser:', result.currentUser);
+  console.log('result.currentUser:', result.currentUserOauthGoogle);
   return result;
 
 };

@@ -7,12 +7,14 @@ import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
 import pdfDocImage from '../../../img/pdf-doc-img.jpg';
+// const upload = require('google-drive-uploader');
+// import upload from 'google-drive-uploader';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { currentUser, setAlert } = useAuth();
+  const { currentUser, /*currentUserOauthGoogle,*/ setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
@@ -35,6 +37,24 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('adding document:', imageName);
         console.log('galleryDoc:', galleryDoc);
         await addDocument('gallery', galleryDoc, imageName);
+
+        /// CAROLINA HERE
+        // console.log('uploading file:' + file + ' to Google Drive');
+        // const auth = await upload.authenticate({
+        //   email: currentUserOauthGoogle?.email,
+        //   privateKey: 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM'
+        // });
+        // const {id, size, md5, mimeType} = await upload({
+        //   path: file,
+        //   folderId: '...Google Drive folder ID...',
+        //   // auth: currentUserOauthGoogle?.authToken /* Google Drive auth object */
+        //   auth: auth
+        // });
+        // console.log('id:', id);
+        // console.log('size:', size);
+        // console.log('md5:', md5);
+        // console.log('mimeType:', mimeType);
+
         setdocumentURL(null);
         setName(null);
       } catch (error) {

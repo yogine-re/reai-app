@@ -7,7 +7,8 @@ import { Lock } from '@mui/icons-material';
 import Login from '../user/Login';
 
 export const DriveUpload: React.FC = () => {
-    const { currentUser, setModal } = useAuth();
+    const { currentUserOauthGoogle, setModal } = useAuth();
+    const currentUser = currentUserOauthGoogle;
     const openLogin = () => {
         setModal({ isOpen: true, title: 'Login', content: <Login /> });
       };
@@ -19,13 +20,8 @@ export const DriveUpload: React.FC = () => {
             console.error('getToken: no current user');
             return;
         }
-        return currentUser?.getIdToken().then((token) => {
-            console.log('getToken: token:', token);
-            return token;
-        })
-        .catch((error) => {
-            console.log('getToken: error getting token:', error);
-        });
+        const accessToken = currentUser.authToken.access_token;
+        return accessToken;
     };
 
     return (
@@ -36,11 +32,16 @@ export const DriveUpload: React.FC = () => {
           </Button>
         ) : (
             <DriveUploady
+                debug
+                autoUpload
+                queryParams={{ keepRevisionForever: true }}
                 getToken={() => getToken()}
                 clientId='616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com'
                 scope='https://www.googleapis.com/auth/drive.file'
+                
             >
                 <UploadButton>Upload to Drive</UploadButton>
+
             </DriveUploady>
                     )}
 
