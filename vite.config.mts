@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react-swc';
 import eslint from 'vite-plugin-eslint';
 import Pages from 'vite-plugin-pages';
 import path from 'path';
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,6 +18,7 @@ export default defineConfig({
   plugins: [
     react(),
     eslint(),
+    nodePolyfills(),
     Pages({
       pagesDir: [{ dir: "pages", baseRoute: "" }],
       extensions: ["tsx"],
