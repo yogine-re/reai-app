@@ -163,7 +163,6 @@ const Login: React.FC = () => {
         </Button>
       </DialogActions>
       <DialogActions sx={{ justifyContent: 'center', py: '24px' }}>
-      {/* <h2>React Google Login</h2> */}
       {/* <GoogleLogin onSuccess={responseMessage} onError={() => errorMessage({})} /> */}
         <Button
           variant='outlined'

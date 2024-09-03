@@ -7,13 +7,12 @@ import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
 import pdfDocImage from '../../../img/pdf-doc-img.jpg';
-import { uploadFile } from '../../../googledrive/uploadFile';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { currentUser, currentUserOauthGoogle, setAlert } = useAuth();
+  const { currentUser, setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
@@ -38,10 +37,6 @@ const ProgressItem = ({ file }: { file: File }) => {
         await addDocument('gallery', galleryDoc, imageName);
         // TODO: add document to google drive here
         console.log('uploading to google drive');
-        const token = currentUserOauthGoogle?.authToken.access_token;
-        if (token) {  
-          await uploadFile(file, token);
-        }
         setdocumentURL(null);
         setName(null);
       } catch (error) {

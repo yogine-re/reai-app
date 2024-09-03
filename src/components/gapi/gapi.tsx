@@ -3,12 +3,12 @@
 // https://gist.github.com/jakekara/652e3c3bf272cd682ae39b50f1c45062
 import React, { ReactElement, useEffect, useState } from 'react';
 import { gapi } from 'gapi-script';
+import { getErrorMessage } from '@/utils';
 
 const DISCOVERY_DOCS = [
   'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
-  'https://www.googleapis.com/discovery/v1/apis/people/v1/rest',
 ];
-const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file';
+const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
            
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM';
 const CLIENT_ID = '616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com';
@@ -21,9 +21,12 @@ export const initClient = (options: {
   updateLoggedInStatus: (status: boolean) => void;
 }) => {
   if (done) {
+    console.log('initClient already done');
     return;
   }
   done = true;
+  console.log('calling gapi.client.init');
+  console.log('gapi.client ', gapi.client);
   gapi.client
     .init({
       apiKey: API_KEY,
@@ -32,6 +35,7 @@ export const initClient = (options: {
       scope: SCOPES,
     })
     .then(() => {
+      console.log('gapi.auth2 ', gapi.auth2);
       // Listen for sign-in state changes.
       console.log('gapi.auth2', gapi.auth2);
 
@@ -49,19 +53,20 @@ export const initClient = (options: {
     });
 };
 
-function LogInOutButton(options: {
-  loggedIn: boolean;
-  logIn: () => void;
-  logOut: () => void;
-}): ReactElement {
-  const { loggedIn, logIn, logOut } = options;
-  const buttonText = loggedIn ? 'Log out' : 'Log in';
-  const buttonAction = loggedIn ? logOut : logIn;
+// function LogInOutButton(options: {
+//   loggedIn: boolean;
+//   logIn: () => void;
+//   logOut: () => void;
+// }): ReactElement {
+//   const { loggedIn, logIn, logOut } = options;
+//   const buttonText = loggedIn ? 'Log out' : 'Log in';
+//   const buttonAction = loggedIn ? logOut : logIn;
 
-  return <button onClick={buttonAction}>{buttonText}</button>;
-}
+//   return <button onClick={buttonAction}>{buttonText}</button>;
+// }
 
 export function GDrive(): ReactElement {
+  console.log('GDrive');
   const [loggedInStatus, setLoggedInStatus] = useState<boolean>(false);
   const [initiatedClient, setInitiatedClient] = useState<boolean>(false);
 
@@ -74,18 +79,51 @@ export function GDrive(): ReactElement {
         },
       })
     );
-
     setInitiatedClient(true);
+    console.log('gapi loaded');
+    // console.log('gapi.client', gapi.client);
+    // console.log('gapi.auth2', gapi.auth2);
+    // console.log('gapi.auth2.getAuthInstance()', gapi.auth2.getAuthInstance());
+    // console.log('gapi.client.drive', gapi.client.drive);
+    driveListFiles();
   }, [initiatedClient]);
 
   return (
     <div>
       <div>You are {loggedInStatus ? '' : 'not'} signed in</div>
-      <LogInOutButton
+      {/* <LogInOutButton
         loggedIn={loggedInStatus}
         logIn={() => gapi.auth2.getAuthInstance().signIn()}
         logOut={() => gapi.auth2.getAuthInstance().signOut()}
-      />
+      /> */}
     </div>
   );
+}
+
+/**
+       * Print metadata for first 10 files.
+       */
+async function driveListFiles() {
+  console.log('driveListFiles');
+  let response;
+  console.log('gapi.client', gapi.cient);
+  try {
+    response = await gapi.client.drive.files.list({
+      'pageSize': 10,
+      'fields': 'files(id, name)',
+    });
+  } catch (err) {
+    console.error('error: ' + getErrorMessage(err));
+    return;
+  }
+  const files = response.result.files;
+  if (!files || files.length == 0) {
+    console.log('No files found.');
+    return;
+  }
+  // Flatten to string to display
+  const output = files.reduce(
+    (str: string, file: { name: string, id: string }) => `${str}${file.name} (${file.id})\n`,
+    'Files:\n');
+  console.log(output);
 }
