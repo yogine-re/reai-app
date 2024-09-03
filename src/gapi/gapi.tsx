@@ -1,5 +1,6 @@
-//see https://gist.github.com/jakekara/652e3c3bf272cd682ae39b50f1c45062
-
+//see 
+// https://github.com/arnabsen1729/google-drive-upload-react
+// https://gist.github.com/jakekara/652e3c3bf272cd682ae39b50f1c45062
 import React, { ReactElement, useEffect, useState } from 'react';
 import { gapi } from 'gapi-script';
 
