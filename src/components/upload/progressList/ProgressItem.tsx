@@ -12,7 +12,7 @@ const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { currentUser, setAlert } = useAuth();
+  const { currentUser, /*currentUserOauthGoogle,*/ setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
@@ -35,6 +35,7 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('adding document:', imageName);
         console.log('galleryDoc:', galleryDoc);
         await addDocument('gallery', galleryDoc, imageName);
+        // TODO: add document to google drive here
         setdocumentURL(null);
         setName(null);
       } catch (error) {

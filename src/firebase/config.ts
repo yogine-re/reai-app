@@ -17,7 +17,7 @@ import { getAuth } from 'firebase/auth';
 const firebaseConfig = {
   apiKey: 'AIzaSyDfTXCAcT90y0Dy8JzPvxsfb8l3t0HdcHc',
   authDomain: 'fir-demo-e5eec.firebaseapp.com',
-  databaseURL: 'https://fir-demo-e5eec.firebaseio.com',
+  databaseURL: 'https://fir-demo-e5eec-default-rtdb.firebaseio.com/',
   projectId: 'fir-demo-e5eec',
   storageBucket: 'fir-demo-e5eec.appspot.com',
   messagingSenderId: '616954384014',

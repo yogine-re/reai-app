@@ -13,6 +13,7 @@ import { getErrorMessage } from '@/utils';
 
 const AccountSettings: React.FC = () => {
   const { currentUser, setModal, modal, setAlert } = useAuth();
+  console.log('providerData: ', currentUser?.providerData);
   const isPasswordProvider =
     currentUser?.providerData[0].providerId === 'password';
 
