@@ -157,7 +157,7 @@ export const useAuth = (): AuthContextType => {
   console.log('authContext:', authContext);
   const result = useContext(authContext);
   console.log('result.currentUser:', result.currentUser);
-  console.log('result.currentUser:', result.currentUserOauthGoogle);
+  console.log('result.currentUserOauthGoogle:', result.currentUserOauthGoogle);
   return result;
 
 };
