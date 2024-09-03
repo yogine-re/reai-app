@@ -15,7 +15,6 @@ export async function uploadFile(file: File, token: string): Promise<string> {
   //   scopes: 'https://www.googleapis.com/auth/drive'
   // });
   // const service = google.drive({ version: 'v3', auth });
-
   listFiles(token);
   const fileName = file.name;
   const fileData = 'this is a sample data';

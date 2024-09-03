@@ -8,6 +8,7 @@ import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { Container } from '@mui/material';
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import { GDrive } from './components/gapi/gapi';
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Modal />
         <Nav />
         <Upload />
+        <GDrive />
     </Container>
     <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
         <Documents />
