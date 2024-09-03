@@ -7,6 +7,7 @@ import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
 import pdfDocImage from '../../../img/pdf-doc-img.jpg';
+// import { uploadBasic } from '../../googledrive/uploadBasic';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);

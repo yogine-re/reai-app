@@ -17,6 +17,27 @@ It integrates React, Vite, Express, and TypeScript. This setup provides a robust
 
 ## Notes
 
+### Tutorials:
+
+#### Material UI, firebase tutorials
+Images gallery using new material ui (mui), simple react lightbox and moment part1
+https://www.youtube.com/watch?v=bkYzlMqQ-Sk&list=PLufbXXGswL_qTK6wu3yxprYXL42y9Nvh-&index=3
+
+All tutorial videos for images gallery with firebase:
+https://www.youtube.com/playlist?list=PLufbXXGswL_qTK6wu3yxprYXL42y9Nvh-
+github:
+https://github.com/codelikepro22/react-firebase-images-gallery/tree/complete-project
+
+https://react-firebase-gallery-testing.web.app/
+
+Material UI:https://mui.com/
+
+#### React-oauth
+   https://github.com/MomenSherif/react-oauth
+   https://react-oauth.vercel.app/
+
+
+
 ## TODO:
 
 ## Pre-requisites:
