@@ -20,6 +20,7 @@ let done = false;
 export const initClient = (options: {
   updateLoggedInStatus: (status: boolean) => void;
 }) => {
+  console.log('initClient');
   if (done) {
     console.log('initClient already done');
     return;
@@ -47,8 +48,17 @@ export const initClient = (options: {
       options.updateLoggedInStatus(
         gapi.auth2.getAuthInstance().isSignedIn.get()
       );
+      console.log('gapi loaded');
+      console.log('gapi', gapi);
+      console.log('gapi.client', gapi?.client);
+      console.log('gapi.auth2', gapi?.auth2);
+      console.log('gapi.auth2.getAuthInstance()', gapi?.auth2?.getAuthInstance());
+      console.log('gapi.client.drive', gapi?.client?.drive);
+      console.log('calling driveListFiles');
+      driveListFiles();
     })
     .catch((err: any) => {
+      console.log('Caught error', err);
       console.error('Caught error', err);
     });
 };
@@ -71,6 +81,8 @@ export function GDrive(): ReactElement {
   const [initiatedClient, setInitiatedClient] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log('GDrive:useEffect');
+    console.log('GDrive:useEffect: calling gapi.load');
     gapi.load('client:auth2', () =>
       initClient({
         updateLoggedInStatus: (status) => {
@@ -80,12 +92,7 @@ export function GDrive(): ReactElement {
       })
     );
     setInitiatedClient(true);
-    console.log('gapi loaded');
-    // console.log('gapi.client', gapi.client);
-    // console.log('gapi.auth2', gapi.auth2);
-    // console.log('gapi.auth2.getAuthInstance()', gapi.auth2.getAuthInstance());
-    // console.log('gapi.client.drive', gapi.client.drive);
-    driveListFiles();
+    console.log('*initiatedClient', initiatedClient);
   }, [initiatedClient]);
 
   return (
@@ -103,10 +110,24 @@ export function GDrive(): ReactElement {
 /**
        * Print metadata for first 10 files.
        */
-async function driveListFiles() {
+export async function driveListFiles() {
   console.log('driveListFiles');
+
+  // gapi.load('client:auth2', () =>
+  //   initClient({
+  //     updateLoggedInStatus: (status) => {
+  //       console.log('driveListFiles:Login status', status);
+  //     },
+  //   })
+  // );
+  // console.log('driveListFiles:gapi loaded');
+  console.log('driveListFiles:gapi', gapi);
+  console.log('driveListFiles:gapi.client', gapi?.client);
+  console.log('driveListFiles:gapi.auth2', gapi?.auth2);
+  console.log('driveListFiles:gapi.auth2.getAuthInstance()', gapi?.auth2?.getAuthInstance());
+  console.log('driveListFiles:gapi.client.drive', gapi?.client?.drive);
   let response;
-  console.log('gapi.client', gapi.cient);
+  console.log('gapi?.client', gapi?.cient);
   try {
     response = await gapi.client.drive.files.list({
       'pageSize': 10,

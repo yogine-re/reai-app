@@ -37,6 +37,7 @@ const ProgressItem = ({ file }: { file: File }) => {
         await addDocument('gallery', galleryDoc, imageName);
         // TODO: add document to google drive here
         console.log('uploading to google drive');
+
         setdocumentURL(null);
         setName(null);
       } catch (error) {
