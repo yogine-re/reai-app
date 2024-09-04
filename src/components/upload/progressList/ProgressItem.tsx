@@ -7,7 +7,7 @@ import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
 import pdfDocImage from '../../../img/pdf-doc-img.jpg';
-import initClientGoogleDrive from '@/gapi/gapi';
+import initClientGoogleDrive, { driveListFiles } from '@/gapi/gapi';
 import {log} from '@/gapi/gapi';
 
 const ProgressItem = ({ file }: { file: File }) => {
@@ -39,12 +39,9 @@ const ProgressItem = ({ file }: { file: File }) => {
         await addDocument('gallery', galleryDoc, imageName);
         // TODO: add document to google drive here
         console.log('uploading to google drive');
-        initClientGoogleDrive({
-          updateLoggedInStatus: (status) => {
-            console.log('Login status', status);
-          },
-        }).then((gapi) => {
-          log('CAROLINA initClientGoogleDrive.then:gapi', gapi);  
+        initClientGoogleDrive().then((gapi) => {
+          log('CAROLINA initClientGoogleDrive.then:gapi', gapi);
+          driveListFiles(gapi);  
         }).catch((error) => {
           console.log('Error initializing google drive client', error);
         });
