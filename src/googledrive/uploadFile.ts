@@ -3,12 +3,15 @@ import axios from 'axios';
 
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM'
 
-export async function uploadHelloWorld(gapi: any, token: string) {
-  console.log('uploadHelloWorld: uploading file');
-  const file = new File(['Hello, world!'], 'hello world.txt', { type: 'text/plain;charset=utf-8' });
-  const contentType = file.type || 'application/octet-stream';
+export async function driveUploadHelloWorld(gapi: any, token: string) {
+  // see https://stackoverflow.com/questions/46160511/how-to-upload-files-to-google-drive-using-gapi-and-resumable-uploads
+  // see https://github.com/googleworkspace/drive-utils
+  console.log('driveUploadHelloWorld: uploading file');
   const user = gapi.auth2.getAuthInstance()?.currentUser?.get();
   const access_token = user?.getAuthResponse()?.access_token || token;
+  const file = new File(['Hello, world!'], 'hello world.txt', { type: 'text/plain;charset=utf-8' });
+  const contentType = file.type || 'application/octet-stream';
+  
   const initResumable = new XMLHttpRequest();
   initResumable.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', true);
   initResumable.setRequestHeader('Authorization', 'Bearer ' + access_token);
@@ -20,7 +23,7 @@ export async function uploadHelloWorld(gapi: any, token: string) {
       const locationUrl = initResumable.getResponseHeader('Location');
       const reader = new FileReader();
       reader.onload = (e) => {
-        console.log('uploadHelloWorld: reader.onload e:', e);
+        console.log('driveUploadHelloWorld: reader.onload e:', e);
         const uploadResumable = new XMLHttpRequest();
         uploadResumable.open('PUT', locationUrl!, true);
         uploadResumable.setRequestHeader('Content-Type', contentType);
@@ -53,7 +56,7 @@ export async function uploadHelloWorld(gapi: any, token: string) {
 export async function uploadFile(file: File, token: string): Promise<void> {
   console.log('uploadBasic: uploading file' + file.name);
   console.log('uploadFile: first listing files');
-  listFiles(token);
+  driveListFilesAxios(token);
   // console.log('now upload file, file name: ' + file.name);
   // // const fileName = file.name;
   // // const fileData = 'this is a sample data';
@@ -91,80 +94,84 @@ export async function uploadFile(file: File, token: string): Promise<void> {
   // return response.data;
 }
 
-async function listFiles(access_token: string) {  
-  console.log('listFiles: access_token:', access_token);
+export async function driveListFilesAxios(access_token: string) {  
+  console.log('driveListFilesAxios axios: access_token:', access_token);
   // Search all files and folders by date
   const dateFilter = new Date('January 01, 2022').toISOString();
 
   // see https://stackoverflow.com/questions/71123422/how-to-set-api-request-to-google-drive-api-using-axios
   // 1. Search all files and folders by date
-  console.log('listFiles: searching files by date');
-  const filesFilteredByDate = await axios.get('https://www.googleapis.com/drive/v3/files', {
+  console.log('driveListFilesAxios: searching files by date');
+  const filesFilteredByDate = await axios.get('https://www.googleapis.com/drive/v3/files&apikey=' + API_KEY, {
     params: {
      q: `createdTime >= '${dateFilter}' or modifiedTime >= '${dateFilter}'`,
      fields: 'files(id,name,modifiedTime,createdTime,mimeType,size)',
      spaces: 'drive',
     },
     headers: {
-      authorization: `Bearer ${access_token}`
+      Authorization: `Bearer ${access_token}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin':'http://localhost:9000',
+      'Access-Control-Allow-Credentials': 'true',
+      // 'Accept-Encoding': 'gzip, deflate, br'
     }
   });
-  console.log('done with listFiles: searching files by date');
+  console.log('done with driveListFilesAxios: searching files by date');
+  
+// // 2. Find a file by size
+// const sizeInBytes = 1024;
+// const filesFilteredBySize = filesFilteredByDate.data.files.filter((file: any) => Number(file.size || 0) >= sizeInBytes);
 
+// // 3. Find all empty folders
+// const emptyFoldersSearch = await axios.get('https://www.googleapis.com/drive/v3/files&apikey=' + API_KEY, {
+//     params: {
+//       q: `mimeType = 'application/vnd.google-apps.folder'`,
+//       fields: 'files(id, name)',
+//       spaces: 'drive',
+//       key: API_KEY,
+//     },
+//     // headers: {
+//     //   authorization: `Bearer ${access_token}`,
+//     // }
+//   });
 
-// 2. Find a file by size
-const sizeInBytes = 1024;
-const filesFilteredBySize = filesFilteredByDate.data.files.filter((file: any) => Number(file.size || 0) >= sizeInBytes);
+// const emptyFolders = [];
 
-// 3. Find all empty folders
-const emptyFoldersSearch = await axios.get('https://www.googleapis.com/drive/v3/files', {
-    params: {
-      q: `mimeType = 'application/vnd.google-apps.folder'`,
-      fields: 'files(id, name)',
-      spaces: 'drive',
-      key: API_KEY,
-    },
-    // headers: {
-    //   authorization: `Bearer ${access_token}`,
-    // }
-  });
+// for await (const folder of emptyFoldersSearch.data.files) {
+//    const childrenResponse = await axios.get('https://www.googleapis.com/drive/v3/files', {
+//       params: {
+//         folderId: folder.id,
+//         spaces: 'drive',
+//         key: API_KEY,
+//       },
+//       headers: {
+//         authorization: `Bearer ${access_token}`
+//       }
+//     });
 
-const emptyFolders = [];
+//   if (!childrenResponse.data.files.length) {
+//     emptyFolders.push(folder);
+//   }
+// }
 
-for await (const folder of emptyFoldersSearch.data.files) {
-   const childrenResponse = await axios.get('https://www.googleapis.com/drive/v3/files', {
-      params: {
-        folderId: folder.id,
-        spaces: 'drive',
-        key: API_KEY,
-      },
-      headers: {
-        authorization: `Bearer ${access_token}`
-      }
-    });
-
-  if (!childrenResponse.data.files.length) {
-    emptyFolders.push(folder);
-  }
-}
-
-// 4. Find a file by type such as ppt, image, etc
-const mimeType = 'image/jpeg';
-const filesFilteredByType = await axios.get('https://www.googleapis.com/drive/v3/files', {
-    params:{
-      q: `mimeType:'${mimeType}'`,
-      fields: 'files(id,name,mimeType,size)',
-      spaces: 'drive',
-      key: API_KEY,
-    },
-    headers: {
-      authorization: `Bearer ${access_token}`
-  }
-});
+// // 4. Find a file by type such as ppt, image, etc
+// const mimeType = 'image/jpeg';
+// const filesFilteredByType = await axios.get('https://www.googleapis.com/drive/v3/files', {
+//     params:{
+//       q: `mimeType:'${mimeType}'`,
+//       fields: 'files(id,name,mimeType,size)',
+//       spaces: 'drive',
+//       key: API_KEY,
+//     },
+//     headers: {
+//       authorization: `Bearer ${access_token}`
+//   }
+// });
 
 console.log(`Found ${filesFilteredByDate.data.files.length} files/folders created or modified at ${dateFilter}`);
-console.log(`Files larger than ${sizeInBytes} bytes:`, filesFilteredBySize);
-console.log(`Found ${emptyFolders.length} empty folders`);
-console.log(`Found ${filesFilteredByType.data.files.length} images of type ${mimeType}'`);
+// console.log(`Files larger than ${sizeInBytes} bytes:`, filesFilteredBySize);
+// console.log(`Found ${emptyFolders.length} empty folders`);
+// console.log(`Found ${filesFilteredByType.data.files.length} images of type ${mimeType}'`);
 
 }

@@ -88,7 +88,6 @@ export async function driveListFiles(theGapi: typeof gapi, token: string) {
     log('driveListFiles theGapi', theGapi);
 
     let response;
-    console.log('theGapi?.client', theGapi?.cient);
     if (theGapi.client?.drive == null) {
         console.log('theGapi.client.drive is null');
         return;
