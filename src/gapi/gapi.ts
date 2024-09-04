@@ -4,25 +4,34 @@ const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM';
 const CLIENT_ID = '616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com';
 
 const initialize = async () => {
-    await new Promise((resolve, reject) => {
+    const result = await new Promise((resolve, reject) => {
         try {
+            console.log('initialize');
             gapi.client.init({
                 apiKey: API_KEY,
                 clientId: CLIENT_ID,
                 discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
                 scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
             });
+            log('initialize gapi', gapi);
             resolve(gapi);
         } catch (error) {
             console.error(`Error initializing gapi client: ${error}`);
             reject();
         }
     });
+    log('initialize result', result);
+    return result;
 };
 
 const authenticate = async () => {
     try {
-        await gapi.auth2.getAuthInstance();
+        console.log('authenticate');
+        const result = await gapi.auth2.getAuthInstance().isSignedIn.listen((isSignedIn: boolean) => {
+            console.log('isSignedIn', isSignedIn);
+            return isSignedIn;
+        });
+        console.log('authenticate result', result);
         console.log('authenticated');
     } catch (error) {
         throw Error(`Error authenticating gapi client: ${error}`);
@@ -30,11 +39,14 @@ const authenticate = async () => {
 };
 
 const loadGoogleDriveApi = async () => {
-    console.log('loadGoogleDriveApi');
     gapi.client.setApiKey(API_KEY);
     try {
-        await gapi.client.load('https://www.googleapis.com/discovery/v1/apis/drive/v3/rest');
+        console.log('loadGoogleDriveApi');
+        const result = await gapi.client.load('https://www.googleapis.com/discovery/v1/apis/drive/v3/rest');
+        log('loadGoogleDriveApi result', result);
+        log('loadGoogleDriveApi gapi', gapi);
         console.log('google drive api loaded');
+        return gapi;
     } catch (error) {
         throw Error(`Error loading google drive api gapi client: ${error}`);
     }
@@ -45,9 +57,14 @@ const initClientGoogleDrive = async () => {
     await new Promise((resolve, reject) => {
         gapi.load('client:auth2', async () => {
             try {
-                await initialize();
-                await authenticate();
-                await loadGoogleDriveApi();
+                console.log('initClientGoogleDrive');
+                const r1 = await initialize();
+                const r2 = await authenticate();
+                const r3 = await loadGoogleDriveApi();
+                log('initClientGoogleDrive r1 ', r1);
+                log('initClientGoogleDrive r2 ', r2);
+                log('initClientGoogleDrive r3 ', r3);
+                log('initClientGoogleDrive gapi', gapi);
                 resolve(gapi);
             } catch (error) {
                 console.error(`Error initializing gapi client: ${error}`);
@@ -55,7 +72,8 @@ const initClientGoogleDrive = async () => {
             }
         });
     });
-    return true;
+    console.log('done with initClientGoogleDrive');
+    return gapi;
 };
 
 
@@ -102,11 +120,11 @@ export async function driveListFiles(theGapi: typeof gapi) {
 
 
 export function log(message: string, theGapi: typeof gapi) {
-    console.log('LOGGING ' + message, theGapi ? 'theGapi is set' : 'theGapi is null');
-    console.log('LOGGING ' + message + '.client', theGapi?.client ? 'theGapi.client is set' : 'theGapi.client is null');
-    console.log('LOGGING ' + message + '.auth2', theGapi?.auth2 ? 'theGapi.auth2 is set' : 'theGapi.auth2 is null');
-    console.log('LOGGING ' + message + '.auth2.getAuthInstance()', theGapi?.auth2?.getAuthInstance() ? 'theGapi.auth2.getAuthInstance() is  set' : 'theGapi.auth2.getAuthInstance() is null');
-    console.log('LOGGING ' + message + '.client.drive', theGapi?.client?.drive ? 'theGapi.client.drive is set' : 'theGapi.client.drive is null');
+    console.log('LOGGING ' + message, theGapi ? ' is set' : ' is null');
+    console.log('LOGGING ' + message + '.client', theGapi?.client ? ' is set' : 'theGapi.client is null');
+    console.log('LOGGING ' + message + '.auth2', theGapi?.auth2 ? '.auth2 is set' : 'theGapi.auth2 is null');
+    console.log('LOGGING ' + message + '.auth2.getAuthInstance()', theGapi?.auth2?.getAuthInstance() ? '.auth2.getAuthInstance() is  set' : 'theGapi.auth2.getAuthInstance() is null');
+    console.log('LOGGING ' + message + '.client.drive', theGapi?.client?.drive ? '.client.drive is set' : '.client.drive is null');
 
 }
 
