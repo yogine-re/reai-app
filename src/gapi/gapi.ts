@@ -4,6 +4,7 @@ import { gapi } from 'gapi-script';
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM';
 const CLIENT_ID = '616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com';
 
+
 const initialize = async () => {
     const result = await new Promise((resolve, reject) => {
         try {
@@ -13,6 +14,7 @@ const initialize = async () => {
                 clientId: CLIENT_ID,
                 discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
                 scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
+                // scope: 'https://www.googleapis.com/auth/plus.login'
             });
             log('initialize gapi', gapi);
             resolve(gapi);
