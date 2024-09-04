@@ -47,7 +47,7 @@ const ProgressItem = ({ file }: { file: File }) => {
           log('CAROLINA initClientGoogleDrive.then:gapi', gapi);
           console.log('CAROLINA currentUserOauthGoogle:', currentUserOauthGoogle);
           const token = currentUserOauthGoogle?.authToken?.access_token || '';
-          console.log('CAROLINA driveListFilesAxios')
+          // console.log('CAROLINA driveListFilesAxios')
           // driveListFilesAxios(token);
           driveUploadHelloWorld(gapi, token);
           driveListFiles(gapi, token);  
