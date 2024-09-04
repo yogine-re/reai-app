@@ -1,8 +1,9 @@
 import { gapi } from 'gapi-script';
-// import { uploadFile } from '@/googledrive/uploadFile';
+import { uploadFile } from '@/googledrive/uploadFile';
 
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM';
 const CLIENT_ID = '616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive';
 
 const initialize = async () => {
     const result = await new Promise((resolve, reject) => {
@@ -12,7 +13,7 @@ const initialize = async () => {
                 apiKey: API_KEY,
                 clientId: CLIENT_ID,
                 discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-                scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
+                scope: SCOPES,
             });
             log('initialize gapi', gapi);
             resolve(gapi);
@@ -81,8 +82,9 @@ const initClientGoogleDrive = async () => {
 /**
        * Print metadata for first 10 files.
        */
-export async function driveListFiles(theGapi: typeof gapi) {
+export async function driveListFiles(theGapi: typeof gapi, token: string) {
     console.log('driveListFiles');
+    console.log('driveListFiles token', token);
     log('driveListFiles theGapi', theGapi);
 
     let response;
@@ -119,24 +121,14 @@ export async function driveListFiles(theGapi: typeof gapi) {
     console.log(output);
 }
 
-export async function driveUploadFile(theGapi: typeof gapi) {
+export async function driveUploadFile(theGapi: typeof gapi, token: string) {
     console.log('driveUploadFile');
     log('driveUploadFile theGapi', theGapi);
-
-    console.log('theGapi?.auth2', theGapi?.auth2);
-    if (theGapi.auth2 == null) {
-        console.log('theGapi.auth2 is null');
-        return;
-    }
-    else {
-        console.log('theGapi.auth2 is set in driveUploadFile');
-    }
-    console.log('theGapi?.auth2', theGapi?.auth2);
-    const user = theGapi.auth2.getAuthInstance().currentUser.get();
-    const oauthToken = user.getAuthResponse().access_token;
-    console.log('oauthToken', oauthToken);  
+    const user = theGapi.auth2.getAuthInstance()?.currentUser?.get();
+    const access_token = user?.getAuthResponse()?.access_token || token;
+    console.log('access_token', access_token);  
     log('driveUploadFile theGapi', theGapi);
-    // uploadFile(oauthToken);
+    uploadFile(theGapi, access_token);
 }
 
 export function log(message: string, theGapi: typeof gapi) {

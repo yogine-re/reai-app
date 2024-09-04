@@ -3,18 +3,15 @@ import axios from 'axios';
 
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM'
 
-export async function uploadHelloWorld(gapi: any) {
+export async function uploadHelloWorld(gapi: any, token: string) {
   console.log('uploadHelloWorld: uploading file');
   const file = new File(['Hello, world!'], 'hello world.txt', { type: 'text/plain;charset=utf-8' });
   const contentType = file.type || 'application/octet-stream';
-  const user = gapi.auth2.getAuthInstance().currentUser.get();
-  console.log('user:', user);
-  const oauthToken = user.getAuthResponse().access_token;
-  console.log('user.getAuthResponse:', user.getAuthResponse());
-  console.log('oauthToken:', oauthToken);
+  const user = gapi.auth2.getAuthInstance()?.currentUser?.get();
+  const access_token = user?.getAuthResponse()?.access_token || token;
   const initResumable = new XMLHttpRequest();
   initResumable.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', true);
-  initResumable.setRequestHeader('Authorization', 'Bearer ' + oauthToken);
+  initResumable.setRequestHeader('Authorization', 'Bearer ' + access_token);
   initResumable.setRequestHeader('Content-Type', 'application/json');
   initResumable.setRequestHeader('X-Upload-Content-Length', file.size.toString());
   initResumable.setRequestHeader('X-Upload-Content-Type', contentType);
@@ -55,14 +52,6 @@ export async function uploadHelloWorld(gapi: any) {
  * */
 export async function uploadFile(file: File, token: string): Promise<void> {
   console.log('uploadBasic: uploading file' + file.name);
-  // Get credentials and build service
-  // TODO (developer) - Use appropriate auth mechanism for your app
-  
-  // This only works on the server side, not on the browser
-  // const auth = new GoogleAuth({
-  //   scopes: 'https://www.googleapis.com/auth/drive'
-  // });
-  // const service = google.drive({ version: 'v3', auth });
   console.log('uploadFile: first listing files');
   listFiles(token);
   // console.log('now upload file, file name: ' + file.name);
@@ -104,13 +93,13 @@ export async function uploadFile(file: File, token: string): Promise<void> {
 
 async function listFiles(access_token: string) {  
   console.log('listFiles: access_token:', access_token);
-// Search all files and folders by date
-const dateFilter = new Date('January 01, 2022').toISOString();
+  // Search all files and folders by date
+  const dateFilter = new Date('January 01, 2022').toISOString();
 
-// see https://stackoverflow.com/questions/71123422/how-to-set-api-request-to-google-drive-api-using-axios
-// 1. Search all files and folders by date
-console.log('listFiles: searching files by date');
-const filesFilteredByDate = await axios.get('https://www.googleapis.com/drive/v3/files', {
+  // see https://stackoverflow.com/questions/71123422/how-to-set-api-request-to-google-drive-api-using-axios
+  // 1. Search all files and folders by date
+  console.log('listFiles: searching files by date');
+  const filesFilteredByDate = await axios.get('https://www.googleapis.com/drive/v3/files', {
     params: {
      q: `createdTime >= '${dateFilter}' or modifiedTime >= '${dateFilter}'`,
      fields: 'files(id,name,modifiedTime,createdTime,mimeType,size)',
