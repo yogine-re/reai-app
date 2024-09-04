@@ -37818,7 +37818,8 @@ var package_default = {
     "react-router": "^6.24.1",
     "react-router-dom": "^6.24.1",
     "react-toastify": "^10.0.5",
-    reactstrap: "^9.2.2"
+    reactstrap: "^9.2.2",
+    "xmlhttprequest-ts": "^1.0.1"
   },
   devDependencies: {
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",

@@ -15,12 +15,7 @@ export function GDrive(): ReactElement {
     console.log('GDrive:useEffect');
     console.log('GDrive:useEffect: calling initClientGoogleDrive');
     
-    initClientGoogleDrive({
-      updateLoggedInStatus: (status) => {
-        console.log('Login status', status);
-        setLoggedInStatus(status);
-      },
-    }).then((gapi) => {
+    initClientGoogleDrive().then((gapi) => {
       log('CAROLINA GDrive:useEffect:then:gapi', gapi);  
       console.log('CAROLINA gapi', gapi);
       driveListFiles(gapi);

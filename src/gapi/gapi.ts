@@ -1,4 +1,5 @@
 import { gapi } from 'gapi-script';
+// import { uploadFile } from '@/googledrive/uploadFile';
 
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM';
 const CLIENT_ID = '616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com';
@@ -118,6 +119,25 @@ export async function driveListFiles(theGapi: typeof gapi) {
     console.log(output);
 }
 
+export async function driveUploadFile(theGapi: typeof gapi) {
+    console.log('driveUploadFile');
+    log('driveUploadFile theGapi', theGapi);
+
+    console.log('theGapi?.auth2', theGapi?.auth2);
+    if (theGapi.auth2 == null) {
+        console.log('theGapi.auth2 is null');
+        return;
+    }
+    else {
+        console.log('theGapi.auth2 is set in driveUploadFile');
+    }
+    console.log('theGapi?.auth2', theGapi?.auth2);
+    const user = theGapi.auth2.getAuthInstance().currentUser.get();
+    const oauthToken = user.getAuthResponse().access_token;
+    console.log('oauthToken', oauthToken);  
+    log('driveUploadFile theGapi', theGapi);
+    // uploadFile(oauthToken);
+}
 
 export function log(message: string, theGapi: typeof gapi) {
     console.log('LOGGING ' + message, theGapi ? ' is set' : ' is null');

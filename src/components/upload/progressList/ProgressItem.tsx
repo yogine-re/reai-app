@@ -7,8 +7,9 @@ import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
 import pdfDocImage from '../../../img/pdf-doc-img.jpg';
-import initClientGoogleDrive, { driveListFiles } from '@/gapi/gapi';
+import initClientGoogleDrive/*, { driveListFiles, driveUploadFile }*/ from '@/gapi/gapi';
 import {log} from '@/gapi/gapi';
+import { /*uploadFile,*/ uploadHelloWorld } from '@/googledrive/uploadFile';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
@@ -41,7 +42,19 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('uploading to google drive');
         initClientGoogleDrive().then((gapi) => {
           log('CAROLINA initClientGoogleDrive.then:gapi', gapi);
-          driveListFiles(gapi);  
+          // driveListFiles(gapi);  
+          // driveUploadFile(gapi);
+          // const user = gapi.auth2.getAuthInstance().currentUser.get();
+          // const oauthToken = user.getAuthResponse().access_token;
+          // const user = gapi.auth2.getAuthInstance().currentUser.get();
+          // console.log('user:', user);
+          // const oauthToken = user.getAuthResponse().access_token;
+          // console.log('user.getAuthResponse:', user.getAuthResponse());
+          // // console.log('user.getAuthResponse().toString():', user.getAuthResponse().toString());
+          // console.log('oauthToken:', oauthToken);
+          uploadHelloWorld(gapi);
+          // uploadFile(file, oauthToken || '');
+
         }).catch((error) => {
           console.log('Error initializing google drive client', error);
         });
