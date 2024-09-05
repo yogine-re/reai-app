@@ -40,6 +40,7 @@ export interface UserOauthGoogle {
 export interface AuthContextType {
   currentUser: User | null;
   currentUserOauthGoogle: UserOauthGoogle | null;
+  accessToken: string;
   signUp: (email: string, password: string) => Promise<UserCredential>;
   login: (email: string, password: string) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
@@ -81,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     location: ''
   });
   const [loading, setLoading] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentOauthGoogleUser, setCurrentOauthGoogleUser] = useState<UserOauthGoogle | null>(null);
 
@@ -92,13 +94,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   const loginWithGoogle = (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    const credential = signInWithPopup(auth, provider);
+    const tokenPromise = credential.then(cred => cred.user.getIdToken());
+    tokenPromise.then(token => {      
+      setAccessToken(token);     
+    });
+    return credential;
   };
   const loginWithOauthGoogle = useGoogleLogin({
     onSuccess: async (codeResponse) => {
       const tokenResponse: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'> = codeResponse;
       const user: UserOauthGoogle = {} as UserOauthGoogle;
       user.authToken = tokenResponse;
+      setAccessToken(tokenResponse.access_token);
       // fetching userinfo can be done on the client or the server
       const userInfo = await axios
         .get('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -135,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const data: AuthContextType = {
     currentUser,
     currentUserOauthGoogle: currentOauthGoogleUser,
+    accessToken,
     signUp,
     login,
     logout,

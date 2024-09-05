@@ -11,6 +11,7 @@ export async function uploadHelloWorld(gapi: any, token: string) {
   const contentType = file.type || 'application/octet-stream';
   const user = gapi.auth2.getAuthInstance()?.currentUser?.get();
   const access_token = user?.getAuthResponse()?.access_token || token;
+  console.log('uploadHelloWorld: access_token:', access_token);
   const initResumable = new XMLHttpRequest();
   initResumable.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', true);
   initResumable.setRequestHeader('Authorization', 'Bearer ' + access_token);
