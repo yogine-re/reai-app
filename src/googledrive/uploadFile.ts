@@ -53,7 +53,7 @@ export async function uploadHelloWorld(gapi: any, token: string) {
 export async function uploadFile(file: File, token: string): Promise<void> {
   console.log('uploadBasic: uploading file' + file.name);
   console.log('uploadFile: first listing files');
-  listFiles(token);
+  driveListFilesAxios(token);
   // console.log('now upload file, file name: ' + file.name);
   // // const fileName = file.name;
   // // const fileData = 'this is a sample data';
@@ -91,14 +91,14 @@ export async function uploadFile(file: File, token: string): Promise<void> {
   // return response.data;
 }
 
-async function listFiles(access_token: string) {  
-  console.log('listFiles: access_token:', access_token);
+async function driveListFilesAxios(access_token: string) {  
+  console.log('driveListFilesAxios: access_token:', access_token);
   // Search all files and folders by date
   const dateFilter = new Date('January 01, 2022').toISOString();
 
   // see https://stackoverflow.com/questions/71123422/how-to-set-api-request-to-google-drive-api-using-axios
   // 1. Search all files and folders by date
-  console.log('listFiles: searching files by date');
+  console.log('driveListFilesAxios: searching files by date');
   const filesFilteredByDate = await axios.get('https://www.googleapis.com/drive/v3/files', {
     params: {
      q: `createdTime >= '${dateFilter}' or modifiedTime >= '${dateFilter}'`,
@@ -109,7 +109,7 @@ async function listFiles(access_token: string) {
       authorization: `Bearer ${access_token}`
     }
   });
-  console.log('done with listFiles: searching files by date');
+  console.log('done with driveListFilesAxios: searching files by date');
 
 
 // 2. Find a file by size
