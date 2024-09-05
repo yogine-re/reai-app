@@ -23,6 +23,13 @@ https://www.youtube.com/playlist?list=PLufbXXGswL_qTK6wu3yxprYXL42y9Nvh-
 The current code is based off of these tutorials.
 
 ## TODO:
+- firebase googleAuth versus google OAuth (currently there are two buttons in the login page). The google OAUth (secoond button) is needed for uploading files to google drive.
+   - We need to figure out if we should continue to use firebase???
+- google OAuth: if the user expires ... need to figure that out
+- implement drive uload: 
+   for drive upload I only have uploadHelloWorld() method. I got this method from https://stackoverflow.com/questions/46160511/how-to-upload-files-to-google-drive-using-gapi-and-resumable-uploads
+   in that article it points to https://github.com/googleworkspace/drive-utils
+   
 
 ## Pre-requisites:
 

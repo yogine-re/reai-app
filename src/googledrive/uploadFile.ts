@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM'
 
+// see https://stackoverflow.com/questions/46160511/how-to-upload-files-to-google-drive-using-gapi-and-resumable-uploads
+// in that article it points to https://github.com/googleworkspace/drive-utils
 export async function uploadHelloWorld(gapi: any, token: string) {
   console.log('uploadHelloWorld: uploading file');
   const file = new File(['Hello, world!'], 'hello world.txt', { type: 'text/plain;charset=utf-8' });
