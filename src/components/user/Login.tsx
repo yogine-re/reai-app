@@ -25,7 +25,7 @@ const Login: React.FC = () => {
     setModal,
     signUp,
     login,
-    loginWithGoogle,
+    // loginWithGoogle,
     loginWithOauthGoogle,
     setAlert,
     setLoading
@@ -70,21 +70,21 @@ const Login: React.FC = () => {
     }
     setLoading(false);
   };
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle();
-      setModal({ ...modal, isOpen: false });
-    } catch (error: unknown) {
-      setAlert({
-        isAlert: true,
-        severity: 'error',
-        message: getErrorMessage(error),
-        timeout: 5000,
-        location: 'modal'
-      });
-      console.log(error);
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     await loginWithGoogle();
+  //     setModal({ ...modal, isOpen: false });
+  //   } catch (error: unknown) {
+  //     setAlert({
+  //       isAlert: true,
+  //       severity: 'error',
+  //       message: getErrorMessage(error),
+  //       timeout: 5000,
+  //       location: 'modal'
+  //     });
+  //     console.log(error);
+  //   }
+  // };
 
   const handleOauthGoogleLogin = async () => {
     try {
@@ -163,14 +163,13 @@ const Login: React.FC = () => {
         </Button>
       </DialogActions>
       <DialogActions sx={{ justifyContent: 'center', py: '24px' }}>
-      {/* <GoogleLogin onSuccess={responseMessage} onError={() => errorMessage({})} /> */}
-        <Button
+        {/* <Button
           variant='outlined'
           startIcon={<Google />}
           onClick={handleGoogleLogin}
         >
           Login with Google
-        </Button>
+        </Button> */}
         <Button
           variant='outlined'
           startIcon={<Google />}

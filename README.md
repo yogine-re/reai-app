@@ -23,6 +23,8 @@ https://www.youtube.com/playlist?list=PLufbXXGswL_qTK6wu3yxprYXL42y9Nvh-
 The current code is based off of these tutorials.
 
 ## TODO:
+- find out if in firebase auth I'm using the old firebase authentication or the updated Google Cloud Authentication for Firebase?
+see https://firebase.google.com/docs/auth#identity-platform]
 - firebase googleAuth versus google OAuth (currently there are two buttons in the login page). The google OAUth (secoond button) is needed for uploading files to google drive.
    - We need to figure out if we should continue to use firebase???
 - google OAuth: if the user expires ... need to figure that out

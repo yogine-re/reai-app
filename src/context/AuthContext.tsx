@@ -5,7 +5,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
-  signOut,
+  // signOut,
   UserCredential,
   User,
    // Add this line
@@ -15,7 +15,7 @@ import { useEffect } from 'react';
 import { useContext } from 'react';
 import { createContext } from 'react';
 import { auth } from '../firebase/config';
-import { /*googleLogout, */TokenResponse, useGoogleLogin } from '@react-oauth/google';
+import { googleLogout, TokenResponse, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { UUID } from 'crypto';
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -38,14 +38,14 @@ export interface UserOauthGoogle {
 
 // Define an interface for the context value
 export interface AuthContextType {
-  currentUser: User | null;
-  currentUserOauthGoogle: UserOauthGoogle | null;
+  currentUser: UserOauthGoogle | null;
+  currentFirebaseUser: User | null;
   accessToken: string;
   signUp: (email: string, password: string) => Promise<UserCredential>;
   login: (email: string, password: string) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
   loginWithOauthGoogle: () => void;
-  logout: () => Promise<void>;
+  logout: () => void;
   resetPassword: (email: string) => Promise<void>;
   // Add other methods or properties as needed
   loading: boolean;
@@ -83,8 +83,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [loading, setLoading] = useState(false);
   const [accessToken, setAccessToken] = useState('');
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentOauthGoogleUser, setCurrentOauthGoogleUser] = useState<UserOauthGoogle | null>(null);
+  const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserOauthGoogle | null>(null);
 
   const signUp = (email: string, password: string): Promise<UserCredential> => {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -121,13 +121,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user.photoURL = userInfo.picture;
       user.uid = userInfo.sub;
       console.log('user oauth google:', user);
-      setCurrentOauthGoogleUser(user);
+      setCurrentUser(user);
     },
     onError: (error) => console.log('Login Failed:', error)
   });
 
-  const logout = (): Promise<void> => {
-    return signOut(auth);
+  const logout = (): void => {
+    return googleLogout();
   };
   const resetPassword = (email: string): Promise<void> => {
     return sendPasswordResetEmail(auth, email);
@@ -135,14 +135,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('AuthContext::useEffect');
     const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user);
+      setCurrentFirebaseUser(user);
       console.log('user status changed: ', user);
     });
     return unsubscribe;
   }, []);
   const data: AuthContextType = {
     currentUser,
-    currentUserOauthGoogle: currentOauthGoogleUser,
+    currentFirebaseUser,
     accessToken,
     signUp,
     login,
@@ -166,7 +166,7 @@ export const useAuth = (): AuthContextType => {
   console.log('authContext:', authContext);
   const result = useContext(authContext);
   console.log('result.currentUser:', result.currentUser);
-  console.log('result.currentUserOauthGoogle:', result.currentUserOauthGoogle);
+  console.log('result.currentFirebaseUser:', result.currentFirebaseUser);
   return result;
 
 };
