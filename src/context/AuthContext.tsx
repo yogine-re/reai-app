@@ -127,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const logout = (): void => {
+    setCurrentUser(null);
     return googleLogout();
   };
   const resetPassword = (email: string): Promise<void> => {
