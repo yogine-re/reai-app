@@ -14,10 +14,11 @@ import { getErrorMessage } from '@/utils';
 const AccountSettings: React.FC = () => {
   const { currentUser, currentFirebaseUser, setModal, modal, setAlert, loginWithOauthGoogle } = useAuth();
   const isPasswordProvider =
-  currentFirebaseUser?.providerData[0].providerId === 'password';
+  currentFirebaseUser?.providerData[0].providerId === 'password' && !currentUser;
 
   const handleAction = async (action: string) => {
-    if (isPasswordProvider) {
+    console.log('AccountSettings: handleAction: issPasswordProvider: ' + isPasswordProvider);
+    if (isPasswordProvider && !currentUser) {
       setModal({
         ...modal,
         title: 'Re-Login',

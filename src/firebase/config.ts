@@ -21,7 +21,7 @@ const firebaseConfig = {
   projectId: 'fir-demo-e5eec',
   storageBucket: 'fir-demo-e5eec.appspot.com',
   messagingSenderId: '616954384014',
-  appId: '1:616954384014:web:f604eb29d2809a18c7c3df'
+  appId: '1:616954384014:web:f604eb29d2809a18c7c3df',
 };
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);

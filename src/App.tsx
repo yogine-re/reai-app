@@ -13,18 +13,18 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 const App: React.FC = () => {
   return (
     <GoogleOAuthProvider clientId='616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com'>
-    <AuthProvider>
-    <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
-        <SplashScreen />
-        <Modal />
-        <Nav />
-        <Upload />
-        {/* <GDrive /> */}
-    </Container>
-    <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
-        <Documents />
-    </Container>
-    </AuthProvider >
+      <AuthProvider>
+        <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
+          <SplashScreen />
+          <Modal />
+          <Nav />
+          <Upload />
+          {/* <GDrive /> */}
+        </Container>
+        <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
+          <Documents />
+        </Container>
+      </AuthProvider >
     </GoogleOAuthProvider>
   );
 };

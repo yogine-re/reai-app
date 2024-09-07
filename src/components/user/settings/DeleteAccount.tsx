@@ -13,12 +13,16 @@ import { getErrorMessage } from '@/utils';
 const DeleteAccount: React.FC = () => {
   const { currentFirebaseUser, setLoading, setAlert, setModal, modal } = useAuth();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('DeleteAccount: handleSubmit');
     e.preventDefault();
     setLoading(true);
     try {
-      await deleteUserFiles('gallery', currentFirebaseUser);
-      if (currentFirebaseUser)
+      if (currentFirebaseUser) {
+        console.log('deleteUserFiles: currentFirebaseUser', currentFirebaseUser);
+        await deleteUserFiles('gallery', currentFirebaseUser);
+        console.log('deleteUser: currentFirebaseUser', currentFirebaseUser);
         await deleteUser(currentFirebaseUser);
+      }
       setModal({ ...modal, isOpen: false });
       setAlert({
         isAlert: true,

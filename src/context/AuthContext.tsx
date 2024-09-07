@@ -18,7 +18,6 @@ import { auth } from '../firebase/config';
 import { googleLogout, TokenResponse, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { UUID } from 'crypto';
-import { log } from 'console';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ModalType {
   isOpen: boolean;
@@ -103,10 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('logging in');
     const credential = signInWithEmailAndPassword(auth, email, password);
     console.log('credential:', credential);
-    const promiseUser = credential.then(cred => {
-      log('CAROLINA cred', cred);
-      return cred.user;
-    });
+    const promiseUser = credential.then(cred => cred.user );
     console.log('promiseUser:', promiseUser);
     promiseUser.then(user => {
       console.log('firebase user:', user);
@@ -145,8 +141,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user.uid = userInfo.sub;
       console.log('user oauth google:', user);
       console.log('logging in firebase user');
-      await signUp(user.email, 'dummyPassword123#');
-      await login(user.email, 'dummyPassword123#');
+      await signUp(user.email, user.uid);
+      await login(user.email, user.uid);
       setCurrentUser(user);
     },
     onError: (error) => console.log('Login Failed:', error)
@@ -190,11 +186,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export default AuthContextType;
 export const useAuth = (): AuthContextType => {
-  console.log('useAuth');
-  console.log('authContext:', authContext);
+  // console.log('useAuth');
+  // console.log('authContext:', authContext);
   const result = useContext(authContext);
-  console.log('result.currentUser:', result.currentUser);
-  console.log('result.currentFirebaseUser:', result.currentFirebaseUser);
   return result;
 
 };

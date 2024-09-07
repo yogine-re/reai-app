@@ -14,15 +14,21 @@ interface ReAuthProps {
 }
 
 const ReAuth: React.FC<ReAuthProps> = ({ action }) => {
-  const { currentFirebaseUser, setLoading, setAlert, setModal, modal } = useAuth();
+  const { currentFirebaseUser, currentUser, setLoading, setAlert, setModal, modal } = useAuth();
   const passwordRef = useRef<HTMLInputElement>(null);
+  const password = passwordRef.current?.value ?? currentUser?.uid.toString() ?? '';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('ReAuth: handleSubmit');
+    console.log('ReAuth: handleSubmit: currentUser  ' + currentUser); 
+    console.log('ReAuth: handleSubmit: currentFirebaseUser  ' + currentFirebaseUser); 
+    console.log('ReAuth: handleSubmit: password' + password);
+    console.log('ReAuth: handleSubmit: password' + password);
     e.preventDefault();
     setLoading(true);
     const credential = EmailAuthProvider.credential(
       currentFirebaseUser?.email ?? '',
-      passwordRef.current!.value
+      password
     );
     try {
       if (currentFirebaseUser) {
