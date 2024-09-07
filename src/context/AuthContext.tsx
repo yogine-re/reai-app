@@ -148,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user.photoURL = userInfo.picture;
       user.uid = userInfo.sub;
       console.log('user oauth google:', user);
-      // Exchange authorization code for tokens
+      // Exchange authorization code for tokens, see https://stackoverflow.com/questions/69727083/using-firebase-auth-gapi
       await initClientGoogleDrive().then((gapiClient) => { setGapiclient(gapiClient); }).catch((error) => console.error('Error initializing gapi client:', error)); 
       console.log('calling gapi.auth2.getAuthInstance');
       const googleAuth = gapi.auth2.getAuthInstance();
