@@ -8,7 +8,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signInWithCredential,
-  // signOut,
+  signOut,
   UserCredential,
   User
 } from 'firebase/auth';
@@ -172,9 +172,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     onError: (error) => console.log('Login Failed:', error)
   });
 
-  const logout = (): void => {
+  const logout = (): Promise<void> => {
     setCurrentUser(null);
-    return googleLogout();
+    googleLogout();
+    return signOut(auth); 
   };
   const resetPassword = (email: string): Promise<void> => {
     return sendPasswordResetEmail(auth, email);
