@@ -2,12 +2,7 @@ import packageJSON from '../../../package.json';
 import express, { Application } from 'express';
 import cors from 'cors';
 import { Request, Response } from 'express';
-const { OAuth2Client } = require('google-auth-library');
 
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI;
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 
 
 const app: Application = express();
@@ -29,9 +24,6 @@ app.get(`/api/v1/version`, (req: Request, res: Response) => {
   };
   res.send(respObj);
 });
-
-const oAuth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
 
 app.use(express.static("./.local/vite/dist"));

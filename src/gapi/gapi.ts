@@ -54,6 +54,23 @@ const loadGoogleDriveApi = async () => {
     }
 };
 
+export const initClientGoogleApi = async () => {
+    await new Promise((resolve, reject) => {
+        gapi.load('client:auth2', async () => {
+            try {
+                console.log('initClientGoogleDrive');
+                await initialize();
+                resolve(gapi);
+            } catch (error) {
+                console.error(`Error initializing gapi client: ${error}`);
+                reject();
+            }
+        });
+    });
+    console.log('initClientGoogleApi result:')
+    console.log('done with initClientGoogleDrive');
+    return gapi;
+};
 
 const initClientGoogleDrive = async () => {
     await new Promise((resolve, reject) => {

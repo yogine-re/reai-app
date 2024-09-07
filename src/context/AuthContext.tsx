@@ -1,3 +1,5 @@
+import { gapi } from 'gapi-script';
+import {initClientGoogleApi as gapiInitialize} from '@/gapi/gapi';
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -5,10 +7,10 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithCredential,
   // signOut,
   UserCredential,
-  User,
-   // Add this line
+  User
 } from 'firebase/auth';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -121,16 +123,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   const loginWithOauthGoogle = useGoogleLogin({
     onSuccess: async (codeResponse) => {
+      console.log('Login Success, codeResponse:', codeResponse);
       const tokenResponse: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'> = codeResponse;
       const user: UserOauth = {} as UserOauth;
       user.authToken = tokenResponse;
       setAccessToken(tokenResponse.access_token);
+
       // fetching userinfo can be done on the client or the server
-      const userInfo = await axios
+      const userInfoResponse = await axios
         .get('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        })
-        .then(res => res.data);
+        });
+      const userInfo = userInfoResponse.data;
+      console.log('userInfoResponse:', userInfoResponse);
       console.log('userInfo:', userInfo);
       user.providerData = user.providerData ? [...user.providerData, userInfo] : [userInfo];
       user.displayName = userInfo.name;
@@ -140,9 +145,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user.photoURL = userInfo.picture;
       user.uid = userInfo.sub;
       console.log('user oauth google:', user);
-      console.log('logging in firebase user');
-      await signUp(user.email, user.uid);
-      await login(user.email, user.uid);
+      // Exchange authorization code for tokens
+      await gapiInitialize();
+      console.log('calling gapi.auth2.getAuthInstance');
+      const googleAuth = gapi.auth2.getAuthInstance();
+      console.log('calling googleAuth.signIn');
+      const googleUser = await googleAuth.signIn();
+      console.log('googleUser:', googleUser);
+      const id_token = googleUser.getAuthResponse().id_token;
+      console.log('id_token:', id_token);
+      // const id_token = userInfoResponse.getAuthResponse().id_token;
+      console.log('id_token:', id_token);
+      // Authenticate with Firebase using the ID token
+      console.log('getting credential from GoogleAuthProvider');
+      const credential = GoogleAuthProvider.credential(id_token);
+      console.log('credential:', credential);
+      console.log('signing in to firebase with credential');
+      const firebaseUserCredential = await signInWithCredential(auth, credential);
+      console.log('firebaseUserCredential:', firebaseUserCredential);
+      setCurrentFirebaseUser(firebaseUserCredential.user);
       setCurrentUser(user);
     },
     onError: (error) => console.log('Login Failed:', error)
@@ -158,6 +179,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('AuthContext::useEffect');
     const unsubscribe = onAuthStateChanged(auth, user => {
+      console.log('user status changed:', user);
+      console.log('user status changed: firebase user:', currentFirebaseUser);  
       setCurrentFirebaseUser(user);
       console.log('user status changed: firebase user:', currentFirebaseUser); 
       console.log('user status changed: user:', currentUser); 
