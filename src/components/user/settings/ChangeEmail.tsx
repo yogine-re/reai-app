@@ -7,15 +7,15 @@ import SubmitButton from '../inputs/SubmitButton';
 import { getErrorMessage } from '@/utils';
 
 const ChangeEmail: React.FC = () => {
-  const { currentUser, setLoading, setAlert, setModal, modal } = useAuth();
+  const { currentFirebaseUser, setLoading, setAlert, setModal, modal } = useAuth();
   const emailRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (currentUser) {
-        await updateEmail(currentUser, emailRef.current!.value);
+      if (currentFirebaseUser) {
+        await updateEmail(currentFirebaseUser, emailRef.current!.value);
       }
       setModal({ ...modal, isOpen: false });
       setAlert({
@@ -42,7 +42,7 @@ const ChangeEmail: React.FC = () => {
     <form onSubmit={handleSubmit}>
       <DialogContent dividers>
         <DialogContentText>Please Enter your new email:</DialogContentText>
-        <EmailField {...{ emailRef, defaultValue: currentUser?.email }} />
+        <EmailField {...{ emailRef, defaultValue: currentFirebaseUser?.email }} />
       </DialogContent>
       <DialogActions>
         <SubmitButton />

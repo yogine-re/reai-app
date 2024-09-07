@@ -13,7 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 export default function Options({ imageId, uid, documentURL }: { imageId: string, uid: string, documentURL: string }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { currentUser, setAlert } = useAuth();
+  const { currentFirebaseUser, setAlert } = useAuth();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -23,7 +23,7 @@ export default function Options({ imageId, uid, documentURL }: { imageId: string
   const handleDelete = async () => {
     try {
       await deleteDocument('gallery', imageId);
-      await deleteFile(`gallery/${currentUser?.uid}/${imageId}`);
+      await deleteFile(`gallery/${currentFirebaseUser?.uid}/${imageId}`);
     } catch (error) {
       setAlert({
         isAlert: true,
@@ -116,7 +116,7 @@ export default function Options({ imageId, uid, documentURL }: { imageId: string
           </ListItemIcon>
           Download
         </MenuItem>
-        {currentUser?.uid === uid && (
+        {currentFirebaseUser?.uid === uid && (
           <MenuItem onClick={handleDelete}>
             <ListItemIcon>
               <Delete />

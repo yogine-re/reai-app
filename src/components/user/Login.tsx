@@ -101,13 +101,6 @@ const Login: React.FC = () => {
       console.log(error);
     }
   };
-  // see https://muhammedsahad.medium.com/react-js-a-step-by-step-guide-to-google-authentication-926d0d85edbd
-  // const responseMessage = (response: any) => {
-  //   console.log(response);
-  // };
-  // const errorMessage = (error: any): void => {
-  //   console.log(error);
-  // };
   useEffect(
     () => {
       if (isRegister) {

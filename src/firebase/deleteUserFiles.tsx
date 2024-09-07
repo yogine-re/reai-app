@@ -2,33 +2,34 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from './config';
 import deleteDocument from './deleteDocument';
 import deleteFile from './deleteFile';
+import { User } from 'firebase/auth';
 
-const deleteUserFiles = (collectionName, currentUser) => {
-  return new Promise(async (resolve, reject) => {
+const deleteUserFiles = (collectionName: string, currentFirebaseUser: User): Promise<void> => {
+  return new Promise<void>(async (resolve, reject) => {
     const q = query(
       collection(db, collectionName),
-      where('uid', '==', currentUser.uid)
+      where('uid', '==', currentFirebaseUser.uid)
     );
     try {
       const snapshot = await getDocs(q);
-      const storePromises = [];
-      const storagePromises = [];
+      const storePromises: Promise<void>[] = [];
+      const storagePromises: Promise<void>[] = [];
       snapshot.forEach((document) => {
         storePromises.push(deleteDocument(collectionName, document.id));
         storagePromises.push(
-          deleteFile(`${collectionName}/${currentUser.uid}/${document.id}`)
+          deleteFile(`${collectionName}/${currentFirebaseUser.uid}/${document.id}`)
         );
       });
       await Promise.all(storePromises);
       await Promise.all(storagePromises);
 
-      if (currentUser?.photoURL) {
-        const photoName = currentUser?.photoURL
-          ?.split(`${currentUser.uid}%2F`)[1]
+      if (currentFirebaseUser?.photoURL) {
+        const photoName = currentFirebaseUser?.photoURL
+          ?.split(`${currentFirebaseUser.uid}%2F`)[1]
           ?.split('?')[0];
         if (photoName) {
           try {
-            await deleteFile(`profile/${currentUser.uid}/${photoName}`);
+            await deleteFile(`profile/${currentFirebaseUser.uid}/${photoName}`);
           } catch (error: unknown) {
             console.log(error);
           }

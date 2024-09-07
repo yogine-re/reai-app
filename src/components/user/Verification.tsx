@@ -3,9 +3,10 @@ import { Alert, Box, Button, Collapse, IconButton } from '@mui/material';
 import { sendEmailVerification } from 'firebase/auth';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { getErrorMessage } from '@/utils';
 
 const Verification = () => {
-  const { currentUser, setAlert, setLoading } = useAuth();
+  const { currentFirebaseUser, setAlert, setLoading } = useAuth();
   const [open, setOpen] = useState(true);
   const [isClicked, setIsClicked] = useState(false);
 
@@ -14,7 +15,7 @@ const Verification = () => {
     setLoading(true);
 
     try {
-      await sendEmailVerification(currentUser);
+      await sendEmailVerification(currentFirebaseUser);
       setAlert({
         isAlert: true,
         severity: 'info',
@@ -26,7 +27,7 @@ const Verification = () => {
       setAlert({
         isAlert: true,
         severity: 'error',
-        message: error.message,
+        message: getErrorMessage(error),
         timeout: 8000,
         location: 'main',
       });
@@ -36,7 +37,7 @@ const Verification = () => {
     setLoading(false);
   };
   return (
-    currentUser?.emailVerified === false && (
+    currentFirebaseUser?.emailVerified === false && (
       <Box>
         <Collapse in={open}>
           <Alert

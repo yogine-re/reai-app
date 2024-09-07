@@ -18,6 +18,7 @@ import { auth } from '../firebase/config';
 import { googleLogout, TokenResponse, useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { UUID } from 'crypto';
+import { log } from 'console';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ModalType {
   isOpen: boolean;
@@ -25,9 +26,18 @@ export interface ModalType {
   content: any;
 }
 
-export interface UserOauthGoogle {
+export declare interface UserInfo {
+  readonly displayName: string | null;
+  readonly email: string | null;
+  readonly phoneNumber: string | null;
+  readonly photoURL: string | null;
+  readonly providerId: string;
+  readonly uid: string;
+}
+
+export interface UserOauth {
   authToken: TokenResponse;
-  userInfo: any;
+  providerData: UserInfo[];
   photoURL: string;
   displayName: string;
   uid: UUID;
@@ -38,7 +48,7 @@ export interface UserOauthGoogle {
 
 // Define an interface for the context value
 export interface AuthContextType {
-  currentUser: UserOauthGoogle | null;
+  currentUser: UserOauth | null;
   currentFirebaseUser: User | null;
   accessToken: string;
   signUp: (email: string, password: string) => Promise<UserCredential>;
@@ -84,13 +94,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false);
   const [accessToken, setAccessToken] = useState('');
   const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(null);
-  const [currentUser, setCurrentUser] = useState<UserOauthGoogle | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserOauth | null>(null);
 
   const signUp = (email: string, password: string): Promise<UserCredential> => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
   const login = (email: string, password: string): Promise<UserCredential> => {
-    return signInWithEmailAndPassword(auth, email, password);
+    console.log('logging in');
+    const credential = signInWithEmailAndPassword(auth, email, password);
+    console.log('credential:', credential);
+    const promiseUser = credential.then(cred => {
+      log('CAROLINA cred', cred);
+      return cred.user;
+    });
+    console.log('promiseUser:', promiseUser);
+    promiseUser.then(user => {
+      console.log('firebase user:', user);
+      setCurrentFirebaseUser(user);
+    });
+    return credential;
   };
   const loginWithGoogle = (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
@@ -104,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithOauthGoogle = useGoogleLogin({
     onSuccess: async (codeResponse) => {
       const tokenResponse: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'> = codeResponse;
-      const user: UserOauthGoogle = {} as UserOauthGoogle;
+      const user: UserOauth = {} as UserOauth;
       user.authToken = tokenResponse;
       setAccessToken(tokenResponse.access_token);
       // fetching userinfo can be done on the client or the server
@@ -113,7 +135,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         })
         .then(res => res.data);
-      user.userInfo = userInfo;
+      console.log('userInfo:', userInfo);
+      user.providerData = user.providerData ? [...user.providerData, userInfo] : [userInfo];
       user.displayName = userInfo.name;
       user.email = userInfo.email;
       user.emailVerified = userInfo.email_verified;
@@ -121,6 +144,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user.photoURL = userInfo.picture;
       user.uid = userInfo.sub;
       console.log('user oauth google:', user);
+      console.log('logging in firebase user');
+      await signUp(user.email, 'dummyPassword123#');
+      await login(user.email, 'dummyPassword123#');
       setCurrentUser(user);
     },
     onError: (error) => console.log('Login Failed:', error)
@@ -137,7 +163,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('AuthContext::useEffect');
     const unsubscribe = onAuthStateChanged(auth, user => {
       setCurrentFirebaseUser(user);
-      console.log('user status changed: ', user);
+      console.log('user status changed: firebase user:', currentFirebaseUser); 
+      console.log('user status changed: user:', currentUser); 
     });
     return unsubscribe;
   }, []);

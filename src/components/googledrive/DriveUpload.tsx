@@ -7,8 +7,7 @@ import { Lock } from '@mui/icons-material';
 import Login from '../user/Login';
 
 export const DriveUpload: React.FC = () => {
-    const { currentUserOauthGoogle, setModal } = useAuth();
-    const currentUser = currentUserOauthGoogle;
+    const { currentUser, setModal } = useAuth();
     const openLogin = () => {
         setModal({ isOpen: true, title: 'Login', content: <Login /> });
       };

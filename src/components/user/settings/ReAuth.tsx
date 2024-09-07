@@ -14,19 +14,19 @@ interface ReAuthProps {
 }
 
 const ReAuth: React.FC<ReAuthProps> = ({ action }) => {
-  const { currentUser, setLoading, setAlert, setModal, modal } = useAuth();
+  const { currentFirebaseUser, setLoading, setAlert, setModal, modal } = useAuth();
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const credential = EmailAuthProvider.credential(
-      currentUser?.email ?? '',
+      currentFirebaseUser?.email ?? '',
       passwordRef.current!.value
     );
     try {
-      if (currentUser) {
-        await reauthenticateWithCredential(currentUser, credential);
+      if (currentFirebaseUser) {
+        await reauthenticateWithCredential(currentFirebaseUser, credential);
       } else {
         throw new Error('No user found');
       }

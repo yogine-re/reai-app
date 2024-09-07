@@ -21,10 +21,10 @@ import { useEffect } from 'react';
 import { getErrorMessage } from '@/utils';
 
 const Profile: React.FC = () => {
-  const { currentUser, setLoading, setAlert, modal, setModal } = useAuth();
-  const [name, setName] = useState(currentUser?.displayName);
+  const { currentFirebaseUser, setLoading, setAlert, modal, setModal } = useAuth();
+  const [name, setName] = useState(currentFirebaseUser?.displayName);
   const [file, setFile] = useState<File | null>(null);
-  const [photoURL, setPhotoURL] = useState(currentUser?.photoURL || '');
+  const [photoURL, setPhotoURL] = useState(currentFirebaseUser?.photoURL || '');
   const [openCrop, setOpenCrop] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,16 +47,16 @@ const Profile: React.FC = () => {
         const imageName = uuidv4() + '.' + file?.name?.split('.')?.pop();
         const url = await uploadFile(
           file,
-          `profile/${currentUser?.uid}/${imageName}`
+          `profile/${currentFirebaseUser?.uid}/${imageName}`
         );
 
-        if (currentUser?.photoURL) {
-          const prevImage = currentUser?.photoURL
-            ?.split(`${currentUser?.uid}%2F`)[1]
+        if (currentFirebaseUser?.photoURL) {
+          const prevImage = currentFirebaseUser?.photoURL
+            ?.split(`${currentFirebaseUser?.uid}%2F`)[1]
             .split('?')[0];
           if (prevImage) {
             try {
-              await deleteFile(`profile/${currentUser?.uid}/${prevImage}`);
+              await deleteFile(`profile/${currentFirebaseUser?.uid}/${prevImage}`);
             } catch (error: unknown) {
               console.log(error);
             }
@@ -67,11 +67,11 @@ const Profile: React.FC = () => {
         imagesObj = { ...imagesObj, uPhoto: url as string };
       }
 
-      if (currentUser) {
-        await updateProfile(currentUser, userObj);
+      if (currentFirebaseUser) {
+        await updateProfile(currentFirebaseUser, userObj);
       }
-      if (currentUser?.uid) {
-        await updateUserRecords('gallery', currentUser.uid, imagesObj);
+      if (currentFirebaseUser?.uid) {
+        await updateUserRecords('gallery', currentFirebaseUser.uid, imagesObj);
       }
 
       setAlert({

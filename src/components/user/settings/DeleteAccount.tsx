@@ -11,14 +11,14 @@ import deleteUserFiles from '../../../firebase/deleteUserFiles';
 import { getErrorMessage } from '@/utils';
 
 const DeleteAccount: React.FC = () => {
-  const { currentUser, setLoading, setAlert, setModal, modal } = useAuth();
+  const { currentFirebaseUser, setLoading, setAlert, setModal, modal } = useAuth();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await deleteUserFiles('gallery', currentUser);
-      if (currentUser)
-        await deleteUser(currentUser);
+      await deleteUserFiles('gallery', currentFirebaseUser);
+      if (currentFirebaseUser)
+        await deleteUser(currentFirebaseUser);
       setModal({ ...modal, isOpen: false });
       setAlert({
         isAlert: true,
