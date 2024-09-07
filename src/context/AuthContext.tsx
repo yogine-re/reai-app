@@ -1,5 +1,5 @@
 import { gapi } from 'gapi-script';
-import {initClientGoogleApi as gapiInitialize} from '@/gapi/gapi';
+import initClientGoogleDrive from '@/gapi/gapi';
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -49,6 +49,7 @@ export interface UserOauth {
 
 // Define an interface for the context value
 export interface AuthContextType {
+  gapiclient: typeof gapi;
   currentUser: UserOauth | null;
   currentFirebaseUser: User | null;
   accessToken: string;
@@ -96,6 +97,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [accessToken, setAccessToken] = useState('');
   const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(null);
   const [currentUser, setCurrentUser] = useState<UserOauth | null>(null);
+  const [gapiclient, setGapiclient] = useState<UserOauth | null>(null);
+
 
   const signUp = (email: string, password: string): Promise<UserCredential> => {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -146,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user.uid = userInfo.sub;
       console.log('user oauth google:', user);
       // Exchange authorization code for tokens
-      await gapiInitialize();
+      await initClientGoogleDrive().then((gapiClient) => { setGapiclient(gapiClient); }).catch((error) => console.error('Error initializing gapi client:', error)); 
       console.log('calling gapi.auth2.getAuthInstance');
       const googleAuth = gapi.auth2.getAuthInstance();
       console.log('calling googleAuth.signIn');
@@ -188,6 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
   const data: AuthContextType = {
+    gapiclient,
     currentUser,
     currentFirebaseUser,
     accessToken,
