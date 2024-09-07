@@ -16,7 +16,7 @@ const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { currentFirebaseUser, accessToken, setAlert } = useAuth();
+  const { currentUser, accessToken, setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
@@ -24,25 +24,25 @@ const ProgressItem = ({ file }: { file: File }) => {
       try {
         const url = await uploadFileProgress(
           file,
-          `gallery/${currentFirebaseUser?.uid}`,
+          `gallery/${currentUser?.uid}`,
           imageName,
           setProgress
         );
         const galleryDoc = {
           documentURL: url,
           documentName: file.name || '',
-          uid: currentFirebaseUser?.uid || '',
-          uEmail: currentFirebaseUser?.email || '',
-          uName: currentFirebaseUser?.displayName || '',
-          uPhoto: currentFirebaseUser?.photoURL || '',
+          uid: currentUser?.uid || '',
+          uEmail: currentUser?.email || '',
+          uName: currentUser?.displayName || '',
+          uPhoto: currentUser?.photoURL || '',
         };
         console.log('adding document:', imageName);
         console.log('galleryDoc:', galleryDoc);
         await addDocument('gallery', galleryDoc, imageName);
         console.log('uploading to google drive');
         initClientGoogleDrive().then((gapi) => {
-          // const token = currentUserR?.authToken?.access_token || '';
-          console.log('currentUserR', currentUserR);
+          // const token = currentUserOauthGoogle?.authToken?.access_token || '';
+          console.log('currentUser', currentUser);
           const token = accessToken;
           // driveListFiles(gapi, token);  
           uploadHelloWorld(gapi, token);
