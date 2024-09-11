@@ -11,11 +11,16 @@ const deleteUserFiles = (collectionName: string, currentFirebaseUser: User): Pro
       where('uid', '==', currentFirebaseUser.uid)
     );
     try {
+      console.log('getDocs query:', q);
+      console.log('query uid == ' + currentFirebaseUser.uid);
+      console.log('collectionName:', collectionName);
       const snapshot = await getDocs(q);
       const storePromises: Promise<void>[] = [];
       const storagePromises: Promise<void>[] = [];
       snapshot.forEach((document) => {
+        console.log('deleting document:', document.id);
         storePromises.push(deleteDocument(collectionName, document.id));
+        console.log('deleting file:', `${collectionName}/${currentFirebaseUser.uid}/${document.id}`); 
         storagePromises.push(
           deleteFile(`${collectionName}/${currentFirebaseUser.uid}/${document.id}`)
         );

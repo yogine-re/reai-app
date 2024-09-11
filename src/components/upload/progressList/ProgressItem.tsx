@@ -15,7 +15,7 @@ const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { gapiclient, currentUser, accessToken, setAlert } = useAuth();
+  const { gapiclient, currentFirebaseUser, accessToken, setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
@@ -23,17 +23,17 @@ const ProgressItem = ({ file }: { file: File }) => {
       try {
         const url = await uploadFileProgress(
           file,
-          `gallery/${currentUser?.uid}`,
+          `gallery/${currentFirebaseUser?.uid}`,
           imageName,
           setProgress
         );
         const galleryDoc = {
           documentURL: url,
           documentName: file.name || '',
-          uid: currentUser?.uid || '',
-          uEmail: currentUser?.email || '',
-          uName: currentUser?.displayName || '',
-          uPhoto: currentUser?.photoURL || '',
+          uid: currentFirebaseUser?.uid || '',
+          uEmail: currentFirebaseUser?.email || '',
+          uName: currentFirebaseUser?.displayName || '',
+          uPhoto: currentFirebaseUser?.photoURL || '',
         };
         console.log('adding document:', imageName);
         console.log('galleryDoc:', galleryDoc);

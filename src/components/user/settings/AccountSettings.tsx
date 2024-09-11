@@ -18,7 +18,7 @@ const AccountSettings: React.FC = () => {
 
   const handleAction = async (action: string) => {
     console.log('AccountSettings: handleAction: issPasswordProvider: ' + isPasswordProvider);
-    if (isPasswordProvider && !currentUser) {
+    if (isPasswordProvider) {
       setModal({
         ...modal,
         title: 'Re-Login',
