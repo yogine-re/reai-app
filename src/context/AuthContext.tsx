@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [accessToken, setAccessToken] = useState('');
   const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(null);
   const [currentUser, setCurrentUser] = useState<UserOauth | null>(null);
-  const [googleApiClient, setGoogleApiClient] = useState<UserOauth | null>(null);
+  const [googleApiClient, setGoogleApiClient] = useState<typeof gapi | null>(null);
 
 
   const signUp = (email: string, password: string): Promise<UserCredential> => {
@@ -148,16 +148,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user.photoURL = userInfo.picture;
       user.uid = userInfo.sub;
       console.log('user oauth google:', user);
+      if (!googleApiClient) {
+        console.error('googleApiClient not initialized');
+        return;
+      } 
       // Exchange authorization code for tokens, see https://stackoverflow.com/questions/69727083/using-firebase-auth-gapi
-      await initClientGoogleDrive().then((googleApiClient) => { setGoogleApiClient(googleApiClient); }).catch((error) => console.error('Error initializing gapi client:', error)); 
-      console.log('calling gapi.auth2.getAuthInstance');
-      const googleAuth = gapi.auth2.getAuthInstance();
+      console.log('calling googleApiClient.auth2.getAuthInstance');
+      const googleAuth = googleApiClient?.auth2.getAuthInstance();
       console.log('calling googleAuth.signIn');
       const googleUser = await googleAuth.signIn();
       console.log('googleUser:', googleUser);
       const id_token = googleUser.getAuthResponse().id_token;
-      console.log('id_token:', id_token);
-      // const id_token = userInfoResponse.getAuthResponse().id_token;
       console.log('id_token:', id_token);
       // Authenticate with Firebase using the ID token
       console.log('getting credential from GoogleAuthProvider');
@@ -180,8 +181,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetPassword = (email: string): Promise<void> => {
     return sendPasswordResetEmail(auth, email);
   };
+
+  const initGoogleApiClient = async () => { 
+    console.log('initGoogleApiClient');
+    initClientGoogleDrive().then((googleApiClient) => { setGoogleApiClient(googleApiClient); }).catch((error) => console.error('Error initializing gapi client:', error)); 
+  }
+  
   useEffect(() => {
     console.log('AuthContext::useEffect');
+    if(!googleApiClient) {
+      console.log('AuthContext::useEffect: initializing googleApiClient');
+      initGoogleApiClient();
+    }
     const unsubscribe = onAuthStateChanged(auth, user => {
       console.log('user status changed:', user);
       console.log('user status changed: firebase user:', currentFirebaseUser);  

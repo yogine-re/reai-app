@@ -12,7 +12,7 @@ import ReAuth from './ReAuth';
 import { getErrorMessage } from '@/utils';
 
 const AccountSettings: React.FC = () => {
-  const { currentUser, currentFirebaseUser, setModal, modal, setAlert, loginWithOauthGoogle } = useAuth();
+  const { currentUser, currentFirebaseUser, setModal, modal, setAlert } = useAuth();
   const isPasswordProvider =
   currentFirebaseUser?.providerData[0].providerId === 'password' && !currentUser;
 
@@ -51,7 +51,7 @@ const AccountSettings: React.FC = () => {
         }
       } catch (error: unknown) {
         setAlert({
-          isAlert: true,
+          isAlert: true, 
           severity: 'error',
           message: getErrorMessage(error),
           timeout: 5000,

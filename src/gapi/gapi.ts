@@ -26,19 +26,19 @@ const initialize = async () => {
     return result;
 };
 
-const authenticate = async () => {
-    try {
-        console.log('authenticate');
-        const result = await gapi.auth2.getAuthInstance().isSignedIn.listen((isSignedIn: boolean) => {
-            console.log('isSignedIn', isSignedIn);
-            return isSignedIn;
-        });
-        console.log('authenticate result', result);
-        console.log('authenticated');
-    } catch (error) {
-        throw Error(`Error authenticating gapi client: ${error}`);
-    }
-};
+// const authenticate = async () => {
+//     try {
+//         console.log('gapi:authenticate');
+//         const result = await gapi.auth2.getAuthInstance().isSignedIn.listen((isSignedIn: boolean) => {
+//             console.log('isSignedIn', isSignedIn);
+//             return isSignedIn;
+//         });
+//         console.log('authenticate result', result);
+//         console.log('authenticated');
+//     } catch (error) {
+//         throw Error(`Error authenticating gapi client: ${error}`);
+//     }
+// };
 
 const loadGoogleDriveApi = async () => {
     gapi.client.setApiKey(API_KEY);
@@ -78,10 +78,10 @@ const initClientGoogleDrive = async () => {
             try {
                 console.log('initClientGoogleDrive');
                 const r1 = await initialize();
-                const r2 = await authenticate();
+                // const r2 = await authenticate();
                 const r3 = await loadGoogleDriveApi();
                 log('initClientGoogleDrive r1 ', r1);
-                log('initClientGoogleDrive r2 ', r2);
+                // log('initClientGoogleDrive r2 ', r2);
                 log('initClientGoogleDrive r3 ', r3);
                 log('initClientGoogleDrive gapi', gapi);
                 resolve(gapi);
