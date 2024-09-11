@@ -28,8 +28,8 @@ const AccountSettings: React.FC = () => {
       try {
         if (currentFirebaseUser)
           await reauthenticateWithPopup(currentFirebaseUser, new GoogleAuthProvider());
-        if (currentUser)
-          await loginWithOauthGoogle();
+        // if (currentUser)
+        //   await loginWithOauthGoogle();
 
         switch (action) {
           case 'changeEmail':
