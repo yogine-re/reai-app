@@ -125,7 +125,7 @@ import RetryHandler from '../utils/RetryHandler';
         this.onUploadError_(e);
       }
     };
-    xhr.onerror = this.onUploadError_;
+    xhr.onerror = this.onUploadError_.bind(this);
     xhr.send(JSON.stringify(this.metadata));
   };
   
@@ -159,8 +159,8 @@ import RetryHandler from '../utils/RetryHandler';
       xhr.upload.addEventListener('progress', this.onProgress);
     }
     console.log('MediaUploader: sendFile_ this.onContentUploadSuccess_:', this.onContentUploadSuccess_);
-    xhr.onload = this.onContentUploadSuccess_;
-    xhr.onerror = this.onContentUploadError_;
+    xhr.onload = this.onContentUploadSuccess_.bind(this);
+    xhr.onerror = this.onContentUploadError_.bind(this);
     xhr.send(content);
   };
   
@@ -177,8 +177,8 @@ import RetryHandler from '../utils/RetryHandler';
     if (xhr.upload) {
       xhr.upload.addEventListener('progress', this.onProgress);
     }
-    xhr.onload = this.onContentUploadSuccess_;
-    xhr.onerror = this.onContentUploadError_;
+    xhr.onload = this.onContentUploadSuccess_.bind(this);
+    xhr.onerror = this.onContentUploadError_.bind(this);
     xhr.send();
   };
   
@@ -230,7 +230,7 @@ import RetryHandler from '../utils/RetryHandler';
     if (e.target.status && (e.target.status < 500)) {
       this.onError(e.target.response);
     } else {
-      this.retryHandler.retry(this.resume_);
+      this.retryHandler.retry(this.resume_.bind(this));
     }
   };
   
