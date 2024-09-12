@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import RetryHandler from '../utils/RetryHandler';
 
 /**
@@ -6,7 +5,7 @@ import RetryHandler from '../utils/RetryHandler';
    * files or in-memory constructs.
    *
    * @example
-   * var content = new Blob(["Hello world"], {"type": "text/plain"});
+   * var content = new Blob(['Hello world'], {'type': 'text/plain'});
    * var uploader = new MediaUploader({
    *   file: content,
    *   token: accessToken,
@@ -27,7 +26,6 @@ import RetryHandler from '../utils/RetryHandler';
    * @param {function} [options.onProgress] Callback for status for the in-progress upload
    * @param {function} [options.onError] Callback if upload fails
    */
-  const noop = function () {};
 
   interface UploadOptions {
     token: string;
@@ -56,61 +54,79 @@ import RetryHandler from '../utils/RetryHandler';
     return undefined;
   }
 
-  const MediaUploader = (options: UploadOptions) => {
-      
-    const [token, setToken] = useState<string>(options.token);
-    const [file, setFile] = useState<Blob | File>(options.file);
-    const [fileId, setFileId] = useState<string | undefined>(options.fileId);
-    const [contentType, setContentType] = useState<string>(options.contentType || 'application/octet-stream');  
-    const [metadata, setMetadata] = useState<Record<string, any>>(options.metadata || {
-      title: getFileName(file), 
-      mimeType: contentType
-    });
-    const [onComplete, setOnComplete] = useState<(response: any) => void>(options.onComplete || noop);
-    const [onProgress, setOnProgress] = useState<(event: ProgressEvent) => void>(options.onProgress || noop);
+  class MediaUploader {
+    file: Blob | File;
+    contentType: string;
+    metadata: Record<string, any>;
+    token: string;
 
-    const [onError, setOnError] = useState<(error: any) => void>(options.onError || noop);
-    const [offset, setOffset] = useState<number>(options.offset || 0);
-    const [chunkSize, setChunkSize] = useState<number>(options.chunkSize || 0);
-    const [retryHandler, setRetryHandler] = useState<RetryHandler>(new RetryHandler());
-    const [url, setUrl] = useState<string>(options.url);
+    onComplete: (response: any) => void;
+    onProgress: (event: ProgressEvent) => void;
+    onError: (error: any) => void;
+    offset: number;
+    chunkSize: number;
+    retryHandler: RetryHandler;
+    url: string;
+    httpMethod: string;
 
-    if (!url) {
-      const params = options.params || {};
-      params.uploadType = "resumable";
-      setUrl(buildUrl_(fileId, params, options.baseUrl));
+    constructor(options: UploadOptions) {
+    
+      console.log('MediaUploader constructor: options:', options);
+      var noop = function() {};
+      this.file = options.file;
+      this.contentType = options.contentType || this.file.type || 'application/octet-stream';
+      this.metadata = options.metadata || {
+        'title': getFileName(this.file),
+        'mimeType': this.contentType
+      };
+      this.token = options.token;
+      this.onComplete = options.onComplete || noop;
+      console.log('MediaUploader: this.onComplete:', this.onComplete);
+      this.onProgress = options.onProgress || noop;
+      console.log('MediaUploader: this.onProgress:', this.onProgress);
+      this.onError = options.onError || noop;
+      console.log('MediaUploader: this.onError:', this.onError);
+      this.offset = options.offset || 0;
+      this.chunkSize = options.chunkSize || 0;
+      this.retryHandler = new RetryHandler();
+    
+      this.url = options.url;
+      if (!this.url) {
+        var params = options.params || {};
+        params.uploadType = 'resumable';
+        this.url = this.buildUrl_(options.fileId, params, options.baseUrl);
+      }
+      this.httpMethod = options.fileId ? 'PATCH' : 'POST';
     }
-    const httpMethod = options.fileId ? "PATCH" : "POST";
-    console.log('MediaUploader.upload: httpMethod:', httpMethod);
 
 
   
   /**
    * Initiate the upload.
    */
-  const upload = function () {
+  upload() {
     var xhr = new XMLHttpRequest();
   
-    xhr.open(httpMethod, url, true);
-    xhr.setRequestHeader("Authorization", "Bearer " + token);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    const fileSize = getFileSize(file);
+    xhr.open(this.httpMethod, this.url, true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + this.token);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    const fileSize = getFileSize(this.file);
     if (fileSize !== undefined) {
-      xhr.setRequestHeader("X-Upload-Content-Length", fileSize.toString());
+      xhr.setRequestHeader('X-Upload-Content-Length', fileSize.toString());
     }
-    xhr.setRequestHeader("X-Upload-Content-Type", contentType[0]);
+    xhr.setRequestHeader('X-Upload-Content-Type', this.contentType);
   
-    xhr.onload = function (e: any) {
+    xhr.onload = (e: any) => {
       if (e.target.status < 400) {
-        var location = e.target.getResponseHeader("Location");
-        setUrl(location);
-        sendFile_();
+        var location = e.target.getResponseHeader('Location');
+        this.url = location;
+        this.sendFile_();
       } else {
-        onUploadError_(e);
+        this.onUploadError_(e);
       }
     };
-    xhr.onerror = onUploadError_;
-    xhr.send(JSON.stringify(metadata));
+    xhr.onerror = this.onUploadError_;
+    xhr.send(JSON.stringify(this.metadata));
   };
   
   /**
@@ -118,31 +134,33 @@ import RetryHandler from '../utils/RetryHandler';
    *
    * @private
    */
-  const sendFile_ = function () {
-    var content = file;
-    var end = file.size;
+  sendFile_() {
+    console.log('MediaUploader: sendFile_');
+    var content = this.file;
+    var end = getFileSize(this.file);
   
-    if (offset || chunkSize) {
+    if (this.offset || this.chunkSize) {
       // Only bother to slice the file if we're either resuming or uploading in chunks
-      if (chunkSize) {
-        end = Math.min(offset + chunkSize, file.size);
+      if (this.chunkSize) {
+        end = Math.min(this.offset + this.chunkSize, getFileSize(this.file) || 0);
       }
-      content = content.slice(offset, end);
+      content = content.slice(this.offset, end);
     }
   
     var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Content-Type", contentType);
+    xhr.open('PUT', this.url, true);
+    xhr.setRequestHeader('Content-Type', this.contentType);
     xhr.setRequestHeader(
-      "Content-Range",
-      "bytes " + offset + "-" + (end - 1) + "/" + file.size
+      'Content-Range',
+      'bytes ' + this.offset + '-' + (end! - 1) + '/' + getFileSize(this.file)
     );
-    xhr.setRequestHeader("X-Upload-Content-Type", file.type);
+    xhr.setRequestHeader('X-Upload-Content-Type', this.file.type);
     if (xhr.upload) {
-      xhr.upload.addEventListener("progress", onProgress);
+      xhr.upload.addEventListener('progress', this.onProgress);
     }
-    xhr.onload = onContentUploadSuccess_;
-    xhr.onerror = onContentUploadError_;
+    console.log('MediaUploader: sendFile_ this.onContentUploadSuccess_:', this.onContentUploadSuccess_);
+    xhr.onload = this.onContentUploadSuccess_;
+    xhr.onerror = this.onContentUploadError_;
     xhr.send(content);
   };
   
@@ -151,16 +169,16 @@ import RetryHandler from '../utils/RetryHandler';
    *
    * @private
    */
-  function resume_() {
+  resume_() {
     var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Content-Range", "bytes */" + getFileSize(file));
-    xhr.setRequestHeader("X-Upload-Content-Type", file.type);
+    xhr.open('PUT', this.url, true);
+    xhr.setRequestHeader('Content-Range', 'bytes */' + getFileSize(this.file));
+    xhr.setRequestHeader('X-Upload-Content-Type', this.file.type);
     if (xhr.upload) {
-      xhr.upload.addEventListener("progress", onProgress);
+      xhr.upload.addEventListener('progress', this.onProgress);
     }
-    xhr.onload = onContentUploadSuccess_;
-    xhr.onerror = onContentUploadError_;
+    xhr.onload = this.onContentUploadSuccess_;
+    xhr.onerror = this.onContentUploadError_;
     xhr.send();
   };
   
@@ -169,10 +187,10 @@ import RetryHandler from '../utils/RetryHandler';
    *
    * @param {XMLHttpRequest} xhr Request object
    */
-  function extractRange_(xhr: XMLHttpRequest) {
-    var range = xhr.getResponseHeader("Range");
+  extractRange_(xhr: XMLHttpRequest) {
+    var range = xhr.getResponseHeader('Range');
     if (range) {
-      setOffset(parseInt(range.match(/\d+/g)!.pop()!, 10) + 1);
+      this.offset = parseInt(range.match(/\d+/g)!.pop()!, 10) + 1;
     }
   };
   
@@ -184,15 +202,20 @@ import RetryHandler from '../utils/RetryHandler';
    * @private
    * @param {object} e XHR event
    */
-  function onContentUploadSuccess_(e: any) {
+  onContentUploadSuccess_(e: any) {
+    console.log('MediaUploader: onContentUploadSuccess_ e:', e);
+    console.log('MediaUploader: onContentUploadSuccess_ this:', this);
     if (e.target.status == 200 || e.target.status == 201) {
-      onComplete(e.target.response);
+      console.log('MediaUploader: onContentUploadSuccess_ this.onComplete:', this.onComplete);
+      if (this.onComplete) {
+        this.onComplete(e.target.response); 
+      }
     } else if (e.target.status == 308) {
-      extractRange_(e.target);
-      retryHandler.reset();
-      sendFile_();
+      this.extractRange_(e.target);
+      this.retryHandler.reset();
+      this.sendFile_();
     } else {
-      onContentUploadError_(e);
+      this.onContentUploadError_(e);
     }
   };
   
@@ -203,11 +226,11 @@ import RetryHandler from '../utils/RetryHandler';
    * @private
    * @param {object} e XHR event
    */
-  function onContentUploadError_(e: any) {
-    if (e.target.status && e.target.status < 500) {
-      onError(e.target.response);
+  onContentUploadError_(e: any) {
+    if (e.target.status && (e.target.status < 500)) {
+      this.onError(e.target.response);
     } else {
-      retryHandler.retry(resume_);
+      this.retryHandler.retry(this.resume_);
     }
   };
   
@@ -217,8 +240,8 @@ import RetryHandler from '../utils/RetryHandler';
    * @private
    * @param {object} e XHR event
    */
-  function onUploadError_(e: any) {
-    onError(e.target.response); // TODO - Retries for initial upload
+  onUploadError_(e: any) {
+    this.onError(e.target.response); // TODO - Retries for initial upload
   };
   
   /**
@@ -228,13 +251,13 @@ import RetryHandler from '../utils/RetryHandler';
    * @param {object} [params] Key/value pairs for query string
    * @return {string} query string
    */
-  function buildQuery_(params: Record<string, string>) {
+  buildQuery_(params: Record<string, string>) {
     params = params || {};
     return Object.keys(params)
       .map(function (key) {
-        return encodeURIComponent(key) + "=" + encodeURIComponent(params[key]);
+        return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
       })
-      .join("&");
+      .join('&');
   };
   
   /**
@@ -245,14 +268,14 @@ import RetryHandler from '../utils/RetryHandler';
    * @param {object} [params] Query parameters
    * @return {string} URL
    */
-  function buildUrl_(id: string | undefined, params: Record<string, string>, baseUrl: string) {
-    var url = baseUrl || "https://www.googleapis.com/upload/drive/v2/files/";
+  buildUrl_(id: string | undefined, params: Record<string, string>, baseUrl: string) {
+    var url = baseUrl || 'https://www.googleapis.com/upload/drive/v2/files/';
     if (id) {
       url += id;
     }
-    var query = buildQuery_(params);
+    var query = this.buildQuery_(params);
     if (query) {
-      url += "?" + query;
+      url += '?' + query;
     }
     return url;
   };

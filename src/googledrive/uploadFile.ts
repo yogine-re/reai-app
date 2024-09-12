@@ -1,6 +1,6 @@
 // see https://cloud.google.com/docs/authentication/api-keys#gcloud
 import axios from 'axios';
-// import { MediaUploader } from './MediaUploader';
+import MediaUploader from './MediaUploader';
 
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM'
 
@@ -10,50 +10,50 @@ export async function uploadHelloWorld(gapi: any, token: string) {
   console.log('uploadHelloWorld: uploading file');
   const file = new File(['Hello, world!'], 'hello world.txt', { type: 'text/plain;charset=utf-8' });
   const contentType = file.type || 'application/octet-stream';
-  const user = gapi.auth2.getAuthInstance()?.currentUser?.get();
-  const access_token = token || user?.getAuthResponse()?.access_token;
-  // var uploader = new MediaUploader({
-  //   file: content,
-  //   token: accessToken,
-  // });
-  // uploader.upload();
-
+  const access_token = token || gapi.auth2.getAuthInstance()?.currentUser?.get()?.getAuthResponse()?.access_token;
   console.log('uploadHelloWorld: access_token:', access_token);
-  const initResumable = new XMLHttpRequest();
-  initResumable.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', true);
-  initResumable.setRequestHeader('Authorization', 'Bearer ' + access_token);
-  initResumable.setRequestHeader('Content-Type', 'application/json');
-  initResumable.setRequestHeader('X-Upload-Content-Length', file.size.toString());
-  initResumable.setRequestHeader('X-Upload-Content-Type', contentType);
-  initResumable.onreadystatechange = function() {
-    if(initResumable.readyState === XMLHttpRequest.DONE && initResumable.status === 200) {
-      const locationUrl = initResumable.getResponseHeader('Location');
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        console.log('uploadHelloWorld: reader.onload e:', e);
-        const uploadResumable = new XMLHttpRequest();
-        uploadResumable.open('PUT', locationUrl!, true);
-        uploadResumable.setRequestHeader('Content-Type', contentType);
-        uploadResumable.setRequestHeader('X-Upload-Content-Type', contentType);
-        uploadResumable.onreadystatechange = function() {
-          if(uploadResumable.readyState === XMLHttpRequest.DONE && uploadResumable.status === 200) {
-            console.log(uploadResumable.response);
-           }
-        };
-        uploadResumable.send(reader.result);
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  };
+  var uploader = new MediaUploader({
+    file: file,
+    contentType: contentType,
+    token: access_token,
+  });
+  uploader.upload();
+
+  // const initResumable = new XMLHttpRequest();
+  // initResumable.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', true);
+  // initResumable.setRequestHeader('Authorization', 'Bearer ' + access_token);
+  // initResumable.setRequestHeader('Content-Type', 'application/json');
+  // initResumable.setRequestHeader('X-Upload-Content-Length', file.size.toString());
+  // initResumable.setRequestHeader('X-Upload-Content-Type', contentType);
+  // initResumable.onreadystatechange = function() {
+  //   if(initResumable.readyState === XMLHttpRequest.DONE && initResumable.status === 200) {
+  //     const locationUrl = initResumable.getResponseHeader('Location');
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       console.log('uploadHelloWorld: reader.onload e:', e);
+  //       const uploadResumable = new XMLHttpRequest();
+  //       uploadResumable.open('PUT', locationUrl!, true);
+  //       uploadResumable.setRequestHeader('Content-Type', contentType);
+  //       uploadResumable.setRequestHeader('X-Upload-Content-Type', contentType);
+  //       uploadResumable.onreadystatechange = function() {
+  //         if(uploadResumable.readyState === XMLHttpRequest.DONE && uploadResumable.status === 200) {
+  //           console.log(uploadResumable.response);
+  //          }
+  //       };
+  //       uploadResumable.send(reader.result);
+  //     };
+  //     reader.readAsArrayBuffer(file);
+  //   }
+  // };
   
-  // You need to stringify the request body containing any file metadata
+  // // You need to stringify the request body containing any file metadata
   
-  initResumable.send(JSON.stringify({
-    'name': file.name,
-    'mimeType': contentType,
-    'Content-Type': contentType,
-    'Content-Length': file.size
-  }));
+  // initResumable.send(JSON.stringify({
+  //   'name': file.name,
+  //   'mimeType': contentType,
+  //   'Content-Type': contentType,
+  //   'Content-Length': file.size
+  // }));
   }
 
 /**
