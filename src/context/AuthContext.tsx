@@ -32,7 +32,6 @@ export interface AuthContextType {
   signUp: (email: string, password: string) => Promise<UserCredential>;
   login: (email: string, password: string) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
-  loginWithGoogle: () => void;
   logout: () => void;
   resetPassword: (email: string) => Promise<void>;
   // Add other methods or properties as needed
