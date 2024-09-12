@@ -1,6 +1,6 @@
 // see https://cloud.google.com/docs/authentication/api-keys#gcloud
 import axios from 'axios';
-import { MediaUploader } from './MediaUploader';
+// import { MediaUploader } from './MediaUploader';
 
 const API_KEY = 'AIzaSyD_BxWI1f5Rk-4jirw5HF1Yw3P0O-6jVnM'
 
@@ -12,11 +12,11 @@ export async function uploadHelloWorld(gapi: any, token: string) {
   const contentType = file.type || 'application/octet-stream';
   const user = gapi.auth2.getAuthInstance()?.currentUser?.get();
   const access_token = token || user?.getAuthResponse()?.access_token;
-  var uploader = new MediaUploader({
-    file: content,
-    token: accessToken,
-  });
-  uploader.upload();
+  // var uploader = new MediaUploader({
+  //   file: content,
+  //   token: accessToken,
+  // });
+  // uploader.upload();
 
   console.log('uploadHelloWorld: access_token:', access_token);
   const initResumable = new XMLHttpRequest();
