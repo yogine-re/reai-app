@@ -7,12 +7,10 @@ import Upload from './components/upload/Upload';
 import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { Container } from '@mui/material';
-import { GoogleOAuthProvider } from '@react-oauth/google'
 // import { GDrive } from './components/gapi/gapi';
 
 const App: React.FC = () => {
   return (
-    <GoogleOAuthProvider clientId='616954384014-tfficuqn6hf5ds39pkcbf6ui62ol16sa.apps.googleusercontent.com'>
       <AuthProvider>
         <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
           <SplashScreen />
@@ -25,7 +23,6 @@ const App: React.FC = () => {
           <Documents />
         </Container>
       </AuthProvider >
-    </GoogleOAuthProvider>
   );
 };
 

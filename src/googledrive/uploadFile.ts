@@ -10,7 +10,7 @@ export async function uploadHelloWorld(gapi: any, token: string) {
   const file = new File(['Hello, world!'], 'hello world.txt', { type: 'text/plain;charset=utf-8' });
   const contentType = file.type || 'application/octet-stream';
   const user = gapi.auth2.getAuthInstance()?.currentUser?.get();
-  const access_token = user?.getAuthResponse()?.access_token || token;
+  const access_token = token || user?.getAuthResponse()?.access_token;
   console.log('uploadHelloWorld: access_token:', access_token);
   const initResumable = new XMLHttpRequest();
   initResumable.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', true);

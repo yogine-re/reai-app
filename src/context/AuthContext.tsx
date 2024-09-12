@@ -17,9 +17,6 @@ import { useEffect } from 'react';
 import { useContext } from 'react';
 import { createContext } from 'react';
 import { auth } from '../firebase/config';
-import { googleLogout, TokenResponse, useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
-import { UUID } from 'crypto';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ModalType {
   isOpen: boolean;
@@ -27,30 +24,9 @@ export interface ModalType {
   content: any;
 }
 
-export declare interface UserInfo {
-  readonly displayName: string | null;
-  readonly email: string | null;
-  readonly phoneNumber: string | null;
-  readonly photoURL: string | null;
-  readonly providerId: string;
-  readonly uid: string;
-}
-
-export interface UserOauth {
-  authToken: TokenResponse;
-  providerData: UserInfo[];
-  photoURL: string;
-  displayName: string;
-  uid: UUID;
-  email: string;
-  emailVerified: boolean;
-  phoneNumber: string;
-}
-
 // Define an interface for the context value
 export interface AuthContextType {
   googleApiClient: typeof gapi | null;
-  currentUser: UserOauth | null;
   currentFirebaseUser: User | null;
   accessToken: string;
   signUp: (email: string, password: string) => Promise<UserCredential>;
@@ -84,127 +60,120 @@ const authContext: React.Context<AuthContextType> = createContext<AuthContextTyp
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [modal, setModal] = useState({
-    isOpen: false, title: '', content: ''
+    isOpen: false,
+    title: '',
+    content: '',
   });
   const [alert, setAlert] = useState({
     isAlert: false,
     severity: 'info',
     message: '',
     timeout: 0,
-    location: ''
+    location: '',
   });
   const [loading, setLoading] = useState(false);
   const [accessToken, setAccessToken] = useState('');
-  const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(null);
-  const [currentUser, setCurrentUser] = useState<UserOauth | null>(null);
-  const [googleApiClient, setGoogleApiClient] = useState<typeof gapi | null>(null);
-
+  const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(
+    null
+  );
+  const [googleApiClient, setGoogleApiClient] = useState<typeof gapi | null>(
+    null
+  );
 
   const signUp = (email: string, password: string): Promise<UserCredential> => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
+  
   const login = (email: string, password: string): Promise<UserCredential> => {
-    console.log('logging in');
+    console.log('login');
     const credential = signInWithEmailAndPassword(auth, email, password);
     console.log('credential:', credential);
-    const promiseUser = credential.then(cred => cred.user );
+    const promiseUser = credential.then((cred) => cred.user);
     console.log('promiseUser:', promiseUser);
-    promiseUser.then(user => {
+    promiseUser.then((user) => {
       console.log('firebase user:', user);
       setCurrentFirebaseUser(user);
     });
     return credential;
   };
   const loginWithGoogle = (): Promise<UserCredential> => {
+    console.log('loginWithGoogle');
     const provider = new GoogleAuthProvider();
     const credential = signInWithPopup(auth, provider);
-    const tokenPromise = credential.then(cred => cred.user.getIdToken());
-    tokenPromise.then(token => {      
-      setAccessToken(token);     
+    const tokenPromise = credential.then((cred) => cred.user.getIdToken());
+    tokenPromise.then((token) => {
+      setAccessToken(token);
     });
     return credential;
   };
-  const loginWithOauthGoogle = useGoogleLogin({
-    onSuccess: async (codeResponse) => {
-      console.log('Login Success, codeResponse:', codeResponse);
-      const tokenResponse: Omit<TokenResponse, 'error' | 'error_description' | 'error_uri'> = codeResponse;
-      const user: UserOauth = {} as UserOauth;
-      user.authToken = tokenResponse;
-      setAccessToken(tokenResponse.access_token);
 
-      // fetching userinfo can be done on the client or the server
-      const userInfoResponse = await axios
-        .get('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        });
-      const userInfo = userInfoResponse.data;
-      console.log('userInfoResponse:', userInfoResponse);
-      console.log('userInfo:', userInfo);
-      user.providerData = user.providerData ? [...user.providerData, userInfo] : [userInfo];
-      user.displayName = userInfo.name;
-      user.email = userInfo.email;
-      user.emailVerified = userInfo.email_verified;
-      user.phoneNumber = userInfo.phone_number;
-      user.photoURL = userInfo.picture;
-      user.uid = userInfo.sub;
-      console.log('user oauth google:', user);
-      if (!googleApiClient) {
-        console.error('googleApiClient not initialized');
-        return;
-      } 
-      // Exchange authorization code for tokens, see https://stackoverflow.com/questions/69727083/using-firebase-auth-gapi
-      console.log('calling googleApiClient.auth2.getAuthInstance');
-      const googleAuth = googleApiClient?.auth2.getAuthInstance();
-      console.log('calling googleAuth.signIn');
-      const googleUser = await googleAuth.signIn();
-      console.log('googleUser:', googleUser);
-      const id_token = googleUser.getAuthResponse().id_token;
-      console.log('id_token:', id_token);
-      // Authenticate with Firebase using the ID token
-      console.log('getting credential from GoogleAuthProvider');
-      const credential = GoogleAuthProvider.credential(id_token);
-      console.log('credential:', credential);
-      console.log('signing in to firebase with credential');
-      const firebaseUserCredential = await signInWithCredential(auth, credential);
-      console.log('firebaseUserCredential:', firebaseUserCredential);
-      setCurrentFirebaseUser(firebaseUserCredential.user);
-      setCurrentUser(user);
-    },
-    onError: (error) => console.log('Login Failed:', error)
-  });
+  const loginWithOauthGoogle = async (): Promise<void> => {
+    console.log('loginWithOauthGoogle');
+    if (!googleApiClient) {
+      console.error('googleApiClient not initialized');
+      return Promise.reject('googleApiClient not initialized');
+    }
+    // Exchange authorization code for tokens, see https://stackoverflow.com/questions/69727083/using-firebase-auth-gapi
+    console.log('calling googleApiClient.auth2.getAuthInstance');
+    const googleAuth = googleApiClient?.auth2.getAuthInstance();
+    console.log('calling googleAuth.signIn');
+    const googleUser = await googleAuth.signIn().catch((error: any) => { console.error('Error signing in:', error); });  
+    if (!googleUser) {
+      return Promise.reject('googleUser not set'); 
+    }
+    console.log('googleUser:', googleUser);
+    const authResponse = googleUser.getAuthResponse();
+    console.log('authResponse:', authResponse);
+    const access_token = authResponse.access_token;
+    const id_token = authResponse.id_token;
+    console.log('access_token:', access_token);
+    // Authenticate with Firebase using the ID token
+    console.log('getting credential from GoogleAuthProvider');
+    const credential = GoogleAuthProvider.credential(id_token);
+    console.log('credential:', credential);
+    console.log('signing in to firebase with credential');
+    const firebaseUserCredential = await signInWithCredential(auth, credential);
+    console.log('firebaseUserCredential:', firebaseUserCredential);
+    console.log('firebaseUserCredential.user:', firebaseUserCredential.user);
+    setAccessToken(access_token);
+  };
 
   const logout = (): Promise<void> => {
-    setCurrentUser(null);
-    googleLogout();
-    return signOut(auth); 
+    setCurrentFirebaseUser(null);
+    return signOut(auth);
   };
+
   const resetPassword = (email: string): Promise<void> => {
     return sendPasswordResetEmail(auth, email);
   };
 
-  const initGoogleApiClient = async () => { 
+  const initGoogleApiClient = async () => {
     console.log('initGoogleApiClient');
-    initClientGoogleDrive().then((googleApiClient) => { setGoogleApiClient(googleApiClient); }).catch((error) => console.error('Error initializing gapi client:', error)); 
-  }
-  
+    initClientGoogleDrive()
+      .then((googleApiClient) => {
+        setGoogleApiClient(googleApiClient);
+      })
+      .catch((error) =>
+        console.error('Error initializing gapi client:', error)
+      );
+  };
+
   useEffect(() => {
     console.log('AuthContext::useEffect');
-    if(!googleApiClient) {
+    if (!googleApiClient) {
       console.log('AuthContext::useEffect: initializing googleApiClient');
       initGoogleApiClient();
     }
-    const unsubscribe = onAuthStateChanged(auth, user => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('user status changed:', user);
-      console.log('user status changed: firebase user:', currentFirebaseUser);  
+      console.log('user status changed: firebase user:', user);
       setCurrentFirebaseUser(user);
-      console.log('user status changed: firebase user:', currentFirebaseUser); 
-      console.log('user status changed: user:', currentUser); 
+      console.log('user status changed: firebase user:', user);
     });
     return unsubscribe;
   }, []);
   const data: AuthContextType = {
     googleApiClient,
-    currentUser,
     currentFirebaseUser,
     accessToken,
     signUp,
@@ -218,7 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAlert,
     loading,
     setLoading,
-    resetPassword
+    resetPassword,
   };
   return <authContext.Provider value={data}>{children}</authContext.Provider>;
 };
