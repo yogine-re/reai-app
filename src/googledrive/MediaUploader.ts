@@ -257,4 +257,5 @@ import RetryHandler from '../utils/RetryHandler';
     return url;
   };
 };
-  
+
+export default MediaUploader;

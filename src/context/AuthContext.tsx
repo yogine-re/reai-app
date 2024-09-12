@@ -181,7 +181,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     modal,
     setModal,
     loginWithGoogle,
-    loginWithGoogle,
     alert,
     setAlert,
     loading,
@@ -193,8 +192,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export default AuthContextType;
 export const useAuth = (): AuthContextType => {
-  // console.log('useAuth');
-  // console.log('authContext:', authContext);
   const result = useContext(authContext);
   return result;
 
