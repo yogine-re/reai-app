@@ -26,7 +26,7 @@ const Login: React.FC = () => {
     signUp,
     login,
     // loginWithGoogle,
-    loginWithOauthGoogle,
+    loginWithGoogle,
     setAlert,
     setLoading
   } = useAuth();
@@ -88,7 +88,7 @@ const Login: React.FC = () => {
 
   const handleOauthGoogleLogin = async () => {
     try {
-      await loginWithOauthGoogle();
+      await loginWithGoogle();
       setModal({ ...modal, isOpen: false });
     } catch (error: unknown) {
       setAlert({

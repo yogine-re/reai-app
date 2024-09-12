@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  // signInWithPopup,
   signInWithCredential,
   signOut,
   UserCredential,
@@ -32,7 +32,7 @@ export interface AuthContextType {
   signUp: (email: string, password: string) => Promise<UserCredential>;
   login: (email: string, password: string) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
-  loginWithOauthGoogle: () => void;
+  loginWithGoogle: () => void;
   logout: () => void;
   resetPassword: (email: string) => Promise<void>;
   // Add other methods or properties as needed
@@ -96,21 +96,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     return credential;
   };
-  const loginWithGoogle = (): Promise<UserCredential> => {
-    console.log('loginWithGoogle');
-    const provider = new GoogleAuthProvider();
-    const credential = signInWithPopup(auth, provider);
-    const tokenPromise = credential.then((cred) => cred.user.getIdToken());
-    tokenPromise.then((token) => {
-      setAccessToken(token);
-    });
-    return credential;
-  };
+  // const loginWithGoogle = (): Promise<UserCredential> => {
+  //   console.log('loginWithGoogle');
+  //   const provider = new GoogleAuthProvider();
+  //   const credential = signInWithPopup(auth, provider);
+  //   const tokenPromise = credential.then((cred) => cred.user.getIdToken());
+  //   tokenPromise.then((token) => {
+  //     setAccessToken(token);
+  //   });
+  //   return credential;
+  // };
 
-  const loginWithOauthGoogle = async (): Promise<void> => {
-    console.log('loginWithOauthGoogle');
+  const loginWithGoogle = async (): Promise<UserCredential> => {
+    console.log('loginWithGoogle');
     if (!googleApiClient) {
-      console.error('googleApiClient not initialized');
       return Promise.reject('googleApiClient not initialized');
     }
     // Exchange authorization code for tokens, see https://stackoverflow.com/questions/69727083/using-firebase-auth-gapi
@@ -136,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('firebaseUserCredential:', firebaseUserCredential);
     console.log('firebaseUserCredential.user:', firebaseUserCredential.user);
     setAccessToken(access_token);
+    return firebaseUserCredential;
   };
 
   const logout = (): Promise<void> => {
@@ -182,7 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     modal,
     setModal,
     loginWithGoogle,
-    loginWithOauthGoogle,
+    loginWithGoogle,
     alert,
     setAlert,
     loading,
