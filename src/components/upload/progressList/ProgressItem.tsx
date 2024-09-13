@@ -7,9 +7,8 @@ import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
 import pdfDocImage from '../../../img/pdf-doc-img.jpg';
-// import { driveListFiles  } from '@/gapi/gapi';
-// import {  driveUploadFile } from '@/gapi/gapi';
-import { /*uploadFile,*/ uploadHelloWorld } from '@/googledrive/uploadFile';
+import { uploadFile/*, uploadHelloWorld*/ } from '@/googledrive/uploadFile';
+import { createFolder } from '@/googledrive/createFolder';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
@@ -39,9 +38,10 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('galleryDoc:', galleryDoc);
         await addDocument('gallery', galleryDoc, imageName);
         console.log('uploading to google drive');
-        // driveListFiles(googleApiClient, token);  
-        uploadHelloWorld(googleApiClient, accessToken);
-          // uploadFile(file, oauthToken || '');
+        // uploadHelloWorld(googleApiClient, accessToken);
+        createFolder(googleApiClient, 'REAI').then((folderId) => {
+            uploadFile(googleApiClient, file, folderId, accessToken);
+        });
         setdocumentURL(null);
         setName(null);
       } catch (error) {

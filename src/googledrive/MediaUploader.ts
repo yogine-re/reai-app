@@ -277,6 +277,7 @@ import RetryHandler from '../utils/RetryHandler';
     if (query) {
       url += '?' + query;
     }
+    console.log('MediaUploader: buildUrl_ url:', url);
     return url;
   };
 };
