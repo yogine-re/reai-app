@@ -1,5 +1,5 @@
 
-export async function createFolder(gapi: any, folderName: string): Promise<string | undefined> {
+export async function createFolder(googleApi: any, folderName: string): Promise<string | undefined> {
      console.log('createFolder: creating folder:', folderName);
     const fileMetadata = {
         name: folderName,
@@ -7,7 +7,7 @@ export async function createFolder(gapi: any, folderName: string): Promise<strin
       };
     
       try {
-        const listResponse = await gapi.client.drive.files.list({
+        const listResponse = await googleApi.client.drive.files.list({
             q: "mimeType='application/vnd.google-apps.folder' and trashed=false and name='" + folderName + "'",
             spaces: 'drive',
             fields: 'nextPageToken, files(id, name)',
@@ -28,7 +28,7 @@ export async function createFolder(gapi: any, folderName: string): Promise<strin
         console.log('createFolder: listResponse:', listResponse);
 
         if(listResponse.result.files.length == 0) {
-            const response = await gapi.client.drive.files.create({
+            const response = await googleApi.client.drive.files.create({
                 resource: fileMetadata,
                 fields: 'id',
               });
