@@ -40,7 +40,9 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('uploading to google drive');
         // uploadHelloWorld(googleApiClient, accessToken);
         createFolder(googleApiClient, 'REAI').then((folderId) => {
+          if(folderId) {
             uploadFile(googleApiClient, file, folderId, accessToken);
+          }
         });
         setdocumentURL(null);
         setName(null);
