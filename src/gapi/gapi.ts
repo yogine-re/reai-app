@@ -65,22 +65,22 @@ const initClientGoogleDrive = async () => {
 /**
        * Print metadata for first 10 files.
        */
-export async function driveListFiles(theGapi: typeof gapi, token: string) {
+export async function driveListFiles(googleApi: typeof gapi, token: string) {
     console.log('driveListFiles');
     console.log('driveListFiles token', token);
-    log('driveListFiles theGapi', theGapi);
+    log('driveListFiles googleApi', googleApi);
 
     let response;
-    console.log('theGapi?.client', theGapi?.cient);
-    if (theGapi.client?.drive == null) {
-        console.log('theGapi.client.drive is null');
+    console.log('googleApi?.client', googleApi?.cient);
+    if (googleApi.client?.drive == null) {
+        console.log('googleApi.client.drive is null');
         return;
     }
     else {
-        console.log('theGapi.client.drive is set in driveListFiles');
+        console.log('googleApi.client.drive is set in driveListFiles');
     }
     try {
-        response = await theGapi.client.drive.files.list({
+        response = await googleApi.client.drive.files.list({
             'pageSize': 10,
             'fields': 'files(id, name)',
         });
@@ -104,12 +104,12 @@ export async function driveListFiles(theGapi: typeof gapi, token: string) {
     console.log(output);
 }
 
-export function log(message: string, theGapi: typeof gapi) {
-    console.log('LOGGING ' + message, theGapi ? ' is set' : ' is null');
-    console.log('LOGGING ' + message + '.client', theGapi?.client ? ' is set' : 'theGapi.client is null');
-    console.log('LOGGING ' + message + '.auth2', theGapi?.auth2 ? '.auth2 is set' : 'theGapi.auth2 is null');
-    console.log('LOGGING ' + message + '.auth2.getAuthInstance()', theGapi?.auth2?.getAuthInstance() ? '.auth2.getAuthInstance() is  set' : 'theGapi.auth2.getAuthInstance() is null');
-    console.log('LOGGING ' + message + '.client.drive', theGapi?.client?.drive ? '.client.drive is set' : '.client.drive is null');
+export function log(message: string, googleApi: typeof gapi) {
+    console.log('LOGGING ' + message, googleApi ? ' is set' : ' is null');
+    console.log('LOGGING ' + message + '.client', googleApi?.client ? ' is set' : 'googleApi.client is null');
+    console.log('LOGGING ' + message + '.auth2', googleApi?.auth2 ? '.auth2 is set' : 'googleApi.auth2 is null');
+    console.log('LOGGING ' + message + '.auth2.getAuthInstance()', googleApi?.auth2?.getAuthInstance() ? '.auth2.getAuthInstance() is  set' : 'googleApi.auth2.getAuthInstance() is null');
+    console.log('LOGGING ' + message + '.client.drive', googleApi?.client?.drive ? '.client.drive is set' : '.client.drive is null');
 
 }
 

@@ -26,7 +26,7 @@ export interface ModalType {
 
 // Define an interface for the context value
 export interface AuthContextType {
-  googleApiClient: typeof gapi | null;
+  googleApi: typeof gapi | null;
   currentFirebaseUser: User | null;
   accessToken: string;
   signUp: (email: string, password: string) => Promise<UserCredential>;
@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(
     null
   );
-  const [googleApiClient, setGoogleApiClient] = useState<typeof gapi | null>(
+  const [googleApi, setgoogleApi] = useState<typeof gapi | null>(
     null
   );
 
@@ -108,12 +108,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithGoogle = async (): Promise<UserCredential> => {
     console.log('loginWithGoogle');
-    if (!googleApiClient) {
-      return Promise.reject('googleApiClient not initialized');
+    if (!googleApi) {
+      return Promise.reject('googleApi not initialized');
     }
     // Exchange authorization code for tokens, see https://stackoverflow.com/questions/69727083/using-firebase-auth-gapi
-    console.log('calling googleApiClient.auth2.getAuthInstance');
-    const googleAuth = googleApiClient?.auth2.getAuthInstance();
+    console.log('calling googleApi.auth2.getAuthInstance');
+    const googleAuth = googleApi?.auth2.getAuthInstance();
     console.log('calling googleAuth.signIn');
     const googleUser = await googleAuth.signIn().catch((error: any) => { console.error('Error signing in:', error); });  
     if (!googleUser) {
@@ -146,11 +146,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return sendPasswordResetEmail(auth, email);
   };
 
-  const initGoogleApiClient = async () => {
-    console.log('initGoogleApiClient');
+  const initgoogleApi = async () => {
+    console.log('initgoogleApi');
     initClientGoogleDrive()
-      .then((googleApiClient) => {
-        setGoogleApiClient(googleApiClient);
+      .then((googleApi) => {
+        setgoogleApi(googleApi);
       })
       .catch((error) =>
         console.error('Error initializing gapi client:', error)
@@ -159,9 +159,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     console.log('AuthContext::useEffect');
-    if (!googleApiClient) {
-      console.log('AuthContext::useEffect: initializing googleApiClient');
-      initGoogleApiClient();
+    if (!googleApi) {
+      console.log('AuthContext::useEffect: initializing googleApi');
+      initgoogleApi();
     }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('user status changed:', user);
@@ -172,7 +172,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
   const data: AuthContextType = {
-    googleApiClient,
+    googleApi,
     currentFirebaseUser,
     accessToken,
     signUp,

@@ -24,11 +24,9 @@ export async function uploadHelloWorld(gapi: any, token: string) {
  * @return{obj} file Id
  * */
 export async function uploadFile(gapi: any, file: File, folderId: string, token: string): Promise<void> {
-  console.log('uploadBasic: uploading file' + file.name);
-  console.log('uploadFile: first listing files');
+  console.log('uploadFile: uploading file' + file.name);
   const access_token = token || gapi.auth2.getAuthInstance()?.currentUser?.get()?.getAuthResponse()?.access_token;
   console.log('MediaUploader: file:', file);
-
 
   const metadata = {
     title: file.name,

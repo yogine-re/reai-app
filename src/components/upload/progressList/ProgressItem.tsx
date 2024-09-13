@@ -14,7 +14,7 @@ const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { googleApiClient, currentFirebaseUser, accessToken, setAlert } = useAuth();
+  const { googleApi, currentFirebaseUser, accessToken, setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
@@ -38,10 +38,10 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('galleryDoc:', galleryDoc);
         await addDocument('gallery', galleryDoc, imageName);
         console.log('uploading to google drive');
-        // uploadHelloWorld(googleApiClient, accessToken);
-        createFolder(googleApiClient, 'REAI').then((folderId) => {
+        // uploadHelloWorld(googleApi, accessToken);
+        createFolder(googleApi, 'REAI').then((folderId) => {
           if(folderId) {
-            uploadFile(googleApiClient, file, folderId, accessToken);
+            uploadFile(googleApi, file, folderId, accessToken);
           }
         });
         setdocumentURL(null);
