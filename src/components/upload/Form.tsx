@@ -8,10 +8,10 @@ type FormProps = {
 };
 
 const Form: React.FC<FormProps> = ({ setFiles }) => {
-  const { currentUser, setModal } = useAuth();
+  const { currentFirebaseUser, setModal } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
-    if (!currentUser) {
+    if (!currentFirebaseUser) {
       return setModal({ isOpen: true, title: 'Login', content: <Login /> });
     }
     if (fileRef.current) {

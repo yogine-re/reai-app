@@ -2,9 +2,9 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 
 const SplashScreen: React.FC = () => {
-  console.log('SplashScreen');
+  // console.log('SplashScreen');
   const { loading } = useAuth();
-  console.log('loading:', loading);
+  // console.log('loading:', loading);
   return (
     <Backdrop
       open={loading || false}

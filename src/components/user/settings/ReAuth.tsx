@@ -14,19 +14,24 @@ interface ReAuthProps {
 }
 
 const ReAuth: React.FC<ReAuthProps> = ({ action }) => {
-  const { currentUser, setLoading, setAlert, setModal, modal } = useAuth();
+  const { currentFirebaseUser, setLoading, setAlert, setModal, modal } = useAuth();
   const passwordRef = useRef<HTMLInputElement>(null);
+  const password = passwordRef.current?.value ?? currentFirebaseUser?.uid.toString() ?? '';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('ReAuth: handleSubmit');
+    console.log('ReAuth: handleSubmit: currentFirebaseUser  ' + currentFirebaseUser); 
+    console.log('ReAuth: handleSubmit: password' + password);
+    console.log('ReAuth: handleSubmit: password' + password);
     e.preventDefault();
     setLoading(true);
     const credential = EmailAuthProvider.credential(
-      currentUser?.email ?? '',
-      passwordRef.current!.value
+      currentFirebaseUser?.email ?? '',
+      password
     );
     try {
-      if (currentUser) {
-        await reauthenticateWithCredential(currentUser, credential);
+      if (currentFirebaseUser) {
+        await reauthenticateWithCredential(currentFirebaseUser, credential);
       } else {
         throw new Error('No user found');
       }

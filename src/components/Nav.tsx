@@ -27,7 +27,7 @@ const Nav: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const { currentUser, setModal, logout, setAlert } = useAuth();
+  const { currentFirebaseUser, setModal, logout, setAlert } = useAuth();
 
   const openLogin = () => {
     setModal({ isOpen: true, title: 'Login', content: <Login /> });
@@ -50,7 +50,7 @@ const Nav: React.FC = () => {
   return (
     <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        {!currentUser ? (
+        {!currentFirebaseUser ? (
           <Button startIcon={<Lock />} onClick={openLogin}>
             Login
           </Button>
@@ -59,10 +59,10 @@ const Nav: React.FC = () => {
             <IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
               <Avatar
                 sx={{ width: 32, height: 32 }}
-                src={currentUser?.photoURL ?? ''}
+                src={currentFirebaseUser?.photoURL ?? ''}
               >
-                {currentUser?.displayName?.charAt(0)?.toUpperCase() ||
-                  currentUser?.email?.charAt(0)?.toUpperCase()}
+                {currentFirebaseUser?.displayName?.charAt(0)?.toUpperCase() ||
+                  currentFirebaseUser?.email?.charAt(0)?.toUpperCase()}
               </Avatar>
             </IconButton>
           </Tooltip>
@@ -111,7 +111,7 @@ const Nav: React.FC = () => {
             })
           }
         >
-          <Avatar src={currentUser?.photoURL ?? ''} /> Profile
+          <Avatar src={currentFirebaseUser?.photoURL ?? ''} /> Profile
         </MenuItem>
         <Divider />
         <MenuItem

@@ -12,12 +12,12 @@ import ReAuth from './ReAuth';
 import { getErrorMessage } from '@/utils';
 
 const AccountSettings: React.FC = () => {
-  const { currentUser, setModal, modal, setAlert } = useAuth();
-  console.log('providerData: ', currentUser?.providerData);
+  const { currentFirebaseUser, setModal, modal, setAlert } = useAuth();
   const isPasswordProvider =
-    currentUser?.providerData[0].providerId === 'password';
+  currentFirebaseUser?.providerData[0].providerId === 'password';
 
   const handleAction = async (action: string) => {
+    console.log('AccountSettings: handleAction: issPasswordProvider: ' + isPasswordProvider);
     if (isPasswordProvider) {
       setModal({
         ...modal,
@@ -26,8 +26,9 @@ const AccountSettings: React.FC = () => {
       });
     } else {
       try {
-        if (currentUser)
-          await reauthenticateWithPopup(currentUser, new GoogleAuthProvider());
+        if (currentFirebaseUser)
+          await reauthenticateWithPopup(currentFirebaseUser, new GoogleAuthProvider());
+
         switch (action) {
           case 'changeEmail':
             setModal({
@@ -48,7 +49,7 @@ const AccountSettings: React.FC = () => {
         }
       } catch (error: unknown) {
         setAlert({
-          isAlert: true,
+          isAlert: true, 
           severity: 'error',
           message: getErrorMessage(error),
           timeout: 5000,

@@ -5,7 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import PasswordField from '../inputs/PasswordField';
 import SubmitButton from '../inputs/SubmitButton';
 const ChangePassword = () => {
-  const { currentUser, setLoading, setAlert, setModal, modal } = useAuth();
+  const { currentFirebaseUser, setLoading, setAlert, setModal, modal } = useAuth();
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const handleSubmit = async e => {
@@ -15,9 +15,9 @@ const ChangePassword = () => {
       if (passwordRef.current?.value !== confirmPasswordRef.current?.value) {
         throw new Error('Passwords do not match');
       }
-      if (currentUser) {
+      if (currentFirebaseUser) {
         if (passwordRef.current) {
-          await updatePassword(currentUser, passwordRef.current.value);
+          await updatePassword(currentFirebaseUser, passwordRef.current.value);
         }
       }
       setModal({ ...modal, isOpen: false });

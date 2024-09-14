@@ -25,8 +25,8 @@ const Login: React.FC = () => {
     setModal,
     signUp,
     login,
+    // loginWithGoogle,
     loginWithGoogle,
-    loginWithOauthGoogle,
     setAlert,
     setLoading
   } = useAuth();
@@ -70,7 +70,23 @@ const Login: React.FC = () => {
     }
     setLoading(false);
   };
-  const handleGoogleLogin = async () => {
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     await loginWithGoogle();
+  //     setModal({ ...modal, isOpen: false });
+  //   } catch (error: unknown) {
+  //     setAlert({
+  //       isAlert: true,
+  //       severity: 'error',
+  //       message: getErrorMessage(error),
+  //       timeout: 5000,
+  //       location: 'modal'
+  //     });
+  //     console.log(error);
+  //   }
+  // };
+
+  const handleOauthGoogleLogin = async () => {
     try {
       await loginWithGoogle();
       setModal({ ...modal, isOpen: false });
@@ -85,29 +101,6 @@ const Login: React.FC = () => {
       console.log(error);
     }
   };
-
-  const handleOauthGoogleLogin = async () => {
-    try {
-      await loginWithOauthGoogle();
-      setModal({ ...modal, isOpen: false });
-    } catch (error: unknown) {
-      setAlert({
-        isAlert: true,
-        severity: 'error',
-        message: getErrorMessage(error),
-        timeout: 5000,
-        location: 'modal'
-      });
-      console.log(error);
-    }
-  };
-  // see https://muhammedsahad.medium.com/react-js-a-step-by-step-guide-to-google-authentication-926d0d85edbd
-  // const responseMessage = (response: any) => {
-  //   console.log(response);
-  // };
-  // const errorMessage = (error: any): void => {
-  //   console.log(error);
-  // };
   useEffect(
     () => {
       if (isRegister) {
@@ -163,15 +156,13 @@ const Login: React.FC = () => {
         </Button>
       </DialogActions>
       <DialogActions sx={{ justifyContent: 'center', py: '24px' }}>
-      {/* <h2>React Google Login</h2> */}
-      {/* <GoogleLogin onSuccess={responseMessage} onError={() => errorMessage({})} /> */}
-        <Button
+        {/* <Button
           variant='outlined'
           startIcon={<Google />}
           onClick={handleGoogleLogin}
         >
           Login with Google
-        </Button>
+        </Button> */}
         <Button
           variant='outlined'
           startIcon={<Google />}

@@ -30,7 +30,6 @@
     "@mui/icons-material": "^6.0.0",
     "@mui/material": "^6.0.1",
     "@mui/styled-engine": "^6.0.0",
-    "@react-oauth/google": "^0.12.1",
     "@react-pdf-viewer/core": "^3.12.0",
     "@react-pdf/renderer": "^3.4.4",
     "@rpldy/sender": "^1.8.3",
@@ -42,7 +41,7 @@
     "cors": "^2.8.5",
     "drive-uploady": "^0.3.0",
     "express": "^4.19.2",
-    "firebase": "^10.13.0",
+    "firebase": "^10.13.1",
     "gapi-script": "^1.2.0",
     "google-drive-uploader": "^0.2.3",
     "googleapis": "^142.0.0",
@@ -59,7 +58,8 @@
     "react-router": "^6.24.1",
     "react-router-dom": "^6.24.1",
     "react-toastify": "^10.0.5",
-    "reactstrap": "^9.2.2"
+    "reactstrap": "^9.2.2",
+    "xmlhttprequest-ts": "^1.0.1"
   },
   "devDependencies": {
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",

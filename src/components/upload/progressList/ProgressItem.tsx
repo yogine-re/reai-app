@@ -7,12 +7,14 @@ import uploadFileProgress from '../../../firebase/uploadFileProgress';
 import addDocument from '../../../firebase/addDocument';
 import { useAuth } from '../../../context/AuthContext';
 import pdfDocImage from '../../../img/pdf-doc-img.jpg';
+import { uploadFile/*, uploadHelloWorld*/ } from '@/googledrive/uploadFile';
+import { createFolder } from '@/googledrive/createFolder';
 
 const ProgressItem = ({ file }: { file: File }) => {
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { currentUser, /*currentUserOauthGoogle,*/ setAlert } = useAuth();
+  const { googleApi, currentFirebaseUser, accessToken, setAlert } = useAuth();
   useEffect(() => {
     const uploadImage = async () => {
       const imageName = uuidv4() + '.' + file.name.split('.').pop();
@@ -20,22 +22,28 @@ const ProgressItem = ({ file }: { file: File }) => {
       try {
         const url = await uploadFileProgress(
           file,
-          `gallery/${currentUser?.uid}`,
+          `gallery/${currentFirebaseUser?.uid}`,
           imageName,
           setProgress
         );
         const galleryDoc = {
           documentURL: url,
           documentName: file.name || '',
-          uid: currentUser?.uid || '',
-          uEmail: currentUser?.email || '',
-          uName: currentUser?.displayName || '',
-          uPhoto: currentUser?.photoURL || '',
+          uid: currentFirebaseUser?.uid || '',
+          uEmail: currentFirebaseUser?.email || '',
+          uName: currentFirebaseUser?.displayName || '',
+          uPhoto: currentFirebaseUser?.photoURL || '',
         };
         console.log('adding document:', imageName);
         console.log('galleryDoc:', galleryDoc);
         await addDocument('gallery', galleryDoc, imageName);
-        // TODO: add document to google drive here
+        console.log('uploading to google drive');
+        // uploadHelloWorld(googleApi, accessToken);
+        createFolder(googleApi, 'REAI').then((folderId) => {
+          if(folderId) {
+            uploadFile(googleApi, file, folderId, accessToken);
+          }
+        });
         setdocumentURL(null);
         setName(null);
       } catch (error) {
