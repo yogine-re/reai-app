@@ -1,51 +1,47 @@
 
 export async function createFolder(googleApi: any, folderName: string): Promise<string | undefined> {
-     console.log('createFolder: creating folder:', folderName);
+    console.log('createFolder: creating folder:', folderName);
     const fileMetadata = {
         name: folderName,
         mimeType: 'application/vnd.google-apps.folder',
-      };
-    
-      try {
+    };
+
+    try {
         const listResponse = await googleApi.client.drive.files.list({
-            q: "mimeType='application/vnd.google-apps.folder' and trashed=false and name='" + folderName + "'",
+            q: `mimeType='application/vnd.google-apps.folder' and trashed=false and name='${folderName}'`,
             spaces: 'drive',
             fields: 'nextPageToken, files(id, name)',
-            }).then((response: { result: { files: { name: string; id: string; }[]; }; }) => {
-            console.log('createFolder: response:', response);
-            console.log('createFolder: response.result.files:', response.result.files);
-            const folders = response.result.files;
-            if (folders && folders.length > 0) {
-                console.log('createFolder: folders:', folders);
-                folders.forEach((folder) => {
-                console.log(`Found folder: ${folder.name}, id: ${folder.id}`);
-                });
-            } else {
-                console.log('No folders found.');
-            }   
-            return response;
         });
+
+        console.log('createFolder: response:', listResponse);
+        const folders = listResponse?.result?.files ?? [];
+
+        if (folders.length > 0) {
+            console.log('createFolder: folders:', folders);
+            folders.forEach((folder: any) => {
+                console.log(`Found folder: ${folder.name}, id: ${folder.id}`);
+            });
+            return folders[0].id; // Return the ID of the first found folder
+        } else {
+            console.log('No folders found.');
+        }
+
         console.log('createFolder: listResponse:', listResponse);
 
-        if(listResponse.result.files.length == 0) {
-            const response = await googleApi.client.drive.files.create({
+        if (folders.length === 0) {
+            const createResponse = await googleApi.client.drive.files.create({
                 resource: fileMetadata,
                 fields: 'id',
-              });
-              console.log('createFolder response:', response);
-              console.log('Folder ID:', response.result.id);
-              return response.result.id;
+            });
+            console.log('createFolder: created folder:', createResponse);
+            return createResponse.result.id;
         }
-        else {
-            console.log('createFolder: folder already exists');
-            console.log('createFolder: folder id:', listResponse.result.files[0].id);
-            return listResponse.result.files[0].id;
-        }
-        
-      } catch (error) {
+    } catch (error) {
         console.error('Error creating folder:', error);
-      }
-};
+    }
+
+    return undefined;
+}
 
 
   // const initResumable = new XMLHttpRequest();
