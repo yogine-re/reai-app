@@ -95,16 +95,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     return credential;
   };
-  // const loginWithGoogle = (): Promise<UserCredential> => {
-  //   console.log('loginWithGoogle');
-  //   const provider = new GoogleAuthProvider();
-  //   const credential = signInWithPopup(auth, provider);
-  //   const tokenPromise = credential.then((cred) => cred.user.getIdToken());
-  //   tokenPromise.then((token) => {
-  //     setAccessToken(token);
-  //   });
-  //   return credential;
-  // };
 
   const loginWithGoogle = async (): Promise<UserCredential> => {
     console.log('loginWithGoogle');
