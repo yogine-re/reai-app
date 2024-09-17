@@ -82,7 +82,7 @@ export default function Documents() {
   },[])
   
   return (
-    <Box sx={{ flexGrow: 0 }}>
+    <Box sx={{ flexGrow: 1 }}>
     <Grid container>
     <Grid size={6}>
       <DndProvider backend={MultiBackend} options={getBackendOptions()}>
