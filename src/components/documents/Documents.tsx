@@ -20,13 +20,13 @@ import { Box } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
-// import { DocumentProperties } from './types';
+import { DocumentProperties } from './types';
 // import theDocuments from '../tree/sample_data.json';
 
 export default function Documents() {
   const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
-  const [treeData, setTreeData] = useState([]);
+  const [treeData, setTreeData] = useState<DocumentProperties[]>([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
   const handleSelect = (node: any) => {
@@ -55,7 +55,7 @@ export default function Documents() {
     let counter = 1;
     const unsubscribe = onSnapshot(collection(db, 'gallery'), (snapshot) => {
       const docs = snapshot.docs; // Store snapshot.docs in a variable
-      const uniqueDocsMap = new Map();
+      const uniqueDocsMap = new Map<DocumentProperties>();
   
       docs.forEach((doc) => {
         const data = doc.data();
@@ -89,6 +89,31 @@ export default function Documents() {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    console.log('useEffect 2');
+    const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'removed') {
+          const deletedUserId = change.doc.id;
+          // Remove the document associated with the deleted user
+          setTreeData((prevTreeData) =>
+            prevTreeData.filter((doc) => doc.data.userId !== deletedUserId)
+          );
+          console.log('deletedUserId: ', deletedUserId);
+          console.log('documentURL: ', documentURL);
+          // Optionally, clear the document URL if it belongs to the deleted user
+          if (documentURL && documentURL.includes(deletedUserId)) {
+            setDocumentURL(null);
+          }
+        }
+      });
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribeUsers();
+  }, [documentURL]);
+  console.log('documentURL: ', documentURL);
   
   return (
     <Box sx={{ flexGrow: 1 }}>
