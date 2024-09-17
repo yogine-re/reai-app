@@ -3,6 +3,7 @@
 // see https://minop1205.github.io/react-dnd-treeview/?path=/docs/basic-examples-select-node--select-node-story
 import * as React from 'react';
 import { useState } from 'react';
+import { useEffect } from 'react';
 import {
   Tree,
   getBackendOptions,
@@ -17,44 +18,38 @@ import { Box } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
+import { DocumentProperties } from './types';
 // import theDocuments from '../tree/sample_data.json';
 
 export default function Documents() {
-  const { documents } = useFirestore('gallery');
+  const { documents} = useFirestore('gallery');
   const [documentURL, setDocumentURL] = useState<string | null>(null);
-  console.log('documentURL: ', documentURL);
-  const uniqueDocuments = documents.filter(
-    (item, index, self) =>
-      index ===
-    self.findIndex((t) => t.data?.documentName === item.data?.documentName)
+  const [updated, setUpdated] = useState(false);
+  const uniqueDocuments = Array.from(
+    new Map(documents.map((item) => [item.data?.documentName, item])).values()
   );
-  console.log('uniqueDocuments: ', uniqueDocuments);
   let counter = 1;
-  const project={id: counter++, parent: 0, droppable: true, text: 'documents'};
-  const theDocuments = uniqueDocuments.map((item) => ({
-    ...item,
+  const createDocument = (documentName: string, item: DocumentProperties|null, parent: number, droppable: boolean) => ({
     id: counter++,
-    parent: 1,
-    droppable: false,
-    text: item.data.documentName,
-    data: { 
-      'fileType': 'text',
-      ...item.data,
-    }
-  }));
-  theDocuments.unshift(project as any);
+    parent,
+    droppable,
+    text: documentName,
+    data: item,
+  });
+  
+  const parent = createDocument('Project', null, 0, true);
+  const theDocuments = uniqueDocuments.map((item) => createDocument(item.data.documentName, item.data, parent.id, false));
+  theDocuments.unshift(parent);
   console.log('theDocuments: ', theDocuments);
   
   const [treeData, setTreeData] = useState(theDocuments);
   const [selectedNode, setSelectedNode] = useState(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
   const handleSelect = (node: any) => {
-    console.log('handleSelect node: ', node);
     setSelectedNode(node);  
     if (node.data?.documentURL) {
       setDocumentURL(node.data.documentURL);
     }
-    console.log('documentURL: ', documentURL);
   };
   const handleTextChange = (id: any, value: any) => {
     const newTree = treeData.map((node) => {
@@ -64,10 +59,8 @@ export default function Documents() {
           text: value
         };
       }
-
       return node;
     });
-
     setTreeData(newTree);
   };
 
@@ -78,6 +71,11 @@ export default function Documents() {
       treeData.push(item);
     }
   });
+
+  useEffect(() => {
+    console.log('useEffect: updated: ', updated);
+    setUpdated(true);
+  },[])
   
   return (
     <Box sx={{ flexGrow: 1 }}>
