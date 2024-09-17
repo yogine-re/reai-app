@@ -10,7 +10,9 @@ import {
   MultiBackend,
 } from '@minoru/react-dnd-treeview';
 import { DndProvider } from 'react-dnd';
-import useFirestore from '../../firebase/useFirestore';
+// import useFirestore from '../../firebase/useFirestore';
+import { app } from '../../firebase/config';
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
@@ -18,35 +20,13 @@ import { Box } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
-import { DocumentProperties } from './types';
+// import { DocumentProperties } from './types';
 // import theDocuments from '../tree/sample_data.json';
 
 export default function Documents() {
-  const { documents} = useFirestore('gallery');
+  const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
-  const [updated, setUpdated] = useState(false);
-  const uniqueDocuments = Array.from(
-    new Map(documents.map((item) => [item.data?.documentName, item])).values()
-  );
-  let counter = 1;
-  const createDocumentData = (documentName: string, item: DocumentProperties|null, parent: number, droppable: boolean) => {
-    console.log('createDocument: documentName:', documentName);
-    console.log('createDocument: counter:', counter);
-    return {
-      id: counter++,
-      parent,
-      droppable,
-      text: documentName,
-      data: item,
-    }
-  };
-  
-  const parentDocumentData = createDocumentData('documents', null, 0, true);
-  const theDocuments = uniqueDocuments.map((item) => createDocumentData(item.data.documentName, item.data, parentDocumentData.id, false));
-  theDocuments.unshift(parentDocumentData);
-  console.log('theDocuments: ', theDocuments);
-  
-  const [treeData, setTreeData] = useState([theDocuments]);
+  const [treeData, setTreeData] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
   const handleSelect = (node: any) => {
@@ -69,17 +49,46 @@ export default function Documents() {
   };
 
   console.log('treeData: ', treeData);
-  theDocuments.forEach((item) => {
-    console.log('item: ', item);
-    if (treeData.find((doc) => doc.id === item.id) === undefined) {
-      treeData.push(item);
-    }
-  });
 
   useEffect(() => {
-    console.log('useEffect: updated: ', updated);
-    setUpdated(true);
-  },[])
+    console.log('useEffect');
+    let counter = 1;
+    const unsubscribe = onSnapshot(collection(db, 'gallery'), (snapshot) => {
+      const docs = snapshot.docs; // Store snapshot.docs in a variable
+      const uniqueDocsMap = new Map();
+  
+      docs.forEach((doc) => {
+        const data = doc.data();
+        if (!uniqueDocsMap.has(data.documentName)) {
+          uniqueDocsMap.set(data.documentName, {
+            id: ++counter,
+            parent: 1,
+            droppable: false,
+            text: data.documentName,
+            data: {
+              documentName: data.documentName,
+              fileType: data.fileType,
+              ...data,
+            },
+          });
+        }
+      });
+  
+      const documents = Array.from(uniqueDocsMap.values());
+      documents.unshift({
+        id: 1,
+        parent: 0,
+        droppable: true,
+        text: 'Documents',
+        data: {},
+      });
+  
+      setTreeData(documents);
+    });
+  
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
   
   return (
     <Box sx={{ flexGrow: 1 }}>
