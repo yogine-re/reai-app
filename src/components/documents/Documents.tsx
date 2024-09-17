@@ -29,20 +29,24 @@ export default function Documents() {
     new Map(documents.map((item) => [item.data?.documentName, item])).values()
   );
   let counter = 1;
-  const createDocument = (documentName: string, item: DocumentProperties|null, parent: number, droppable: boolean) => ({
-    id: counter++,
-    parent,
-    droppable,
-    text: documentName,
-    data: item,
-  });
+  const createDocumentData = (documentName: string, item: DocumentProperties|null, parent: number, droppable: boolean) => {
+    console.log('createDocument: documentName:', documentName);
+    console.log('createDocument: counter:', counter);
+    return {
+      id: counter++,
+      parent,
+      droppable,
+      text: documentName,
+      data: item,
+    }
+  };
   
-  const parent = createDocument('Project', null, 0, true);
-  const theDocuments = uniqueDocuments.map((item) => createDocument(item.data.documentName, item.data, parent.id, false));
-  theDocuments.unshift(parent);
+  const parentDocumentData = createDocumentData('documents', null, 0, true);
+  const theDocuments = uniqueDocuments.map((item) => createDocumentData(item.data.documentName, item.data, parentDocumentData.id, false));
+  theDocuments.unshift(parentDocumentData);
   console.log('theDocuments: ', theDocuments);
   
-  const [treeData, setTreeData] = useState(theDocuments);
+  const [treeData, setTreeData] = useState([theDocuments]);
   const [selectedNode, setSelectedNode] = useState(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
   const handleSelect = (node: any) => {

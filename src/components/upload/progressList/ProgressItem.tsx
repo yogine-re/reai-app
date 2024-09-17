@@ -17,7 +17,7 @@ const ProgressItem = ({ file }: { file: File }) => {
   const [name, setName] = useState<string | null>(null);
   const { googleApi, currentFirebaseUser, accessToken, setAlert } = useAuth();
   useEffect(() => {
-    const uloadFile = async () => {
+    const uploadFile = async () => {
       const fileName = uuidv4() + '.' + file.name.split('.').pop();
       console.log('uloadFile: fileName:', fileName);
       try {
@@ -62,7 +62,7 @@ const ProgressItem = ({ file }: { file: File }) => {
     console.log('file name:', file.name);
     setName(file.name);
     setdocumentURL(URL.createObjectURL(file));
-    uloadFile();
+    uploadFile();
   }, [file]);
   return (
     documentURL && (
