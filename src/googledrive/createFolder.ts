@@ -1,6 +1,5 @@
 
 export async function createFolder(googleApi: any, folderName: string): Promise<string | undefined> {
-    console.log('createFolder: creating folder:', folderName);
     const fileMetadata = {
         name: folderName,
         mimeType: 'application/vnd.google-apps.folder',
@@ -13,27 +12,19 @@ export async function createFolder(googleApi: any, folderName: string): Promise<
             fields: 'nextPageToken, files(id, name)',
         });
 
-        console.log('createFolder: response:', listResponse);
         const folders = listResponse?.result?.files ?? [];
 
         if (folders.length > 0) {
-            console.log('createFolder: folders:', folders);
-            folders.forEach((folder: any) => {
-                console.log(`Found folder: ${folder.name}, id: ${folder.id}`);
-            });
             return folders[0].id; // Return the ID of the first found folder
         } else {
             console.log('No folders found.');
         }
-
-        console.log('createFolder: listResponse:', listResponse);
 
         if (folders.length === 0) {
             const createResponse = await googleApi.client.drive.files.create({
                 resource: fileMetadata,
                 fields: 'id',
             });
-            console.log('createFolder: created folder:', createResponse);
             return createResponse.result.id;
         }
     } catch (error) {

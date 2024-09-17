@@ -24050,6 +24050,7 @@ var package_default = {
   dependencies: {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@minoru/react-dnd-treeview": "^3.4.4",
     "@mui/icons-material": "^6.0.0",
     "@mui/material": "^6.0.1",
     "@mui/styled-engine": "^6.0.0",
@@ -24075,6 +24076,7 @@ var package_default = {
     "pdfjs-dist": "^3.11.174",
     react: "^18.3.1",
     "react-18-image-lightbox": "^5.1.4",
+    "react-dnd": "^16.0.1",
     "react-dom": "^18.3.1",
     "react-easy-crop": "^5.0.8",
     "react-modal": "^3.16.1",

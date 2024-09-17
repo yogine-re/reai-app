@@ -84,45 +84,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   
   const login = (email: string, password: string): Promise<UserCredential> => {
-    console.log('login');
     const credential = signInWithEmailAndPassword(auth, email, password);
-    console.log('credential:', credential);
     const promiseUser = credential.then((cred) => cred.user);
-    console.log('promiseUser:', promiseUser);
     promiseUser.then((user) => {
-      console.log('firebase user:', user);
       setCurrentFirebaseUser(user);
     });
     return credential;
   };
 
   const loginWithGoogle = async (): Promise<UserCredential> => {
-    console.log('loginWithGoogle');
     if (!googleApi) {
       return Promise.reject('googleApi not initialized');
     }
     // Exchange authorization code for tokens, see https://stackoverflow.com/questions/69727083/using-firebase-auth-gapi
-    console.log('calling googleApi.auth2.getAuthInstance');
     const googleAuth = googleApi?.auth2.getAuthInstance();
-    console.log('calling googleAuth.signIn');
     const googleUser = await googleAuth.signIn().catch((error: any) => { console.error('Error signing in:', error); });  
     if (!googleUser) {
       return Promise.reject('googleUser not set'); 
     }
-    console.log('googleUser:', googleUser);
     const authResponse = googleUser.getAuthResponse();
-    console.log('authResponse:', authResponse);
     const access_token = authResponse.access_token;
     const id_token = authResponse.id_token;
-    console.log('access_token:', access_token);
     // Authenticate with Firebase using the ID token
-    console.log('getting credential from GoogleAuthProvider');
     const credential = GoogleAuthProvider.credential(id_token);
-    console.log('credential:', credential);
-    console.log('signing in to firebase with credential');
     const firebaseUserCredential = await signInWithCredential(auth, credential);
-    console.log('firebaseUserCredential:', firebaseUserCredential);
-    console.log('firebaseUserCredential.user:', firebaseUserCredential.user);
     setAccessToken(access_token);
     return firebaseUserCredential;
   };
@@ -137,7 +122,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const initgoogleApi = async () => {
-    console.log('initgoogleApi');
     initClientGoogleDrive()
       .then((googleApi) => {
         setgoogleApi(googleApi);
@@ -148,16 +132,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    console.log('AuthContext::useEffect');
     if (!googleApi) {
-      console.log('AuthContext::useEffect: initializing googleApi');
       initgoogleApi();
     }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('user status changed:', user);
-      console.log('user status changed: firebase user:', user);
       setCurrentFirebaseUser(user);
-      console.log('user status changed: firebase user:', user);
     });
     return unsubscribe;
   }, []);

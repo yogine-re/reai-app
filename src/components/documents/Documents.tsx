@@ -1,223 +1,185 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import Grid from '@mui/material/Grid2';
+import {
+  Tree,
+  getBackendOptions,
+  MultiBackend,
+} from '@minoru/react-dnd-treeview';
+import { DndProvider } from 'react-dnd';
 import useFirestore from '../../firebase/useFirestore';
-import { Box, ListItem, ListItemButton, ListItemText } from '@mui/material';
+// import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-// import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Grid from '@mui/material/Grid2';
+import { Box } from '@mui/material';
+import styles from './Documents.module.css';
+import { CustomNode } from '../tree/CustomNode';
+import Typography from '@mui/material/Typography';
+// import { TypeIcon } from '../tree/TypeIcon';
 
-// const theme = createTheme({
-//   palette: {
-//     mode: 'dark',
-//   },
-// });
+
+
 
 export default function Documents() {
   const { documents } = useFirestore('gallery');
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
-
-  const handleClick = async (documentData: any) => {
-    console.log(`Clicked on document: ${documentData.documentName}`);
-    console.log(`document url: ${documentData.documentURL}`);
-    setDocumentUrl(documentData.documentURL);
-  };
-
-  // Remove duplicates based on document id
-const uniqueDocuments = documents.filter((item, index, self) =>
-  index === self.findIndex((t) => t.data?.documentName === item.data?.documentName)
-);
-
-  return (
-    // <ThemeProvider theme={theme}>
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={3}>
-        <Grid size={6}>
-            {uniqueDocuments.map((item) => (
-              <ListItem disablePadding key={item?.id}>
-                <ListItemButton onClick={() => handleClick(item?.data)}>
-                  <ListItemText primary={item?.data.documentName} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </Grid>
-          <Grid size='grow'>
-            {documentUrl && (
-              <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-                <Viewer fileUrl={documentUrl} />
-              </Worker>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
-    // </ThemeProvider>
-
-  );
-}
-
-
-// import ImageList from '@mui/material/ImageList';
-// import ImageListItem from '@mui/material/ImageListItem';
-
-// import { Avatar, Tooltip, Typography } from '@mui/material';
-// import moment from 'moment';
-// import Options from './Options';
-// import useFirestore from '../../firebase/useFirestore';
-// import Lightbox from 'react-18-image-lightbox';
-// import 'react-18-image-lightbox/style.css';
-// import { useState } from 'react';
-
-// function srcset(image: string, size: number, rows = 1, cols = 1) {
-//   return {
-//     src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
-//     srcSet: `${image}?w=${size * cols}&h=${
-//       size * rows
-//     }&fit=crop&auto=format&dpr=2 2x`,
-//   };
-// }
-
-// export default function Documents() {
-//   const { documents } = useFirestore('gallery');
-//   const [isOpen, setIsOpen] = useState(false);
-//   const [photoIndex, setPhotoIndex] = useState(0);
+  console.log('documentUrl: ', documentUrl);
   
-//   return (
-//     <>
-//       <ImageList variant='quilted' cols={4} rowHeight={200}>
-//         {documents.map((item, index) => (
-//           <ImageListItem
-//             key={item?.id}
-//             cols={
-//               pattern[
-//                 index - Math.floor(index / pattern.length) * pattern.length
-//               ].cols
-//             }
-//             rows={
-//               pattern[
-//                 index - Math.floor(index / pattern.length) * pattern.length
-//               ].rows
-//             }
-//             sx={{
-//               opacity: '.7',
-//               transition: 'opacity .3s linear',
-//               cursor: 'pointer',
-//               '&:hover': { opacity: 1 },
-//             }}
-//           >
-//             <Options
-//               imageId={item?.id}
-//               uid={(item as { data: { uid: string } })?.data?.uid}
-//               imageURL={item?.data?.imageURL}
-//             />
-
-//             <img
-//               {...srcset(
-//                 item?.data?.imageURL,
-//                 200,
-//                 pattern[
-//                   index - Math.floor(index / pattern.length) * pattern.length
-//                 ].rows,
-//                 pattern[
-//                   index - Math.floor(index / pattern.length) * pattern.length
-//                 ].cols
-//               )}
-//               alt={item?.data?.uName || item?.data?.uEmail?.split('@')[0]}
-//               loading='lazy'
-//               onClick={() => {
-//                 setPhotoIndex(index);
-//                 setIsOpen(true);
-//               }}
-//             />
-//             <Typography
-//               variant='body2'
-//               component='span'
-//               sx={{
-//                 position: 'absolute',
-//                 bottom: 0,
-//                 left: 0,
-//                 color: 'white',
-//                 background: 'rgba(0,0,0, .3)',
-//                 p: '5px',
-//                 borderTopRightRadius: 8,
-//               }}
-//             >
-//               {moment(item?.data?.timestamp?.toDate()).fromNow()}
-//             </Typography>
-//             <Tooltip
-//               title={item?.data?.uName || item?.data?.uEmail?.split('@')[0]}
-//               sx={{
-//                 position: 'absolute',
-//                 bottom: '3px',
-//                 right: '3px',
-//               }}
-//             >
-//               <Avatar
-//                 src={item?.data?.uPhoto}
-//                 imgProps={{ 'aria-hidden': true }}
-//               />
-//             </Tooltip>
-//           </ImageListItem>
-//         ))}
-//       </ImageList>
-//       {isOpen && (
-//         <Lightbox
-//           mainSrc={documents[photoIndex]?.data?.imageURL}
-//           nextSrc={
-//             documents[(photoIndex + 1) % documents.length]?.data?.imageURL
-//           }
-//           prevSrc={
-//             documents[(photoIndex + documents.length - 1) % documents.length]
-//               ?.data?.imageURL
-//           }
-//           onCloseRequest={() => setIsOpen(false)}
-//           onMoveNextRequest={() =>
-//             setPhotoIndex((photoIndex + 1) % documents.length)
-//           }
-//           onMovePrevRequest={() =>
-//             setPhotoIndex(
-//               (photoIndex + documents.length - 1) % documents.length
-//             )
-//           }
-//           imageTitle={documents[photoIndex]?.data?.uName}
-//           imageCaption={documents[photoIndex]?.data?.uEmail}
-//         />
-//       )}
-//     </>
-//   );
-// }
-
-// const pattern = [
-//   {
-//     rows: 2,
-//     cols: 2,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-//   {
-//     rows: 1,
-//     cols: 2,
-//   },
-//   {
-//     rows: 1,
-//     cols: 2,
-//   },
-//   {
-//     rows: 2,
-//     cols: 2,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-// ];
+  const handleClick = async (node: any, onToggle: any) => {
+    console.log('handleClick node: ', node);
+    console.log('handleClick onToggle: ', onToggle);
+    onToggle(node);
+    if (node.parent !== 0 && node.data) {
+      console.log('documentUrl: ', node.data.documentURL);
+      setDocumentUrl(node.data.documentURL);
+    }
+  };
+  
+  // Remove duplicates based on document id
+  const uniqueDocuments = documents.filter(
+    (item, index, self) =>
+      index ===
+    self.findIndex((t) => t.data?.documentName === item.data?.documentName)
+  );
+  console.log('uniqueDocuments: ', uniqueDocuments);
+  // let counter = 1;
+  // const project={id: counter++, parent: 0, droppable: true, text: 'Project', data: {documentName: 'Project'}};
+  // const theDocuments = [];
+  // // theDocuments = uniqueDocuments.map((item) => ({
+  // //   ...item,
+  // //   id: counter++,
+  // //   parent: 1,
+  // //   droppable: true,
+  // //   text: item.data.documentName,
+  // // }));
+  // theDocuments.unshift(project);
+  // const project2={id: counter++, parent: 1, text: 'Project2', data: {documentName: 'Project2'}};
+  // theDocuments.unshift(project2);
+  // const project3={id: counter++, parent: 1, text: 'Project3', data: {documentName: 'Project3'}};
+  // theDocuments.unshift(project3);
+  const theDocuments = [
+    {
+      id: 1,
+      parent: 0,
+      droppable: true,
+      text: 'Folder 1',
+    },
+    {
+      id: 2,
+      parent: 1,
+      text: 'File 1-1',
+      data: {
+        fileType: 'csv',
+        fileSize: '0.5MB',
+      },
+    },
+    {
+      id: 3,
+      parent: 1,
+      text: 'File 1-2',
+      data: {
+        fileType: 'pdf',
+        fileSize: '4.8MB',
+      },
+    },
+    {
+      id: 4,
+      parent: 0,
+      droppable: true,
+      text: 'Folder 2',
+    },
+    {
+      id: 5,
+      parent: 4,
+      droppable: true,
+      text: 'Folder 2-1',
+    },
+    {
+      id: 6,
+      parent: 5,
+      text: 'File 2-1-1',
+      data: {
+        fileType: 'image',
+        fileSize: '2.1MB',
+      },
+    },
+  ];
+  
+  console.log('theDocuments: ', theDocuments);
+  
+  const [treeData, setTreeData] = useState(theDocuments);
+  const handleDrop = (newTreeData: any) => setTreeData(newTreeData);
+  console.log('treeData: ', treeData);
+  theDocuments.forEach((item) => {
+    console.log('item: ', item);
+    if (treeData.find((doc) => doc.id === item.id) === undefined) {
+      treeData.push(item);
+    }
+  });
+  
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+    <Grid container>
+    <Grid size={6}>
+    {/* {theDocuments.map((item) => (
+      <ListItem disablePadding key={item?.id}>
+      <ListItemButton onClick={() => handleClick(item?.data)}>
+      <ListItemText primary={item?.data.documentName} />
+      </ListItemButton>
+      </ListItem>
+      ))} */}
+      <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+      <Tree
+      tree={treeData}
+      rootId={0}
+      onDrop={handleDrop}
+      render={(node, { depth, isOpen, onToggle }) => (
+        <div
+        className={styles.root}
+        style={{
+          paddingInlineStart: depth * 24,
+          listStyleType: 'none',
+        }}
+        >
+        {node.droppable && (
+          <span onClick={() => handleClick(node, onToggle)}>
+          {isOpen ? '[-]' : '[+]'}
+          {node.text}
+          </span>
+        )}
+        {!node.droppable && (
+          <span onClick={() => handleClick(node, onToggle)}>
+          {
+            <div className={styles.label}>
+            <Typography variant='body2'>{node.text}</Typography>
+            </div>
+          }
+          </span>
+        )}
+        </div>
+      )}
+      />
+      <Tree
+      tree={treeData}
+      rootId={0}
+      onDrop={handleDrop}
+      render={(node, options) => (
+        <CustomNode node={node} {...options} />
+      )}
+      />
+      </DndProvider>
+      </Grid>
+      <Grid size='grow'>
+      {documentUrl && (
+        <Worker
+        workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
+        >
+        <Viewer fileUrl={documentUrl} />
+        </Worker>
+      )}
+      </Grid>
+      </Grid>
+      </Box>
+    );
+  }
