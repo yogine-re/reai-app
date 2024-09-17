@@ -17,32 +17,27 @@ import { Box } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
+import { DocumentProperties } from './types';
 // import theDocuments from '../tree/sample_data.json';
 
 export default function Documents() {
-  const { documents } = useFirestore('gallery');
+  const { documents} = useFirestore('gallery');
   const [documentURL, setDocumentURL] = useState<string | null>(null);
-  console.log('documentURL: ', documentURL);
-  const uniqueDocuments = documents.filter(
-    (item, index, self) =>
-      index ===
-    self.findIndex((t) => t.data?.documentName === item.data?.documentName)
+  const uniqueDocuments = Array.from(
+    new Map(documents.map((item) => [item.data?.documentName, item])).values()
   );
-  console.log('uniqueDocuments: ', uniqueDocuments);
   let counter = 1;
-  const project={id: counter++, parent: 0, droppable: true, text: 'REAI'};
-  const theDocuments = uniqueDocuments.map((item) => ({
-    ...item,
+  const createDocument = (documentName: string, item: DocumentProperties|null, parent: number, droppable: boolean) => ({
     id: counter++,
-    parent: 1,
-    droppable: false,
-    text: item.data.documentName,
-    data: { 
-      'fileType': 'text',
-      ...item.data,
-    }
-  }));
-  theDocuments.unshift(project as any);
+    parent,
+    droppable,
+    text: documentName,
+    data: item,
+  });
+  
+  const parent = createDocument('Project', null, 0, true);
+  const theDocuments = uniqueDocuments.map((item) => createDocument(item.data.documentName, item.data, parent.id, false));
+  theDocuments.unshift(parent);
   console.log('theDocuments: ', theDocuments);
   
   const [treeData, setTreeData] = useState(theDocuments);
