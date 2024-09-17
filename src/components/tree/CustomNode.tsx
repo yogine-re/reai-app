@@ -2,47 +2,42 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { TypeIcon } from './TypeIcon';
-import { NodeModel } from '@minoru/react-dnd-treeview';
-import { FileProperties } from './types';
 import styles from './CustomNode.module.css';
 
-type Props = {
-  node: NodeModel<FileProperties>;
-  depth: number;
-  isOpen: boolean;
-  testIdPrefix?: string;
-  onToggle: (id: NodeModel['id']) => void;
-};
-
-export const CustomNode: React.FC<Props> = ({
-  testIdPrefix = '',
-  ...props
-}) => {
-  const { id, droppable, data } = props.node;
+export const CustomNode = (props: any) => {
+  const { droppable, data } = props.node;
   const indent = props.depth * 24;
 
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleToggle = (e: any) => {
     e.stopPropagation();
     props.onToggle(props.node.id);
   };
 
+  const handleSelect = () => props.onSelect(props.node);
+
   return (
     <div
-      className={styles.root}
+      className={`tree-node ${styles.root} ${
+        props.isSelected ? styles.isSelected : ''
+      }`}
       style={{ paddingInlineStart: indent }}
-      data-testid={`${testIdPrefix}custom-node-${id}`}
+      onClick={handleSelect}
     >
-      <div className={`${styles.arrow} ${props.isOpen ? styles.isOpen : ''}`}>
+      <div
+        className={`${styles.expandIconWrapper} ${
+          props.isOpen ? styles.isOpen : ''
+        }`}
+      >
         {props.node.droppable && (
           <div onClick={handleToggle}>
-            <ArrowRightIcon data-testid={`arrow-right-icon-${id}`} />
+            <ArrowRightIcon />
           </div>
         )}
       </div>
-      <div className={styles.filetype}>
-        <TypeIcon droppable={droppable || false} fileType={data?.fileType} />
+      <div>
+        <TypeIcon droppable={droppable} fileType={data?.fileType} />
       </div>
-      <div className={styles.label}>
+      <div className={styles.labelGridItem}>
         <Typography variant='body2'>{props.node.text}</Typography>
       </div>
     </div>

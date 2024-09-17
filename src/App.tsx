@@ -7,9 +7,14 @@ import Upload from './components/upload/Upload';
 import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { Container } from '@mui/material';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { theme } from './theme';
+
 
 const App: React.FC = () => {
   return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <AuthProvider>
         <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
           <SplashScreen />
@@ -17,10 +22,11 @@ const App: React.FC = () => {
           <Nav />
           <Upload />
         </Container>
-        <Container maxWidth='lg' sx={{ textAlign: 'center', mt: '3rem' }}>
+        <Container>
           <Documents />
         </Container>
-      </AuthProvider >
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

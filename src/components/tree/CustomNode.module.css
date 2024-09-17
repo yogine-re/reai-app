@@ -1,11 +1,18 @@
 .root {
   align-items: center;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
   height: 32px;
+  padding-inline-end: 8px;
 }
 
-.arrow {
+.root.isSelected {
+  color: #1967d2;
+}
+
+.expandIconWrapper {
   align-items: center;
+  font-size: 0;
   cursor: pointer;
   display: flex;
   height: 24px;
@@ -15,19 +22,10 @@
   transform: rotate(0deg);
 }
 
-.arrow > div {
-  align-items: center;
-  display: flex;
-}
-
-.arrow.isOpen {
+.expandIconWrapper.isOpen {
   transform: rotate(90deg);
 }
 
-.filetype {
-  display: flex;
-}
-
-.label {
+.labelGridItem {
   padding-inline-start: 8px;
 }
