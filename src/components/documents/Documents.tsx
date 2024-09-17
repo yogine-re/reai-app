@@ -1,4 +1,6 @@
 
+// see https://www.npmjs.com/package/@minoru/react-dnd-treeview?activeTab=readme#usage
+// see https://minop1205.github.io/react-dnd-treeview/?path=/docs/basic-examples-select-node--select-node-story
 import * as React from 'react';
 import { useState } from 'react';
 import {
@@ -8,7 +10,6 @@ import {
 } from '@minoru/react-dnd-treeview';
 import { DndProvider } from 'react-dnd';
 import useFirestore from '../../firebase/useFirestore';
-// import { ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
@@ -29,7 +30,7 @@ export default function Documents() {
   );
   console.log('uniqueDocuments: ', uniqueDocuments);
   let counter = 1;
-  const project={id: counter++, parent: 0, droppable: true, text: 'Project'};
+  const project={id: counter++, parent: 0, droppable: true, text: 'REAI'};
   const theDocuments = uniqueDocuments.map((item) => ({
     ...item,
     id: counter++,
@@ -37,7 +38,7 @@ export default function Documents() {
     droppable: false,
     text: item.data.documentName,
     data: { 
-      fileType: 'pdf',
+      'fileType': 'text',
       ...item.data,
     }
   }));
@@ -55,8 +56,22 @@ export default function Documents() {
     }
     console.log('documentURL: ', documentURL);
   };
+  const handleTextChange = (id: any, value: any) => {
+    const newTree = treeData.map((node) => {
+      if (node.id === id) {
+        return {
+          ...node,
+          text: value
+        };
+      }
+
+      return node;
+    });
+
+    setTreeData(newTree);
+  };
+
   console.log('treeData: ', treeData);
-  
   theDocuments.forEach((item) => {
     console.log('item: ', item);
     if (treeData.find((doc) => doc.id === item.id) === undefined) {
@@ -81,6 +96,7 @@ export default function Documents() {
                 isSelected={node.id === selectedNode?.id}
                 onToggle={onToggle}
                 onSelect={handleSelect}
+                onTextChange={handleTextChange}
               />
             )}
             dragPreviewRender={(monitorProps) => (
@@ -91,6 +107,8 @@ export default function Documents() {
               draggingSource: styles.draggingSource,
               dropTarget: styles.dropTarget
             }}
+            initialOpen={true}
+            sort={false}
           />
         </div>
       </DndProvider>
