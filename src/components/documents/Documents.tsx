@@ -30,7 +30,7 @@ export default function Documents() {
   );
   console.log('uniqueDocuments: ', uniqueDocuments);
   let counter = 1;
-  const project={id: counter++, parent: 0, droppable: true, text: 'REAI'};
+  const project={id: counter++, parent: 0, droppable: true, text: 'documents'};
   const theDocuments = uniqueDocuments.map((item) => ({
     ...item,
     id: counter++,
