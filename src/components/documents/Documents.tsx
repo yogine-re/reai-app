@@ -3,6 +3,7 @@
 // see https://minop1205.github.io/react-dnd-treeview/?path=/docs/basic-examples-select-node--select-node-story
 import * as React from 'react';
 import { useState } from 'react';
+import { useEffect } from 'react';
 import {
   Tree,
   getBackendOptions,
@@ -23,6 +24,7 @@ import { DocumentProperties } from './types';
 export default function Documents() {
   const { documents} = useFirestore('gallery');
   const [documentURL, setDocumentURL] = useState<string | null>(null);
+  const [updated, setUpdated] = useState(false);
   const uniqueDocuments = Array.from(
     new Map(documents.map((item) => [item.data?.documentName, item])).values()
   );
@@ -73,9 +75,14 @@ export default function Documents() {
       treeData.push(item);
     }
   });
+
+  useEffect(() => {
+    console.log('useEffect: updated: ', updated);
+    setUpdated(true);
+  },[])
   
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 0 }}>
     <Grid container>
     <Grid size={6}>
       <DndProvider backend={MultiBackend} options={getBackendOptions()}>
@@ -99,11 +106,12 @@ export default function Documents() {
             )}
             onDrop={handleDrop}
             classes={{
+              root: styles.root,
               draggingSource: styles.draggingSource,
               dropTarget: styles.dropTarget
             }}
-            initialOpen={true}
-            sort={false}
+            initialOpen={[0]}
+            sort={true}
           />
         </div>
       </DndProvider>
