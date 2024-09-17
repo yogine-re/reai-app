@@ -9,7 +9,6 @@ export const TypeIcon = (props: any) => {
   if (props.droppable) {
     return <FolderIcon />;
   }
-  console.log('TypeIcon fileType:', props.fileType);
 
   switch (props.fileType) {
     case 'image':
