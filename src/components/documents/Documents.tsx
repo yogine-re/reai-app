@@ -57,6 +57,7 @@ export default function Documents() {
     console.log('useEffect');
     let counter = 1;
     const unsubscribe = onSnapshot(collection(db, 'gallery'), (snapshot) => {
+      console.log('unsubscribe snapshot.docs: ', snapshot.docs);
       const docs = snapshot.docs; // Store snapshot.docs in a variable
       const uniqueDocsMap = new Map();
   
@@ -87,36 +88,17 @@ export default function Documents() {
       });
   
       setTreeData(documents);
+      console.log('CAROLINA documents: ', documents);
+      console.log('documentURL: ', documentURL);
+      if(documents.length <= 1) {
+        setDocumentURL(null);
+      }
+      
     });
   
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    console.log('useEffect 2');
-    const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'removed') {
-          const deletedDocId = change.doc.id;
-          // Remove the document associated with the deleted user
-          setTreeData((prevTreeData) =>
-            prevTreeData.filter((doc) => doc.data?.uid !== deletedDocId)
-          );
-          console.log('deletedDocId: ', deletedDocId);
-          console.log('documentURL: ', documentURL);
-          // Optionally, clear the document URL if it belongs to the deleted user
-          if (documentURL && documentURL.includes(deletedDocId)) {
-            setDocumentURL(null);
-          }
-        }
-      });
-    });
-
-    // Cleanup subscription on unmount
-    return () => unsubscribeUsers();
-  }, [documentURL]);
-  console.log('documentURL: ', documentURL);
   
   return (
     <Box sx={{ flexGrow: 1 }}>
