@@ -23,11 +23,11 @@ const ProgressItem = ({ file }: { file: File }) => {
       try {
         const url = await uploadFileProgress(
           file,
-          `gallery/${currentFirebaseUser?.uid}`,
+          `documents/${currentFirebaseUser?.uid}`,
           fileName,
           setProgress
         ) as string;
-        const galleryDoc: DocumentProperties = {
+        const documentsDoc: DocumentProperties = {
           documentURL: url,
           documentName: file.name || '',
           uid: currentFirebaseUser?.uid || '',
@@ -38,10 +38,10 @@ const ProgressItem = ({ file }: { file: File }) => {
           fileSize: file.size.toString(),
         };
         console.log('adding document:', fileName);
-        console.log('galleryDoc:', galleryDoc);
-        await addDocument('gallery', galleryDoc, fileName);
+        console.log('documentsDoc:', documentsDoc);
+        await addDocument('documents', documentsDoc, fileName);
         console.log('uploading to google drive');
-        GoogleDriveCreateFolder(googleApi, 'REAI').then((folderId: string|undefined) => {
+        GoogleDriveCreateFolder(googleApi, 'documents').then((folderId: string|undefined) => {
           if(folderId) {
             GoogleDriveUploadFile(googleApi, file, folderId, accessToken);
           }
@@ -67,7 +67,7 @@ const ProgressItem = ({ file }: { file: File }) => {
   return (
     documentURL && (
       <ImageListItem cols={1} rows={1}>
-        <img src={pdfDocImage} alt="gallery" loading="lazy" />
+        <img src={pdfDocImage} alt="documents" loading="lazy" />
         <Box sx={backDrop}>
           {progress < 100 ? (
             <CircularProgressWithLabel value={progress} />

@@ -19,7 +19,7 @@ const DeleteAccount: React.FC = () => {
     try {
       if (currentFirebaseUser) {
         console.log('deleteUserFiles: currentFirebaseUser', currentFirebaseUser);
-        await deleteUserFiles('gallery', currentFirebaseUser);
+        await deleteUserFiles('documents', currentFirebaseUser);
         console.log('deleteUser: currentFirebaseUser', currentFirebaseUser);
         await deleteUser(currentFirebaseUser);
       }

@@ -56,7 +56,7 @@ export default function Documents() {
   useEffect(() => {
     console.log('useEffect');
     let counter = 1;
-    const unsubscribe = onSnapshot(collection(db, 'gallery'), (snapshot) => {
+    const unsubscribe = onSnapshot(collection(db, 'documents'), (snapshot) => {
       console.log('unsubscribe snapshot.docs: ', snapshot.docs);
       const docs = snapshot.docs; // Store snapshot.docs in a variable
       const uniqueDocsMap = new Map();

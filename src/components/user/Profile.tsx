@@ -71,7 +71,7 @@ const Profile: React.FC = () => {
         await updateProfile(currentFirebaseUser, userObj);
       }
       if (currentFirebaseUser?.uid) {
-        await updateUserRecords('gallery', currentFirebaseUser.uid, imagesObj);
+        await updateUserRecords('documents', currentFirebaseUser.uid, imagesObj);
       }
 
       setAlert({
