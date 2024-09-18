@@ -8,6 +8,7 @@ import {
   Tree,
   getBackendOptions,
   MultiBackend,
+  NodeModel,
 } from '@minoru/react-dnd-treeview';
 import { DndProvider } from 'react-dnd';
 // import useFirestore from '../../firebase/useFirestore';
@@ -26,8 +27,8 @@ import { DocumentProperties } from './types';
 export default function Documents() {
   const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
-  const [treeData, setTreeData] = useState<DocumentProperties[]>([]);
-  const [selectedNode, setSelectedNode] = useState(null);
+  const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
+  const [selectedNode, setSelectedNode] = useState<NodeModel<DocumentProperties> | null>(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
   const handleSelect = (node: any) => {
     setSelectedNode(node);  
@@ -36,7 +37,9 @@ export default function Documents() {
     }
   };
   const handleTextChange = (id: any, value: any) => {
-    const newTree = treeData.map((node) => {
+    console.log('handleTextChange id: ', id);
+    console.log('handleTextChange value: ', value);
+    const newTree = treeData.map((node: NodeModel<DocumentProperties>) => {
       if (node.id === id) {
         return {
           ...node,
@@ -55,7 +58,7 @@ export default function Documents() {
     let counter = 1;
     const unsubscribe = onSnapshot(collection(db, 'gallery'), (snapshot) => {
       const docs = snapshot.docs; // Store snapshot.docs in a variable
-      const uniqueDocsMap = new Map<DocumentProperties>();
+      const uniqueDocsMap = new Map();
   
       docs.forEach((doc) => {
         const data = doc.data();
@@ -95,15 +98,15 @@ export default function Documents() {
     const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'removed') {
-          const deletedUserId = change.doc.id;
+          const deletedDocId = change.doc.id;
           // Remove the document associated with the deleted user
           setTreeData((prevTreeData) =>
-            prevTreeData.filter((doc) => doc.data.userId !== deletedUserId)
+            prevTreeData.filter((doc) => doc.data?.uid !== deletedDocId)
           );
-          console.log('deletedUserId: ', deletedUserId);
+          console.log('deletedDocId: ', deletedDocId);
           console.log('documentURL: ', documentURL);
           // Optionally, clear the document URL if it belongs to the deleted user
-          if (documentURL && documentURL.includes(deletedUserId)) {
+          if (documentURL && documentURL.includes(deletedDocId)) {
             setDocumentURL(null);
           }
         }

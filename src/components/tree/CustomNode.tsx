@@ -34,7 +34,7 @@ export const CustomNode = (props: any) => {
     setVisibleInput(false);
   };
 
-  const handleChangeText = (e) => {
+  const handleChangeText = (e: any) => {
     setLabelText(e.target.value);
   };
 
@@ -94,7 +94,7 @@ export const CustomNode = (props: any) => {
             <Typography variant='body2' className={styles.nodeLabel}>
               {props.node.text}
             </Typography>
-            {(!props.node.data) ?
+            {Object.keys(props.node.data).length === 0 ?
             <IconButton className={styles.editButton} onClick={handleShowInput}>
                 <EditIcon className={styles.editIcon} />
             </IconButton>
