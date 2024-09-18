@@ -22,8 +22,8 @@ export default function Options({ imageId, uid, documentURL }: { imageId: string
   };
   const handleDelete = async () => {
     try {
-      await deleteDocument('gallery', imageId);
-      await deleteFile(`gallery/${currentFirebaseUser?.uid}/${imageId}`);
+      await deleteDocument('documents', imageId);
+      await deleteFile(`documents/${currentFirebaseUser?.uid}/${imageId}`);
     } catch (error) {
       setAlert({
         isAlert: true,

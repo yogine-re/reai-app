@@ -2,7 +2,7 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from './config';
-const useFirestore = (collectionName = 'gallery') => {
+const useFirestore = (collectionName = 'documents') => {
   const [documents, setDocuments] = useState<{ id: string; data: any }[]>([]);
   const { setAlert } = useAuth();
   useEffect(
