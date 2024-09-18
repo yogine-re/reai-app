@@ -70,8 +70,6 @@ import RetryHandler from '../utils/RetryHandler';
     httpMethod: string;
 
     constructor(options: UploadOptions) {
-    
-      console.log('MediaUploader constructor: options:', options);
       var noop = function() {};
       this.file = options.file;
       this.contentType = options.contentType || this.file.type || 'application/octet-stream';
@@ -81,11 +79,8 @@ import RetryHandler from '../utils/RetryHandler';
       };
       this.token = options.token;
       this.onComplete = options.onComplete || noop;
-      console.log('MediaUploader: this.onComplete:', this.onComplete);
       this.onProgress = options.onProgress || noop;
-      console.log('MediaUploader: this.onProgress:', this.onProgress);
       this.onError = options.onError || noop;
-      console.log('MediaUploader: this.onError:', this.onError);
       this.offset = options.offset || 0;
       this.chunkSize = options.chunkSize || 0;
       this.retryHandler = new RetryHandler();
@@ -135,7 +130,6 @@ import RetryHandler from '../utils/RetryHandler';
    * @private
    */
   sendFile_() {
-    console.log('MediaUploader: sendFile_');
     var content = this.file;
     var end = getFileSize(this.file);
   
@@ -158,7 +152,6 @@ import RetryHandler from '../utils/RetryHandler';
     if (xhr.upload) {
       xhr.upload.addEventListener('progress', this.onProgress);
     }
-    console.log('MediaUploader: sendFile_ this.onContentUploadSuccess_:', this.onContentUploadSuccess_);
     xhr.onload = this.onContentUploadSuccess_.bind(this);
     xhr.onerror = this.onContentUploadError_.bind(this);
     xhr.send(content);
@@ -203,10 +196,7 @@ import RetryHandler from '../utils/RetryHandler';
    * @param {object} e XHR event
    */
   onContentUploadSuccess_(e: any) {
-    console.log('MediaUploader: onContentUploadSuccess_ e:', e);
-    console.log('MediaUploader: onContentUploadSuccess_ this:', this);
     if (e.target.status == 200 || e.target.status == 201) {
-      console.log('MediaUploader: onContentUploadSuccess_ this.onComplete:', this.onComplete);
       if (this.onComplete) {
         this.onComplete(e.target.response); 
       }
@@ -277,7 +267,6 @@ import RetryHandler from '../utils/RetryHandler';
     if (query) {
       url += '?' + query;
     }
-    console.log('MediaUploader: buildUrl_ url:', url);
     return url;
   };
 };

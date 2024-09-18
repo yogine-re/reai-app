@@ -1,223 +1,149 @@
 
+// see https://www.npmjs.com/package/@minoru/react-dnd-treeview?activeTab=readme#usage
+// see https://minop1205.github.io/react-dnd-treeview/?path=/docs/basic-examples-select-node--select-node-story
 import * as React from 'react';
 import { useState } from 'react';
-import Grid from '@mui/material/Grid2';
-import useFirestore from '../../firebase/useFirestore';
-import { Box, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { useEffect } from 'react';
+import {
+  Tree,
+  getBackendOptions,
+  MultiBackend,
+  NodeModel,
+} from '@minoru/react-dnd-treeview';
+import { DndProvider } from 'react-dnd';
+// import useFirestore from '../../firebase/useFirestore';
+import { app } from '../../firebase/config';
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-// import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-// const theme = createTheme({
-//   palette: {
-//     mode: 'dark',
-//   },
-// });
+import Grid from '@mui/material/Grid2';
+import { Box } from '@mui/material';
+import styles from './Documents.module.css';
+import { CustomNode } from '../tree/CustomNode';
+import { CustomDragPreview } from '../tree/CustomDragPreview';
+import { DocumentProperties } from './types';
+// import theDocuments from '../tree/sample_data.json';
 
 export default function Documents() {
-  const { documents } = useFirestore('gallery');
-  const [documentUrl, setDocumentUrl] = useState<string | null>(null);
-
-  const handleClick = async (documentData: any) => {
-    console.log(`Clicked on document: ${documentData.documentName}`);
-    console.log(`document url: ${documentData.documentURL}`);
-    setDocumentUrl(documentData.documentURL);
+  const db = getFirestore(app);
+  const [documentURL, setDocumentURL] = useState<string | null>(null);
+  const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
+  const [selectedNode, setSelectedNode] = useState<NodeModel<DocumentProperties> | null>(null);
+  const handleDrop = (newTree: any) => setTreeData(newTree);
+  const handleSelect = (node: any) => {
+    setSelectedNode(node);  
+    if (node.data?.documentURL) {
+      setDocumentURL(node.data.documentURL);
+    }
+  };
+  const handleTextChange = (id: any, value: any) => {
+    console.log('handleTextChange id: ', id);
+    console.log('handleTextChange value: ', value);
+    const newTree = treeData.map((node: NodeModel<DocumentProperties>) => {
+      if (node.id === id) {
+        return {
+          ...node,
+          text: value
+        };
+      }
+      return node;
+    });
+    setTreeData(newTree);
   };
 
-  // Remove duplicates based on document id
-const uniqueDocuments = documents.filter((item, index, self) =>
-  index === self.findIndex((t) => t.data?.documentName === item.data?.documentName)
-);
+  console.log('treeData: ', treeData);
 
-  return (
-    // <ThemeProvider theme={theme}>
-      <Box sx={{ flexGrow: 1 }}>
-        <Grid container spacing={3}>
-        <Grid size={6}>
-            {uniqueDocuments.map((item) => (
-              <ListItem disablePadding key={item?.id}>
-                <ListItemButton onClick={() => handleClick(item?.data)}>
-                  <ListItemText primary={item?.data.documentName} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </Grid>
-          <Grid size='grow'>
-            {documentUrl && (
-              <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-                <Viewer fileUrl={documentUrl} />
-              </Worker>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
-    // </ThemeProvider>
-
-  );
-}
-
-
-// import ImageList from '@mui/material/ImageList';
-// import ImageListItem from '@mui/material/ImageListItem';
-
-// import { Avatar, Tooltip, Typography } from '@mui/material';
-// import moment from 'moment';
-// import Options from './Options';
-// import useFirestore from '../../firebase/useFirestore';
-// import Lightbox from 'react-18-image-lightbox';
-// import 'react-18-image-lightbox/style.css';
-// import { useState } from 'react';
-
-// function srcset(image: string, size: number, rows = 1, cols = 1) {
-//   return {
-//     src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
-//     srcSet: `${image}?w=${size * cols}&h=${
-//       size * rows
-//     }&fit=crop&auto=format&dpr=2 2x`,
-//   };
-// }
-
-// export default function Documents() {
-//   const { documents } = useFirestore('gallery');
-//   const [isOpen, setIsOpen] = useState(false);
-//   const [photoIndex, setPhotoIndex] = useState(0);
+  useEffect(() => {
+    console.log('useEffect');
+    let counter = 1;
+    const unsubscribe = onSnapshot(collection(db, 'gallery'), (snapshot) => {
+      console.log('unsubscribe snapshot.docs: ', snapshot.docs);
+      const docs = snapshot.docs; // Store snapshot.docs in a variable
+      const uniqueDocsMap = new Map();
   
-//   return (
-//     <>
-//       <ImageList variant='quilted' cols={4} rowHeight={200}>
-//         {documents.map((item, index) => (
-//           <ImageListItem
-//             key={item?.id}
-//             cols={
-//               pattern[
-//                 index - Math.floor(index / pattern.length) * pattern.length
-//               ].cols
-//             }
-//             rows={
-//               pattern[
-//                 index - Math.floor(index / pattern.length) * pattern.length
-//               ].rows
-//             }
-//             sx={{
-//               opacity: '.7',
-//               transition: 'opacity .3s linear',
-//               cursor: 'pointer',
-//               '&:hover': { opacity: 1 },
-//             }}
-//           >
-//             <Options
-//               imageId={item?.id}
-//               uid={(item as { data: { uid: string } })?.data?.uid}
-//               imageURL={item?.data?.imageURL}
-//             />
-
-//             <img
-//               {...srcset(
-//                 item?.data?.imageURL,
-//                 200,
-//                 pattern[
-//                   index - Math.floor(index / pattern.length) * pattern.length
-//                 ].rows,
-//                 pattern[
-//                   index - Math.floor(index / pattern.length) * pattern.length
-//                 ].cols
-//               )}
-//               alt={item?.data?.uName || item?.data?.uEmail?.split('@')[0]}
-//               loading='lazy'
-//               onClick={() => {
-//                 setPhotoIndex(index);
-//                 setIsOpen(true);
-//               }}
-//             />
-//             <Typography
-//               variant='body2'
-//               component='span'
-//               sx={{
-//                 position: 'absolute',
-//                 bottom: 0,
-//                 left: 0,
-//                 color: 'white',
-//                 background: 'rgba(0,0,0, .3)',
-//                 p: '5px',
-//                 borderTopRightRadius: 8,
-//               }}
-//             >
-//               {moment(item?.data?.timestamp?.toDate()).fromNow()}
-//             </Typography>
-//             <Tooltip
-//               title={item?.data?.uName || item?.data?.uEmail?.split('@')[0]}
-//               sx={{
-//                 position: 'absolute',
-//                 bottom: '3px',
-//                 right: '3px',
-//               }}
-//             >
-//               <Avatar
-//                 src={item?.data?.uPhoto}
-//                 imgProps={{ 'aria-hidden': true }}
-//               />
-//             </Tooltip>
-//           </ImageListItem>
-//         ))}
-//       </ImageList>
-//       {isOpen && (
-//         <Lightbox
-//           mainSrc={documents[photoIndex]?.data?.imageURL}
-//           nextSrc={
-//             documents[(photoIndex + 1) % documents.length]?.data?.imageURL
-//           }
-//           prevSrc={
-//             documents[(photoIndex + documents.length - 1) % documents.length]
-//               ?.data?.imageURL
-//           }
-//           onCloseRequest={() => setIsOpen(false)}
-//           onMoveNextRequest={() =>
-//             setPhotoIndex((photoIndex + 1) % documents.length)
-//           }
-//           onMovePrevRequest={() =>
-//             setPhotoIndex(
-//               (photoIndex + documents.length - 1) % documents.length
-//             )
-//           }
-//           imageTitle={documents[photoIndex]?.data?.uName}
-//           imageCaption={documents[photoIndex]?.data?.uEmail}
-//         />
-//       )}
-//     </>
-//   );
-// }
-
-// const pattern = [
-//   {
-//     rows: 2,
-//     cols: 2,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-//   {
-//     rows: 1,
-//     cols: 2,
-//   },
-//   {
-//     rows: 1,
-//     cols: 2,
-//   },
-//   {
-//     rows: 2,
-//     cols: 2,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-//   {
-//     rows: 1,
-//     cols: 1,
-//   },
-// ];
+      docs.forEach((doc) => {
+        const data = doc.data();
+        if (!uniqueDocsMap.has(data.documentName)) {
+          uniqueDocsMap.set(data.documentName, {
+            id: ++counter,
+            parent: 1,
+            droppable: false,
+            text: data.documentName,
+            data: {
+              documentName: data.documentName,
+              fileType: data.fileType,
+              ...data,
+            },
+          });
+        }
+      });
+  
+      const documents = Array.from(uniqueDocsMap.values());
+      documents.unshift({
+        id: 1,
+        parent: 0,
+        droppable: true,
+        text: 'Documents',
+        data: {},
+      });
+  
+      setTreeData(documents);
+      console.log('CAROLINA documents: ', documents);
+      console.log('documentURL: ', documentURL);
+      if(documents.length <= 1) {
+        setDocumentURL(null);
+      }
+      
+    });
+  
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+  
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+    <Grid container>
+    <Grid size={6}>
+      <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+        <div className={styles.app}>
+          <Tree
+            tree={treeData}
+            rootId={0}
+            render={(node, { depth, isOpen, onToggle }) => (
+              <CustomNode
+                node={node}
+                depth={depth}
+                isOpen={isOpen}
+                isSelected={node.id === selectedNode?.id}
+                onToggle={onToggle}
+                onSelect={handleSelect}
+                onTextChange={handleTextChange}
+              />
+            )}
+            dragPreviewRender={(monitorProps) => (
+              <CustomDragPreview monitorProps={monitorProps} />
+            )}
+            onDrop={handleDrop}
+            classes={{
+              draggingSource: styles.draggingSource,
+              dropTarget: styles.dropTarget
+            }}
+            initialOpen={true}
+            sort={false}
+          />
+        </div>
+      </DndProvider>
+      </Grid>
+      <Grid size='grow'>
+      {documentURL && (
+        <Worker
+        workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
+        >
+        <Viewer fileUrl={documentURL} />
+        </Worker>
+      )}
+      </Grid>
+      </Grid>
+      </Box>
+    );
+  }
