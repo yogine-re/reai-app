@@ -1,5 +1,6 @@
 
 export async function renameFolder(googleApi: any, fileId: string, newfolderName: string) {
+    console.log('renameFolder fileId: ', fileId);
     const requestBody = {
         name: newfolderName,
     };

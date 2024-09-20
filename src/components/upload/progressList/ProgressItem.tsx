@@ -10,12 +10,14 @@ import pdfDocImage from '../../../img/pdf-doc-img.jpg';
 import { uploadFile as GoogleDriveUploadFile } from '@/googledrive/uploadFile';
 import { createFolder as GoogleDriveCreateFolder } from '@/googledrive/createFolder';
 import { DocumentProperties } from '../../documents/types';
+import { useAppData } from '../../../context/AppContext';
 
 const ProgressItem = ({ file }: { file: File }) => {
+  const { googleApi, documentRoot } = useAppData();
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
-  const { googleApi, currentFirebaseUser, accessToken, setAlert } = useAuth();
+  const { currentFirebaseUser, accessToken, setAlert } = useAuth();
   useEffect(() => {
     const uploadFile = async () => {
       const fileName = uuidv4() + '.' + file.name.split('.').pop();
@@ -41,7 +43,7 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('documentsDoc:', documentsDoc);
         await addDocument('documents', documentsDoc, fileName);
         console.log('uploading to google drive');
-        GoogleDriveCreateFolder(googleApi, 'documents').then((folderId: string|undefined) => {
+        GoogleDriveCreateFolder(googleApi, documentRoot).then((folderId: string|undefined) => {
           if(folderId) {
             GoogleDriveUploadFile(googleApi, file, folderId, accessToken);
           }

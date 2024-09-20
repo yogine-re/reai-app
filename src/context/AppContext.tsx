@@ -2,50 +2,65 @@ import React, { createContext, useState, useEffect } from 'react';
 import { useContext } from 'react';
 import { gapi } from 'gapi-script';
 import initClientGoogleDrive from '@/gapi/gapi';
-
+import { renameFolder as GoogleDriveRenameFolder } from '@/googledrive/renameFolder';
 
 export interface AppContextType {
-    googleApi: typeof gapi | null;
-    documentRoot: string;
-
+  googleApi: typeof gapi | null;
+  documentRoot: string;
+  updateDocumentRoot: (newDocumentRoot: string) => void;
 };
 
-const AppContext: React.Context<AppContextType> = createContext<AppContextType>(null as any);
+const AppDataContext: React.Context<AppContextType> = createContext<AppContextType>(null as any);
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [googleApi, setGoogleApi] = useState<typeof gapi | null>(null);
-    const [documentRoot] = useState<string>('documents');
+  const [googleApi, setGoogleApi] = useState<typeof gapi | null>(null);
+  const [documentRoot, setDocumentRoot] = useState<string>('documents');
 
-    const initClientGoogleApi = async () => {
-        initClientGoogleDrive()
-          .then((googleApi) => {
-            setGoogleApi(googleApi);
-          })
-          .catch((error) =>
-            console.error('Error initializing gapi client:', error)
-          );
-      };
+  const initClientGoogleApi = async () => {
+    initClientGoogleDrive()
+      .then((googleApi) => {
+        setGoogleApi(googleApi);
+      })
+      .catch((error) =>
+        console.error('Error initializing gapi client:', error)
+      );
+  };
+
+  const updateDocumentRoot = (newDocumentRoot: string) => {
+    try {
+      const documentRootId = CAROLINA
+      GoogleDriveRenameFolder(googleApi, documentRootId, newDocumentRoot);
+      setDocumentRoot(newDocumentRoot);
+    } catch (error) {
+      console.error('Error updating document root:', error);
+    }
+  };
 
   useEffect(() => {
     if (!googleApi) {
-        initClientGoogleApi();
+      initClientGoogleApi();
     }
   }, []);
+  
   const appData: AppContextType = {
     googleApi,
     documentRoot,
+    updateDocumentRoot,
   };
 
   return (
-	<AppContext.Provider value={appData}>
+	<AppDataContext.Provider value={appData}>
 	  {children}
-	</AppContext.Provider>
+	</AppDataContext.Provider>
   );
 };
 
-export default AppContext;
+export default AppDataContext;
 export const useAppData = (): AppContextType => {
-    const result = useContext(AppContext);
-    return result;
+    const context = useContext(AppDataContext);
+    if (!context) {
+      throw new Error('useAppData must be used within an AppDataProvider');
+    }
+    return context;
   
   };

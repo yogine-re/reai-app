@@ -22,9 +22,13 @@ import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
 import { DocumentProperties } from './types';
+import { useAppData } from '../../context/AppContext';
+
 // import theDocuments from '../tree/sample_data.json';
 
 export default function Documents() {
+  const { documentRoot } = useAppData();
+
   const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
@@ -83,7 +87,7 @@ export default function Documents() {
         id: 1,
         parent: 0,
         droppable: true,
-        text: 'Documents',
+        text: documentRoot,
         data: {},
       });
   
