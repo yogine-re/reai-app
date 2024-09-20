@@ -28,8 +28,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateDocumentRoot = (newDocumentRoot: string) => {
     try {
-      const documentRootId = CAROLINA
-      GoogleDriveRenameFolder(googleApi, documentRootId, newDocumentRoot);
+      GoogleDriveRenameFolder(googleApi, documentRoot, newDocumentRoot);
       setDocumentRoot(newDocumentRoot);
     } catch (error) {
       console.error('Error updating document root:', error);
