@@ -1,4 +1,9 @@
 import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+// import Badge from '@mui/material';
+import { styled } from '@mui/system';
+import { InputBase, Typography } from '@mui/material';
+import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -10,12 +15,31 @@ import Tooltip from '@mui/material/Tooltip';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { Button } from '@mui/material';
-import { Lock } from '@mui/icons-material';
+import { Lock, Pets } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import Login from './user/Login';
 import Profile from './user/Profile';
 import AccountSettings from './user/settings/AccountSettings';
 import { getErrorMessage } from '../utils';
+
+const StyledToolbar = styled(Toolbar)({
+  display: 'flex',
+  justifyContent: 'space-between'
+});
+const Search = styled('div')(({ theme }) => ({
+  backgroundColor: 'white',
+  padding: '0 10px',
+  borderRadius: theme.shape.borderRadius,
+  width: '40%'
+}));
+// const Icons = styled(Box)(({ theme }) => ({
+//   display: 'none',
+//   alignItems: 'center',
+//   gap: '20px',
+//   [theme.breakpoints.up('sm')]: {
+//     display: 'flex'
+//   }
+// }));
 
 const Nav: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -48,15 +72,23 @@ const Nav: React.FC = () => {
     }
   };
   return (
-    <React.Fragment>
+    <AppBar position='sticky'>
+      <StyledToolbar>
+        <Typography variant='h6' sx={{ display: { xs: 'none', sm: 'block' } }}>
+          REAI
+        </Typography>
+        <Pets sx={{ display: { xs: 'block', sm: 'none' } }} />
+        <Search>
+          <InputBase placeholder='search...' />
+        </Search>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         {!currentFirebaseUser ? (
           <Button startIcon={<Lock />} onClick={openLogin}>
             Login
           </Button>
         ) : (
-          <Tooltip title="Account settings">
-            <IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
+          <Tooltip title='Account settings'>
+            <IconButton onClick={handleClick} size='small' sx={{ ml: 2 }}>
               <Avatar
                 sx={{ width: 32, height: 32 }}
                 src={currentFirebaseUser?.photoURL ?? ''}
@@ -68,6 +100,7 @@ const Nav: React.FC = () => {
           </Tooltip>
         )}
       </Box>
+      </StyledToolbar>
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -124,18 +157,18 @@ const Nav: React.FC = () => {
           }
         >
           <ListItemIcon>
-            <Settings fontSize="small" />
+            <Settings fontSize='small' />
           </ListItemIcon>
           Settings
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout fontSize='small' />
           </ListItemIcon>
           Logout
         </MenuItem>
       </Menu>
-    </React.Fragment>
+    </AppBar>
   );
 }
 export default Nav;
