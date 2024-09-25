@@ -9,9 +9,11 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import { useDragOver } from '@minoru/react-dnd-treeview';
+import { useAppData } from '../../context/AppContext';
 import styles from './CustomNode.module.css';
 
 export const CustomNode = (props: any) => {
+  const { updateDocumentRoot } = useAppData();
   const { id, text } = props.node;
   const [visibleInput, setVisibleInput] = useState(false);
   const [labelText, setLabelText] = useState(text);
@@ -41,6 +43,7 @@ export const CustomNode = (props: any) => {
   const handleSubmit = () => {
     setVisibleInput(false);
     props.onTextChange(id, labelText);
+    updateDocumentRoot(labelText);
   };
 
   const dragOverProps = useDragOver(id, props.isOpen, props.onToggle);

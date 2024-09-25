@@ -35,8 +35,8 @@ const Form: React.FC<FormProps> = ({ setFiles }) => {
         inputRef={fileRef}
         onChange={handleChange}
       />
-      <Fab color="primary" aria-label="add" onClick={handleClick}>
-        <Add fontSize="large" />
+      <Fab size="small" color="primary" aria-label="add" onClick={handleClick}>
+        <Add fontSize="small" />
       </Fab>
     </form>
   );

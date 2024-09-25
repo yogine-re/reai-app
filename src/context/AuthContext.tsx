@@ -1,5 +1,3 @@
-import { gapi } from 'gapi-script';
-import initClientGoogleDrive from '@/gapi/gapi';
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -17,6 +15,7 @@ import { useEffect } from 'react';
 import { useContext } from 'react';
 import { createContext } from 'react';
 import { auth } from '../firebase/config';
+import { useAppData } from '../context/AppContext';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ModalType {
   isOpen: boolean;
@@ -26,7 +25,6 @@ export interface ModalType {
 
 // Define an interface for the context value
 export interface AuthContextType {
-  googleApi: typeof gapi | null;
   currentFirebaseUser: User | null;
   accessToken: string;
   signUp: (email: string, password: string) => Promise<UserCredential>;
@@ -58,6 +56,8 @@ export interface AuthContextType {
 const authContext: React.Context<AuthContextType> = createContext<AuthContextType>(null as any);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { googleApi } = useAppData();
+
   const [modal, setModal] = useState({
     isOpen: false,
     title: '',
@@ -75,9 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentFirebaseUser, setCurrentFirebaseUser] = useState<User | null>(
     null
   );
-  const [googleApi, setgoogleApi] = useState<typeof gapi | null>(
-    null
-  );
+
 
   const signUp = (email: string, password: string): Promise<UserCredential> => {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -121,27 +119,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return sendPasswordResetEmail(auth, email);
   };
 
-  const initgoogleApi = async () => {
-    initClientGoogleDrive()
-      .then((googleApi) => {
-        setgoogleApi(googleApi);
-      })
-      .catch((error) =>
-        console.error('Error initializing gapi client:', error)
-      );
-  };
-
   useEffect(() => {
-    if (!googleApi) {
-      initgoogleApi();
-    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentFirebaseUser(user);
     });
     return unsubscribe;
   }, []);
   const data: AuthContextType = {
-    googleApi,
     currentFirebaseUser,
     accessToken,
     signUp,

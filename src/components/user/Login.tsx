@@ -12,8 +12,6 @@ import PasswordField from './inputs/PasswordField';
 import SubmitButton from './inputs/SubmitButton';
 import ResetPassword from './ResetPassword';
 import { getErrorMessage } from '../../utils';
-// import { GoogleLogin } from '@react-oauth/google';
-
 
 const Login: React.FC = () => {
   const emailRef = useRef<HTMLInputElement>(null);
