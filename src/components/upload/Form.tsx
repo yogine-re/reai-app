@@ -50,6 +50,7 @@ const Form: React.FC<FormProps> = ({ setFiles }) => {
           border: '1px solid', // Add border
           borderColor: 'currentColor', // Use current text color for the border
           marginLeft: '16px', // Move the button to the right
+          marginTop: '16px', // Move the button down
         }}
       >        
          <FileUpload sx={{ mr: 1 }} fontSize='small'/>

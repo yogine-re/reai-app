@@ -6,7 +6,7 @@ const Upload: React.FC = () => {
   const [files, setFiles] = useState([]);
   return (
     <div>
-      <Stack direction="row" spacing={2} justifyContent="space-between">
+      <Stack direction="column" spacing={2} justifyContent="space-between">
         <Form setFiles={setFiles} />
         <ProgressList files={files} />
       </Stack>
