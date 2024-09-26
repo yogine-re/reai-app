@@ -22,8 +22,8 @@ const App: React.FC = () => {
             <Stack direction='column' spacing={2} justifyContent='space-between'>
               <Nav />
               <Upload />
+              <Documents />
             </Stack>
-            <Documents />
           </Box>
         </AuthProvider>
       </AppDataProvider>
