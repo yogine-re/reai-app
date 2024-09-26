@@ -24,13 +24,17 @@ import { getErrorMessage } from '../utils';
 
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
+
 });
 const Search = styled('div')(({ theme }) => ({
   backgroundColor: 'white',
   padding: '0 10px',
   borderRadius: theme.shape.borderRadius,
   width: '40%'
+}));
+const CustomLock = styled(Lock)(() => ({
+  color: 'white', // Custom color
 }));
 // const Icons = styled(Box)(({ theme }) => ({
 //   display: 'none',
@@ -83,7 +87,7 @@ const Nav: React.FC = () => {
         </Search>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         {!currentFirebaseUser ? (
-          <Button startIcon={<Lock />} onClick={openLogin}>
+          <Button startIcon={<CustomLock/>} onClick={openLogin} sx={{ color: 'white' }}>
             Login
           </Button>
         ) : (

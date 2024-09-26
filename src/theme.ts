@@ -1,6 +1,27 @@
 import { createTheme } from '@mui/material/styles';
+// import { PaletteOptions } from '@mui/material/styles/createPalette';
+
+declare module '@mui/material/styles/createPalette' {
+  interface PaletteOptions {
+    otherColor?: {
+      main: string;
+    };
+  }
+}
 
 export const theme = createTheme({
+  palette:{
+    primary:{
+      main: '#1760a5',
+      light: 'skyblue'
+    },
+    secondary:{
+      main: '#15c630',
+    },
+    otherColor:{
+      main:'#999'
+    }
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {

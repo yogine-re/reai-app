@@ -23,7 +23,6 @@ const Login: React.FC = () => {
     setModal,
     signUp,
     login,
-    // loginWithGoogle,
     loginWithGoogle,
     setAlert,
     setLoading
