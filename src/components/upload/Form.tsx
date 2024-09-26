@@ -37,8 +37,22 @@ const Form: React.FC<FormProps> = ({ setFiles }) => {
         inputRef={fileRef}
         onChange={handleChange}
       />  
-      <Fab variant='extended' size='small' onClick={handleClick}>
-        <FileUpload sx={{ mr: 1 }} fontSize='small'/>
+      <Fab
+        variant='extended'
+        size='small'
+        onClick={handleClick}
+        sx={{
+          textTransform: 'none',
+          borderRadius: '8px',
+          fontSize: '0.70rem', // Smaller font size
+          padding: '2px 8px', // Smaller padding
+          backgroundColor: 'transparent', // No background color
+          border: '1px solid', // Add border
+          borderColor: 'currentColor', // Use current text color for the border
+          marginLeft: '16px', // Move the button to the right
+        }}
+      >        
+         <FileUpload sx={{ mr: 1 }} fontSize='small'/>
             Upload Files
       </Fab>
     </form>
