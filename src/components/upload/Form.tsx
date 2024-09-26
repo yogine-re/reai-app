@@ -1,22 +1,8 @@
 import { FileUpload } from '@mui/icons-material';
-// import { Add } from '@mui/icons-material';
-import { Button } from '@mui/material';
-// import { Fab, Input } from '@mui/material';
+import { Fab, Input } from '@mui/material';
 import { useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Login from '../user/Login';
-import { styled } from '@mui/material/styles';
-
-const VisuallyHiddenInput = styled('input')({
-  position: 'absolute',
-  width: '1px',
-  height: '1px',
-  padding: 0,
-  margin: '-1px',
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  border: 0,
-});
 
 type FormProps = {
   setFiles: any;
@@ -34,6 +20,7 @@ const Form: React.FC<FormProps> = ({ setFiles }) => {
     }
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('handleChange', e.target.files);
     if (e.target.files) {
       setFiles([...e.target.files]);
     }
@@ -43,27 +30,17 @@ const Form: React.FC<FormProps> = ({ setFiles }) => {
   };
   return (
     <form>
-      <Button
-        size='small'
-        component='label'
-        role={undefined}
-        variant='outlined'
-        tabIndex={-1}
-        startIcon={<FileUpload/>}
-      >
-        Upload files
-        <VisuallyHiddenInput type='file' onChange={handleChange} onClick={handleClick} multiple />
-      </Button>
-      {/* <Input
+      <Input
         type='file'
         inputProps={{ multiple: true }}
         sx={{ display: 'none' }}
         inputRef={fileRef}
         onChange={handleChange}
-      />
-      <Fab size='small' color='primary' aria-label='add' onClick={handleClick}>
-        <Add fontSize='small' />
-      </Fab> */}
+      />  
+      <Fab variant='extended' size='small' onClick={handleClick}>
+        <FileUpload sx={{ mr: 1 }} fontSize='small'/>
+            Upload Files
+      </Fab>
     </form>
   );
 };
