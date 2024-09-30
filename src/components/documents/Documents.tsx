@@ -17,7 +17,7 @@ import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
@@ -106,6 +106,7 @@ export default function Documents() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
+      <Stack direction="column" spacing={2} justifyContent="space-between">
       <Grid container>
         <Grid size={6}>
           <DndProvider backend={MultiBackend} options={getBackendOptions()}>
@@ -138,6 +139,9 @@ export default function Documents() {
             </div>
           </DndProvider>
         </Grid>
+        <Grid size={2}>
+
+        </Grid>
         <Grid size='grow'>
           {documentURL && (
             <Worker
@@ -148,6 +152,7 @@ export default function Documents() {
           )}
         </Grid>
       </Grid>
+      </Stack>
     </Box>
   );
 }
