@@ -17,14 +17,13 @@ import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
-import { Box, Stack } from '@mui/material';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
 import { DocumentProperties } from './types';
 import { useAppData } from '../../context/AppContext';
-
-// import theDocuments from '../tree/sample_data.json';
+import { MoreVertRounded } from '@mui/icons-material';
 
 export default function Documents() {
   const { documentRoot } = useAppData();
@@ -32,6 +31,7 @@ export default function Documents() {
   const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
+  const [isTreeVisible, setIsTreeVisible] = useState<boolean>(true); // State to manage tree visibility
   const [selectedNode, setSelectedNode] =
     useState<NodeModel<DocumentProperties> | null>(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
@@ -108,6 +108,21 @@ export default function Documents() {
     <Box sx={{ flexGrow: 1 }}>
       <Stack direction="column" spacing={2} justifyContent="space-between">
       <Grid container>
+      <IconButton
+          size="small"
+          onClick={() => setIsTreeVisible(!isTreeVisible)}
+          sx={{
+            width: '24px',
+            height: '24px',
+            padding: '4px',
+            '& .MuiSvgIcon-root': {
+              fontSize: '16px',
+            },
+          }}
+        >
+          <MoreVertRounded />
+        </IconButton>
+        {isTreeVisible ? (
         <Grid size={6}>
           <DndProvider backend={MultiBackend} options={getBackendOptions()}>
             <div className={styles.app}>
@@ -139,6 +154,10 @@ export default function Documents() {
             </div>
           </DndProvider>
         </Grid>
+        ) : (
+          <Typography variant="body2" noWrap sx={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+          </Typography>
+        )}
         <Grid size={2}>
 
         </Grid>
@@ -152,6 +171,7 @@ export default function Documents() {
           )}
         </Grid>
       </Grid>
+
       </Stack>
     </Box>
   );
