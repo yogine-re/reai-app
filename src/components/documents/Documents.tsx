@@ -32,10 +32,11 @@ export default function Documents() {
   const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
-  const [selectedNode, setSelectedNode] = useState<NodeModel<DocumentProperties> | null>(null);
+  const [selectedNode, setSelectedNode] =
+    useState<NodeModel<DocumentProperties> | null>(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
   const handleSelect = (node: any) => {
-    setSelectedNode(node);  
+    setSelectedNode(node);
     if (node.data?.documentURL) {
       setDocumentURL(node.data.documentURL);
     }
@@ -47,7 +48,7 @@ export default function Documents() {
       if (node.id === id) {
         return {
           ...node,
-          text: value
+          text: value,
         };
       }
       return node;
@@ -64,7 +65,7 @@ export default function Documents() {
       console.log('unsubscribe snapshot.docs: ', snapshot.docs);
       const docs = snapshot.docs; // Store snapshot.docs in a variable
       const uniqueDocsMap = new Map();
-  
+
       docs.forEach((doc) => {
         const data = doc.data();
         if (!uniqueDocsMap.has(data.documentName)) {
@@ -81,7 +82,7 @@ export default function Documents() {
           });
         }
       });
-  
+
       const documents = Array.from(uniqueDocsMap.values());
       documents.unshift({
         id: 1,
@@ -90,64 +91,63 @@ export default function Documents() {
         text: documentRoot,
         data: {},
       });
-  
+
       setTreeData(documents);
       console.log('CAROLINA documents: ', documents);
       console.log('documentURL: ', documentURL);
-      if(documents.length <= 1) {
+      if (documents.length <= 1) {
         setDocumentURL(null);
       }
-      
     });
-  
+
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
-  
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-    <Grid container>
-    <Grid size={6}>
-      <DndProvider backend={MultiBackend} options={getBackendOptions()}>
-        <div className={styles.app}>
-          <Tree
-            tree={treeData}
-            rootId={0}
-            render={(node, { depth, isOpen, onToggle }) => (
-              <CustomNode
-                node={node}
-                depth={depth}
-                isOpen={isOpen}
-                isSelected={node.id === selectedNode?.id}
-                onToggle={onToggle}
-                onSelect={handleSelect}
-                onTextChange={handleTextChange}
+      <Grid container>
+        <Grid size={6}>
+          <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+            <div className={styles.app}>
+              <Tree
+                tree={treeData}
+                rootId={0}
+                render={(node, { depth, isOpen, onToggle }) => (
+                  <CustomNode
+                    node={node}
+                    depth={depth}
+                    isOpen={isOpen}
+                    isSelected={node.id === selectedNode?.id}
+                    onToggle={onToggle}
+                    onSelect={handleSelect}
+                    onTextChange={handleTextChange}
+                  />
+                )}
+                dragPreviewRender={(monitorProps) => (
+                  <CustomDragPreview monitorProps={monitorProps} />
+                )}
+                onDrop={handleDrop}
+                classes={{
+                  draggingSource: styles.draggingSource,
+                  dropTarget: styles.dropTarget,
+                }}
+                initialOpen={true}
+                sort={false}
               />
-            )}
-            dragPreviewRender={(monitorProps) => (
-              <CustomDragPreview monitorProps={monitorProps} />
-            )}
-            onDrop={handleDrop}
-            classes={{
-              draggingSource: styles.draggingSource,
-              dropTarget: styles.dropTarget
-            }}
-            initialOpen={true}
-            sort={false}
-          />
-        </div>
-      </DndProvider>
+            </div>
+          </DndProvider>
+        </Grid>
+        <Grid size='grow'>
+          {documentURL && (
+            <Worker
+              workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
+            >
+              <Viewer fileUrl={documentURL} />
+            </Worker>
+          )}
+        </Grid>
       </Grid>
-      <Grid size='grow'>
-      {documentURL && (
-        <Worker
-        workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
-        >
-        <Viewer fileUrl={documentURL} />
-        </Worker>
-      )}
-      </Grid>
-      </Grid>
-      </Box>
-    );
-  }
+    </Box>
+  );
+}

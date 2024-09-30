@@ -6,7 +6,6 @@ import Upload from './components/upload/Upload';
 import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { AppDataProvider } from './context/AppContext';
-import { Box } from '@mui/material';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { theme } from './theme';
 
@@ -17,12 +16,10 @@ const App: React.FC = () => {
       <CssBaseline />
       <AppDataProvider>
         <AuthProvider>
-          <Box bgcolor={'background.default'} color={'text.primary'}>
-            <Modal />
-              <Nav />
-              <Upload />
-              <Documents />
-          </Box>
+          <Modal />
+          <Nav />
+          <Upload />
+          <Documents />
         </AuthProvider>
       </AppDataProvider>
     </ThemeProvider>

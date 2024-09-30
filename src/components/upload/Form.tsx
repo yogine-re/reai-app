@@ -45,10 +45,8 @@ const Form: React.FC<FormProps> = ({ setFiles }) => {
           textTransform: 'none',
           borderRadius: '8px',
           fontSize: '0.70rem', // Smaller font size
-          padding: '2px 8px', // Smaller padding
           backgroundColor: 'transparent', // No background color
           border: '1px solid', // Add border
-          borderColor: 'currentColor', // Use current text color for the border
           marginLeft: '16px', // Move the button to the right
           marginTop: '16px', // Move the button down
         }}
