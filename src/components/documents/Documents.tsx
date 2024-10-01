@@ -17,7 +17,7 @@ import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
-import { Box, IconButton, Stack, Typography } from '@mui/material';
+import {IconButton } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
@@ -105,11 +105,9 @@ export default function Documents() {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Stack direction="column" spacing={2} justifyContent="space-between">
-      <Grid container>
+    <Grid container>
       <IconButton
-          size="small"
+          size='small'
           onClick={() => setIsTreeVisible(!isTreeVisible)}
           sx={{
             width: '24px',
@@ -123,7 +121,7 @@ export default function Documents() {
           <MoreVertRounded />
         </IconButton>
         {isTreeVisible ? (
-        <Grid size={6}>
+        <Grid size={3}>
           <DndProvider backend={MultiBackend} options={getBackendOptions()}>
             <div className={styles.app}>
               <Tree
@@ -155,13 +153,14 @@ export default function Documents() {
           </DndProvider>
         </Grid>
         ) : (
-          <Typography variant="body2" noWrap sx={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-          </Typography>
+          <Grid size={3}>
+
+          </Grid>
         )}
-        <Grid size={2}>
+        <Grid size={4}>
 
         </Grid>
-        <Grid size='grow'>
+        <Grid size={4}>
           {documentURL && (
             <Worker
               workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
@@ -170,9 +169,6 @@ export default function Documents() {
             </Worker>
           )}
         </Grid>
-      </Grid>
-
-      </Stack>
-    </Box>
+    </Grid>
   );
 }
