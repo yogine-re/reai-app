@@ -2,7 +2,7 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 // import Badge from '@mui/material';
 import { styled } from '@mui/system';
-import { InputBase, Typography } from '@mui/material';
+import { Fab, InputBase, Typography } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -26,8 +26,6 @@ import { useAppData } from '../context/AppContext';
 
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
-  // justifyContent: 'space-between',
-
 });
 const Search = styled('div')(({ theme }) => ({
   backgroundColor: 'lightgrey',
@@ -38,14 +36,6 @@ const Search = styled('div')(({ theme }) => ({
 const CustomLock = styled(Lock)(() => ({
   color: 'black', // Custom color
 }));
-// const Icons = styled(Box)(({ theme }) => ({
-//   display: 'none',
-//   alignItems: 'center',
-//   gap: '20px',
-//   [theme.breakpoints.up('sm')]: {
-//     display: 'flex'
-//   }
-// }));
 
 const Nav: React.FC = () => {
   const { setFilesToUpload } = useAppData();
@@ -58,6 +48,10 @@ const Nav: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const handleAssistantClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('Assistant clicked', event);
+  };
+  
   const { currentFirebaseUser, setModal, logout, setAlert } = useAuth();
 
   const openLogin = () => {
@@ -89,6 +83,24 @@ const Nav: React.FC = () => {
         </Typography>
         <Pets sx={{ display: { xs: 'block', sm: 'none' }, marginRight: 4 }} />
         <UploadForm setFiles={setFilesToUpload} />
+        <Fab
+        variant='extended'
+        size='small'
+        onClick={handleAssistantClick}
+        sx={{
+          textTransform: 'none',
+          borderRadius: '8px',
+          fontSize: '0.70rem', // Smaller font size
+          backgroundColor: 'transparent', // No background color
+          // border: '1px solid', // Add border
+          marginLeft: '16px', // Move the button to the right
+          marginRight: '16px', 
+          marginTop: '16px', // Move the button down
+          marginBottom: '16px', // Move the button up
+        }}
+      >        
+        Assistant
+      </Fab>
         <Search sx={{ width: '500px', marginRight: 4 }}> {/* Adjust the width and add marginRight */}
           <InputBase placeholder='search...' />
         </Search>

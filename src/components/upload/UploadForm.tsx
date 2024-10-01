@@ -46,7 +46,7 @@ const UploadForm: React.FC<FormProps> = ({ setFiles }) => {
           borderRadius: '8px',
           fontSize: '0.70rem', // Smaller font size
           backgroundColor: 'transparent', // No background color
-          border: '1px solid', // Add border
+          // border: '1px solid', // Add border
           marginLeft: '16px', // Move the button to the right
           marginRight: '16px', 
           marginTop: '16px', // Move the button down

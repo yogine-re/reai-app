@@ -2,7 +2,7 @@
 import React from 'react';
 import Modal from './components/Modal';
 import Nav from './components/Nav';
-import Upload from './components/upload/Upload';
+import UploadProgress from './components/upload/UploadProgress';
 import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { AppDataProvider } from './context/AppContext';
@@ -19,7 +19,7 @@ const App: React.FC = () => {
           <Modal />
           <Nav />
           <Box sx={{ marginTop: 4 }}> {/* Add marginTop to create space */}
-          <Upload />
+          <UploadProgress />
           <Documents />
           </Box>
         </AuthProvider>
