@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { gapi } from 'gapi-script';
 import initClientGoogleDrive from '@/gapi/gapi';
 import { renameFolder as GoogleDriveRenameFolder } from '@/googledrive/renameFolder';
+import { DocumentProperties } from '@/components/documents/types';
 
 export interface AppContextType {
   googleApi: typeof gapi | null;
@@ -10,8 +11,8 @@ export interface AppContextType {
   updateProject: (newProject: string) => void;
   filesToUpload: File[];
   setFilesToUpload: (newFiles: File[]) => void;
-  documents: string[];
-  setDocuments: (newDocuments: string[]) => void;
+  currentDocument: DocumentProperties | null;
+  setCurrentDocument: (document: DocumentProperties) => void;
 
 };
 
@@ -21,7 +22,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [googleApi, setGoogleApi] = useState<typeof gapi | null>(null);
   const [project, setProject] = useState<string>('My Project');
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
-  const [documents, setDocuments] = useState<string[]>([]);
+  const [currentDocument, setCurrentDocument] = useState<DocumentProperties | null>(null);
+
 
   const initClientGoogleApi = async () => {
     initClientGoogleDrive()
@@ -47,6 +49,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       initClientGoogleApi();
     }
   }, []);
+
   
   const appData: AppContextType = {
     googleApi,
@@ -54,8 +57,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     updateProject,
     filesToUpload,
     setFilesToUpload,
-    documents,
-    setDocuments
+    currentDocument,
+    setCurrentDocument
   };
 
   return (

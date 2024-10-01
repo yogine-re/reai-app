@@ -5,10 +5,10 @@ import { useAuth } from '../../context/AuthContext';
 import Login from '../user/Login';
 
 type FormProps = {
-  setFiles: (files: File[]) => void;
+  setFilesToUpload: (files: File[]) => void;
 };
 
-const UploadForm: React.FC<FormProps> = ({ setFiles }) => {
+const UploadForm: React.FC<FormProps> = ({ setFilesToUpload }) => {
   const { currentFirebaseUser, setModal } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
@@ -22,7 +22,7 @@ const UploadForm: React.FC<FormProps> = ({ setFiles }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('handleChange', e.target.files);
     if (e.target.files) {
-      setFiles([...e.target.files]);
+      setFilesToUpload([...e.target.files]);
     }
     if (fileRef.current) {
       fileRef.current.value = '';

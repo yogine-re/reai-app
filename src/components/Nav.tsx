@@ -51,7 +51,7 @@ const Nav: React.FC = () => {
   const handleAssistantClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log('Assistant clicked', event);
   };
-  
+
   const { currentFirebaseUser, setModal, logout, setAlert } = useAuth();
 
   const openLogin = () => {
@@ -82,7 +82,7 @@ const Nav: React.FC = () => {
           REAI
         </Typography>
         <Pets sx={{ display: { xs: 'block', sm: 'none' }, marginRight: 4 }} />
-        <UploadForm setFiles={setFilesToUpload} />
+        <UploadForm setFilesToUpload={setFilesToUpload} />
         <Fab
         variant='extended'
         size='small'

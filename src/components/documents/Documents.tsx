@@ -23,19 +23,23 @@ import { CustomDragPreview } from '../tree/CustomDragPreview';
 import { DocumentProperties } from './types';
 import { useAppData } from '../../context/AppContext';
 import { MoreVertRounded } from '@mui/icons-material';
-//
+import DocumentMenu from './DocumentsMenu';
+
 export default function Documents() {
-  const { project } = useAppData();
+  const { project, currentDocument } = useAppData();
+  const [documents, setDocuments] = useState<DocumentProperties[]>([]);
+  const [documentURL, setDocumentURL] = useState<string | null>(null);
 
   const db = getFirestore(app);
-  const [documentURL, setDocumentURL] = useState<string | null>(null);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
-  const [isTreeVisible, setIsTreeVisible] = useState<boolean>(true); // State to manage tree visibility
+  const [isTreeVisible, setIsTreeVisible] = useState<boolean>(false); 
+  const [selectedDocument, setSelectedDocument] = useState<DocumentProperties | null>(null);
   const [selectedNode, setSelectedNode] =
     useState<NodeModel<DocumentProperties> | null>(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
-  const handleSelect = (node: any) => {
+  const handleSelect = (node: NodeModel<DocumentProperties>) => {
     setSelectedNode(node);
+    if(node.data) setSelectedDocument(node.data);
     if (node.data?.documentURL) {
       setDocumentURL(node.data.documentURL);
     }
@@ -82,8 +86,9 @@ export default function Documents() {
         }
       });
 
-      const documents = Array.from(uniqueDocsMap.values());
-      documents.unshift({
+      const documentNodes = Array.from(uniqueDocsMap.values());
+      setDocuments(Array.from(uniqueDocsMap.values()).map((doc) => doc.data));
+      documentNodes.unshift({
         id: 1,
         parent: 0,
         droppable: true,
@@ -91,8 +96,8 @@ export default function Documents() {
         data: {},
       });
 
-      setTreeData(documents);
-      console.log('documents: ', documents);
+      setTreeData(documentNodes);
+      console.log('documentNodes: ', documentNodes);
       console.log('documentURL: ', documentURL);
       if (documents.length <= 1) {
         setDocumentURL(null);
@@ -102,6 +107,15 @@ export default function Documents() {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (currentDocument) {
+      // Perform any actions needed when currentDocument changes
+      console.log('Current document has changed:', currentDocument);
+      setSelectedDocument(currentDocument);
+      setDocumentURL(currentDocument.documentURL);
+    }
+  }, [currentDocument]);
 
   return (
     <Grid container>
@@ -154,9 +168,10 @@ export default function Documents() {
       ) : (
         <Grid size={6}></Grid>
       )}
-      <Grid size={5} container justifyContent='center'>
+      <Grid size={5} container justifyContent='left'>
+        <DocumentMenu documents={documents} />
         <Box>
-          {selectedNode && (
+          {selectedDocument && (
             <Typography
               variant='subtitle1'
               sx={{
@@ -166,7 +181,7 @@ export default function Documents() {
                 letterSpacing: 1.2,
               }}
             >
-              {selectedNode.text}
+              {selectedDocument.documentName}
             </Typography>
           )}
         </Box>
