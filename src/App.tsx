@@ -6,7 +6,7 @@ import Upload from './components/upload/Upload';
 import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { AppDataProvider } from './context/AppContext';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { theme } from './theme';
 
 
@@ -18,8 +18,10 @@ const App: React.FC = () => {
         <AuthProvider>
           <Modal />
           <Nav />
+          <Box sx={{ marginTop: 4 }}> {/* Add marginTop to create space */}
           <Upload />
           <Documents />
+          </Box>
         </AuthProvider>
       </AppDataProvider>
     </ThemeProvider>

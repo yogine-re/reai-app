@@ -89,7 +89,7 @@ const Nav: React.FC = () => {
         </Typography>
         <Pets sx={{ display: { xs: 'block', sm: 'none' }, marginRight: 4 }} />
         <UploadForm setFiles={setFilesToUpload} />
-        <Search sx={{ width: '450px', marginRight: 4 }}> {/* Adjust the width and add marginRight */}
+        <Search sx={{ width: '500px', marginRight: 4 }}> {/* Adjust the width and add marginRight */}
           <InputBase placeholder='search...' />
         </Search>
         <Box sx={{ flexGrow: 1 }} /> {/* This Box will take up the remaining space */}
@@ -137,7 +137,7 @@ const Nav: React.FC = () => {
               mr: 1,
             },
             '&:before': {
-              content: '"""',
+              content: '""',
               display: 'block',
               position: 'absolute',
               top: 0,

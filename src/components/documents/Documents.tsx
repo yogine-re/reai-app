@@ -14,10 +14,9 @@ import { DndProvider } from 'react-dnd';
 // import useFirestore from '../../firebase/useFirestore';
 import { app } from '../../firebase/config';
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
-import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
-import {IconButton } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
@@ -107,20 +106,20 @@ export default function Documents() {
   return (
     <Grid container>
       <IconButton
-          size='small'
-          onClick={() => setIsTreeVisible(!isTreeVisible)}
-          sx={{
-            width: '24px',
-            height: '24px',
-            padding: '4px',
-            '& .MuiSvgIcon-root': {
-              fontSize: '16px',
-            },
-          }}
-        >
-          <MoreVertRounded />
-        </IconButton>
-        {isTreeVisible ? (
+        size='small'
+        onClick={() => setIsTreeVisible(!isTreeVisible)}
+        sx={{
+          width: '24px',
+          height: '24px',
+          padding: '4px',
+          '& .MuiSvgIcon-root': {
+            fontSize: '16px',
+          },
+        }}
+      >
+        <MoreVertRounded />
+      </IconButton>
+      {isTreeVisible ? (
         <Grid size={6}>
           <DndProvider backend={MultiBackend} options={getBackendOptions()}>
             <div className={styles.app}>
@@ -152,21 +151,35 @@ export default function Documents() {
             </div>
           </DndProvider>
         </Grid>
-        ) : (
-          <Grid size={6}>
-
-          </Grid>
-        )}
-        
-        <Grid size={5} container justifyContent="flex-end">
-          {documentURL && (
-            <Worker
-              workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
+      ) : (
+        <Grid size={6}></Grid>
+      )}
+      <Grid size={5} container justifyContent='center'>
+        <Box>
+          {selectedNode && (
+            <Typography
+              variant='subtitle1'
+              sx={{
+                marginBottom: 2,
+                fontWeight: 'bold',
+                color: 'primary.main',
+                letterSpacing: 1.2,
+              }}
             >
-              <Viewer fileUrl={documentURL} />
-            </Worker>
+              {selectedNode.text}
+            </Typography>
           )}
-        </Grid>
+        </Box>
+        {documentURL && (
+            
+              <iframe
+                src={documentURL}
+                style={{ width: '100%', height: '80vh', border: 'none' }}
+                title="Document Viewer"
+              />
+            
+          )}
+      </Grid>
     </Grid>
   );
 }
