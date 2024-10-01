@@ -8,13 +8,20 @@ export interface AppContextType {
   googleApi: typeof gapi | null;
   project: string;
   updateProject: (newProject: string) => void;
+  filesToUpload: File[];
+  setFilesToUpload: (newFiles: File[]) => void;
+  documents: string[];
+  setDocuments: (newDocuments: string[]) => void;
+
 };
 
 const AppDataContext: React.Context<AppContextType> = createContext<AppContextType>(null as any);
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [googleApi, setGoogleApi] = useState<typeof gapi | null>(null);
-  const [project, setproject] = useState<string>('My Project');
+  const [project, setProject] = useState<string>('My Project');
+  const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
+  const [documents, setDocuments] = useState<string[]>([]);
 
   const initClientGoogleApi = async () => {
     initClientGoogleDrive()
@@ -29,7 +36,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateProject = (newProject: string) => {
     try {
       GoogleDriveRenameFolder(googleApi, project, newProject);
-      setproject(newProject);
+      setProject(newProject);
     } catch (error) {
       console.error('Error updating document root:', error);
     }
@@ -45,6 +52,10 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     googleApi,
     project,
     updateProject,
+    filesToUpload,
+    setFilesToUpload,
+    documents,
+    setDocuments
   };
 
   return (

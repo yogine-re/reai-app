@@ -93,7 +93,7 @@ export default function Documents() {
       });
 
       setTreeData(documents);
-      console.log('CAROLINA documents: ', documents);
+      console.log('documents: ', documents);
       console.log('documentURL: ', documentURL);
       if (documents.length <= 1) {
         setDocumentURL(null);

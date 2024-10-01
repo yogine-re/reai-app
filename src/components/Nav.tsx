@@ -21,10 +21,12 @@ import Login from './user/Login';
 import Profile from './user/Profile';
 import AccountSettings from './user/settings/AccountSettings';
 import { getErrorMessage } from '../utils';
+import UploadForm from './upload/UploadForm';
+import { useAppData } from '../context/AppContext';
 
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
-  justifyContent: 'space-between',
+  // justifyContent: 'space-between',
 
 });
 const Search = styled('div')(({ theme }) => ({
@@ -46,6 +48,7 @@ const CustomLock = styled(Lock)(() => ({
 // }));
 
 const Nav: React.FC = () => {
+  const { setFilesToUpload } = useAppData();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -78,33 +81,43 @@ const Nav: React.FC = () => {
   return (
     <AppBar position='sticky' sx={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}>
       <StyledToolbar>
-      <Typography variant='h6' sx={{ display: { xs: 'none', sm: 'block' }, color: 'black' }}>
-      REAI
+        <Typography
+          variant='h6'
+          sx={{ display: { xs: 'none', sm: 'block' }, marginRight: 4 , color: 'black' }}
+        >
+          REAI
         </Typography>
-        <Pets sx={{ display: { xs: 'block', sm: 'none' } }} />
-        <Search>
+        <Pets sx={{ display: { xs: 'block', sm: 'none' }, marginRight: 4 }} />
+        <UploadForm setFiles={setFilesToUpload} />
+        <Search sx={{ width: '450px', marginRight: 4 }}> {/* Adjust the width and add marginRight */}
           <InputBase placeholder='search...' />
         </Search>
-        
-      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        {!currentFirebaseUser ? (
-          <Button startIcon={<CustomLock/>} onClick={openLogin} sx={{ color: 'black' }}>
-            Login
-          </Button>
-        ) : (
-          <Tooltip title='Account settings'>
-            <IconButton onClick={handleClick} size='small' sx={{ ml: 2 }}>
-              <Avatar
-                sx={{ width: 32, height: 32 }}
-                src={currentFirebaseUser?.photoURL ?? ''}
-              >
-                {currentFirebaseUser?.displayName?.charAt(0)?.toUpperCase() ||
-                  currentFirebaseUser?.email?.charAt(0)?.toUpperCase()}
-              </Avatar>
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>
+        <Box sx={{ flexGrow: 1 }} /> {/* This Box will take up the remaining space */}
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}
+        >
+          {!currentFirebaseUser ? (
+            <Button
+              startIcon={<CustomLock />}
+              onClick={openLogin}
+              sx={{ color: 'black' }}
+            >
+              Login
+            </Button>
+          ) : (
+            <Tooltip title='Account settings'>
+              <IconButton onClick={handleClick} size='small' sx={{ ml: 2 }}>
+                <Avatar
+                  sx={{ width: 32, height: 32 }}
+                  src={currentFirebaseUser?.photoURL ?? ''}
+                >
+                  {currentFirebaseUser?.displayName?.charAt(0)?.toUpperCase() ||
+                    currentFirebaseUser?.email?.charAt(0)?.toUpperCase()}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
       </StyledToolbar>
       <Menu
         anchorEl={anchorEl}
@@ -124,7 +137,7 @@ const Nav: React.FC = () => {
               mr: 1,
             },
             '&:before': {
-              content: '""',
+              content: '"""',
               display: 'block',
               position: 'absolute',
               top: 0,
