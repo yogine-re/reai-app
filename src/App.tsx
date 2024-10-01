@@ -6,8 +6,7 @@ import Upload from './components/upload/Upload';
 import Documents from './components/documents/Documents';
 import { AuthProvider } from './context/AuthContext';
 import { AppDataProvider } from './context/AppContext';
-import { Box } from '@mui/material';
-import { ThemeProvider, CssBaseline, Stack } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { theme } from './theme';
 
 
@@ -17,13 +16,11 @@ const App: React.FC = () => {
       <CssBaseline />
       <AppDataProvider>
         <AuthProvider>
-          <Box bgcolor={'background.default'} color={'text.primary'}>
-            <Modal />
-            <Stack direction='column' spacing={2} justifyContent='space-between'>
-              <Nav />
-              <Upload />
-            </Stack>
-            <Documents />
+          <Modal />
+          <Nav />
+          <Box sx={{ marginTop: 4 }}> {/* Add marginTop to create space */}
+          <Upload />
+          <Documents />
           </Box>
         </AuthProvider>
       </AppDataProvider>

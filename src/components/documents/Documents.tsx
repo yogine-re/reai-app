@@ -14,28 +14,28 @@ import { DndProvider } from 'react-dnd';
 // import useFirestore from '../../firebase/useFirestore';
 import { app } from '../../firebase/config';
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
-import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
-import { Box } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
 import { DocumentProperties } from './types';
 import { useAppData } from '../../context/AppContext';
-
-// import theDocuments from '../tree/sample_data.json';
+import { MoreVertRounded } from '@mui/icons-material';
 
 export default function Documents() {
-  const { documentRoot } = useAppData();
+  const { project } = useAppData();
 
   const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
-  const [selectedNode, setSelectedNode] = useState<NodeModel<DocumentProperties> | null>(null);
+  const [isTreeVisible, setIsTreeVisible] = useState<boolean>(true); // State to manage tree visibility
+  const [selectedNode, setSelectedNode] =
+    useState<NodeModel<DocumentProperties> | null>(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
   const handleSelect = (node: any) => {
-    setSelectedNode(node);  
+    setSelectedNode(node);
     if (node.data?.documentURL) {
       setDocumentURL(node.data.documentURL);
     }
@@ -47,7 +47,7 @@ export default function Documents() {
       if (node.id === id) {
         return {
           ...node,
-          text: value
+          text: value,
         };
       }
       return node;
@@ -64,7 +64,7 @@ export default function Documents() {
       console.log('unsubscribe snapshot.docs: ', snapshot.docs);
       const docs = snapshot.docs; // Store snapshot.docs in a variable
       const uniqueDocsMap = new Map();
-  
+
       docs.forEach((doc) => {
         const data = doc.data();
         if (!uniqueDocsMap.has(data.documentName)) {
@@ -81,73 +81,105 @@ export default function Documents() {
           });
         }
       });
-  
+
       const documents = Array.from(uniqueDocsMap.values());
       documents.unshift({
         id: 1,
         parent: 0,
         droppable: true,
-        text: documentRoot,
+        text: project,
         data: {},
       });
-  
+
       setTreeData(documents);
-      console.log('CAROLINA documents: ', documents);
+      console.log('documents: ', documents);
       console.log('documentURL: ', documentURL);
-      if(documents.length <= 1) {
+      if (documents.length <= 1) {
         setDocumentURL(null);
       }
-      
     });
-  
+
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
-  
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
     <Grid container>
-    <Grid size={6}>
-      <DndProvider backend={MultiBackend} options={getBackendOptions()}>
-        <div className={styles.app}>
-          <Tree
-            tree={treeData}
-            rootId={0}
-            render={(node, { depth, isOpen, onToggle }) => (
-              <CustomNode
-                node={node}
-                depth={depth}
-                isOpen={isOpen}
-                isSelected={node.id === selectedNode?.id}
-                onToggle={onToggle}
-                onSelect={handleSelect}
-                onTextChange={handleTextChange}
+      <IconButton
+        size='small'
+        onClick={() => setIsTreeVisible(!isTreeVisible)}
+        sx={{
+          width: '24px',
+          height: '24px',
+          padding: '4px',
+          '& .MuiSvgIcon-root': {
+            fontSize: '16px',
+          },
+        }}
+      >
+        <MoreVertRounded />
+      </IconButton>
+      {isTreeVisible ? (
+        <Grid size={6}>
+          <DndProvider backend={MultiBackend} options={getBackendOptions()}>
+            <div className={styles.app}>
+              <Tree
+                tree={treeData}
+                rootId={0}
+                render={(node, { depth, isOpen, onToggle }) => (
+                  <CustomNode
+                    node={node}
+                    depth={depth}
+                    isOpen={isOpen}
+                    isSelected={node.id === selectedNode?.id}
+                    onToggle={onToggle}
+                    onSelect={handleSelect}
+                    onTextChange={handleTextChange}
+                  />
+                )}
+                dragPreviewRender={(monitorProps) => (
+                  <CustomDragPreview monitorProps={monitorProps} />
+                )}
+                onDrop={handleDrop}
+                classes={{
+                  draggingSource: styles.draggingSource,
+                  dropTarget: styles.dropTarget,
+                }}
+                initialOpen={true}
+                sort={false}
               />
-            )}
-            dragPreviewRender={(monitorProps) => (
-              <CustomDragPreview monitorProps={monitorProps} />
-            )}
-            onDrop={handleDrop}
-            classes={{
-              draggingSource: styles.draggingSource,
-              dropTarget: styles.dropTarget
-            }}
-            initialOpen={true}
-            sort={false}
-          />
-        </div>
-      </DndProvider>
-      </Grid>
-      <Grid size='grow'>
-      {documentURL && (
-        <Worker
-        workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
-        >
-        <Viewer fileUrl={documentURL} />
-        </Worker>
+            </div>
+          </DndProvider>
+        </Grid>
+      ) : (
+        <Grid size={6}></Grid>
       )}
+      <Grid size={5} container justifyContent='center'>
+        <Box>
+          {selectedNode && (
+            <Typography
+              variant='subtitle1'
+              sx={{
+                marginBottom: 2,
+                fontWeight: 'bold',
+                color: 'primary.main',
+                letterSpacing: 1.2,
+              }}
+            >
+              {selectedNode.text}
+            </Typography>
+          )}
+        </Box>
+        {documentURL && (
+            
+              <iframe
+                src={documentURL}
+                style={{ width: '100%', height: '80vh', border: 'none' }}
+                title="Document Viewer"
+              />
+            
+          )}
       </Grid>
-      </Grid>
-      </Box>
-    );
-  }
+    </Grid>
+  );
+}

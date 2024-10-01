@@ -5,10 +5,10 @@ import { useAuth } from '../../context/AuthContext';
 import Login from '../user/Login';
 
 type FormProps = {
-  setFiles: any;
+  setFiles: (files: File[]) => void;
 };
 
-const Form: React.FC<FormProps> = ({ setFiles }) => {
+const UploadForm: React.FC<FormProps> = ({ setFiles }) => {
   const { currentFirebaseUser, setModal } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
@@ -37,11 +37,26 @@ const Form: React.FC<FormProps> = ({ setFiles }) => {
         inputRef={fileRef}
         onChange={handleChange}
       />  
-      <Fab variant='extended' size='small' onClick={handleClick}>
-        <FileUpload sx={{ mr: 1 }} fontSize='small'/>
+      <Fab
+        variant='extended'
+        size='small'
+        onClick={handleClick}
+        sx={{
+          textTransform: 'none',
+          borderRadius: '8px',
+          fontSize: '0.70rem', // Smaller font size
+          backgroundColor: 'transparent', // No background color
+          border: '1px solid', // Add border
+          marginLeft: '16px', // Move the button to the right
+          marginRight: '16px', 
+          marginTop: '16px', // Move the button down
+          marginBottom: '16px', // Move the button up
+        }}
+      >        
+         <FileUpload sx={{ mr: 1 }} fontSize='small'/>
             Upload Files
       </Fab>
     </form>
   );
 };
-export default Form;
+export default UploadForm;
