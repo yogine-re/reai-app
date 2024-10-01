@@ -26,7 +26,7 @@ import { useAppData } from '../../context/AppContext';
 import { MoreVertRounded } from '@mui/icons-material';
 
 export default function Documents() {
-  const { documentRoot } = useAppData();
+  const { project } = useAppData();
 
   const db = getFirestore(app);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
@@ -88,7 +88,7 @@ export default function Documents() {
         id: 1,
         parent: 0,
         droppable: true,
-        text: documentRoot,
+        text: project,
         data: {},
       });
 
@@ -121,7 +121,7 @@ export default function Documents() {
           <MoreVertRounded />
         </IconButton>
         {isTreeVisible ? (
-        <Grid size={3}>
+        <Grid size={6}>
           <DndProvider backend={MultiBackend} options={getBackendOptions()}>
             <div className={styles.app}>
               <Tree
@@ -153,14 +153,12 @@ export default function Documents() {
           </DndProvider>
         </Grid>
         ) : (
-          <Grid size={3}>
+          <Grid size={6}>
 
           </Grid>
         )}
-        <Grid size={4}>
-
-        </Grid>
-        <Grid size={4}>
+        
+        <Grid size={5} container justifyContent="flex-end">
           {documentURL && (
             <Worker
               workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}

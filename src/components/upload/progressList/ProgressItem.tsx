@@ -13,7 +13,7 @@ import { DocumentProperties } from '../../documents/types';
 import { useAppData } from '../../../context/AppContext';
 
 const ProgressItem = ({ file }: { file: File }) => {
-  const { googleApi, documentRoot } = useAppData();
+  const { googleApi, project } = useAppData();
   const [progress, setProgress] = useState(0);
   const [documentURL, setdocumentURL] = useState<null | string>(null);
   const [name, setName] = useState<string | null>(null);
@@ -43,7 +43,7 @@ const ProgressItem = ({ file }: { file: File }) => {
         console.log('documentsDoc:', documentsDoc);
         await addDocument('documents', documentsDoc, fileName);
         console.log('uploading to google drive');
-        GoogleDriveCreateFolder(googleApi, documentRoot).then((folderId: string|undefined) => {
+        GoogleDriveCreateFolder(googleApi, project).then((folderId: string|undefined) => {
           if(folderId) {
             GoogleDriveUploadFile(googleApi, file, folderId, accessToken);
           }

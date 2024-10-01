@@ -28,13 +28,13 @@ const StyledToolbar = styled(Toolbar)({
 
 });
 const Search = styled('div')(({ theme }) => ({
-  backgroundColor: 'white',
+  backgroundColor: 'lightgrey',
   padding: '0 10px',
   borderRadius: theme.shape.borderRadius,
   width: '40%'
 }));
 const CustomLock = styled(Lock)(() => ({
-  color: 'white', // Custom color
+  color: 'black', // Custom color
 }));
 // const Icons = styled(Box)(({ theme }) => ({
 //   display: 'none',
@@ -76,18 +76,19 @@ const Nav: React.FC = () => {
     }
   };
   return (
-    <AppBar position='sticky'>
+    <AppBar position='sticky' sx={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}>
       <StyledToolbar>
-        <Typography variant='h6' sx={{ display: { xs: 'none', sm: 'block' } }}>
-          REAI
+      <Typography variant='h6' sx={{ display: { xs: 'none', sm: 'block' }, color: 'black' }}>
+      REAI
         </Typography>
         <Pets sx={{ display: { xs: 'block', sm: 'none' } }} />
         <Search>
           <InputBase placeholder='search...' />
         </Search>
+        
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         {!currentFirebaseUser ? (
-          <Button startIcon={<CustomLock/>} onClick={openLogin} sx={{ color: 'white' }}>
+          <Button startIcon={<CustomLock/>} onClick={openLogin} sx={{ color: 'black' }}>
             Login
           </Button>
         ) : (

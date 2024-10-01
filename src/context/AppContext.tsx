@@ -6,15 +6,15 @@ import { renameFolder as GoogleDriveRenameFolder } from '@/googledrive/renameFol
 
 export interface AppContextType {
   googleApi: typeof gapi | null;
-  documentRoot: string;
-  updateDocumentRoot: (newDocumentRoot: string) => void;
+  project: string;
+  updateProject: (newProject: string) => void;
 };
 
 const AppDataContext: React.Context<AppContextType> = createContext<AppContextType>(null as any);
 
 export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [googleApi, setGoogleApi] = useState<typeof gapi | null>(null);
-  const [documentRoot, setDocumentRoot] = useState<string>('documents');
+  const [project, setproject] = useState<string>('My Project');
 
   const initClientGoogleApi = async () => {
     initClientGoogleDrive()
@@ -26,10 +26,10 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       );
   };
 
-  const updateDocumentRoot = (newDocumentRoot: string) => {
+  const updateProject = (newProject: string) => {
     try {
-      GoogleDriveRenameFolder(googleApi, documentRoot, newDocumentRoot);
-      setDocumentRoot(newDocumentRoot);
+      GoogleDriveRenameFolder(googleApi, project, newProject);
+      setproject(newProject);
     } catch (error) {
       console.error('Error updating document root:', error);
     }
@@ -43,8 +43,8 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   
   const appData: AppContextType = {
     googleApi,
-    documentRoot,
-    updateDocumentRoot,
+    project,
+    updateProject,
   };
 
   return (
