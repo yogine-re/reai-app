@@ -11,12 +11,17 @@ import {
   NodeModel,
 } from '@minoru/react-dnd-treeview';
 import { DndProvider } from 'react-dnd';
-// import useFirestore from '../../firebase/useFirestore';
 import { app } from '../../firebase/config';
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
-import { Box, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  InputBase,
+  styled,
+  Typography,
+} from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
@@ -24,6 +29,13 @@ import { DocumentProperties } from './types';
 import { useAppData } from '../../context/AppContext';
 import { MoreVertRounded } from '@mui/icons-material';
 import DocumentMenu from './DocumentsMenu';
+
+const Search = styled('div')(({ theme }) => ({
+  backgroundColor: 'lightgrey',
+  padding: '0 10px',
+  borderRadius: theme.shape.borderRadius,
+  width: '40%',
+}));
 
 export default function Documents() {
   const { project, currentDocument } = useAppData();
@@ -58,8 +70,6 @@ export default function Documents() {
     });
     setTreeData(newTree);
   };
-
-  console.log('treeData: ', treeData);
 
   useEffect(() => {
     console.log('useEffect');
@@ -166,7 +176,23 @@ export default function Documents() {
           </DndProvider>
         </Grid>
       ) : (
-        <Grid size={6}></Grid>
+        <Grid size={6}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column', // Arrange items in a column
+              // justifyContent: 'center', // Center items horizontally
+              alignItems: 'center', // Center items vertically
+              height: '100%', // Ensure the Box takes the full height of the Grid
+          }}
+          >
+          <Search sx={{ width: '400px' }}>
+            {' '}
+            {/* Adjust the width and add marginRight */}
+            <InputBase placeholder='search...' />
+          </Search>
+          </Box>
+        </Grid>
       )}
       <Grid size={5} container justifyContent='left'>
         <DocumentMenu documents={documents} />
@@ -186,14 +212,12 @@ export default function Documents() {
           )}
         </Box>
         {documentURL && (
-            
-              <iframe
-                src={documentURL}
-                style={{ width: '100%', height: '80vh', border: 'none' }}
-                title="Document Viewer"
-              />
-            
-          )}
+          <iframe
+            src={documentURL}
+            style={{ width: '100%', height: '80vh', border: 'none' }}
+            title='Document Viewer'
+          />
+        )}
       </Grid>
     </Grid>
   );

@@ -18,7 +18,7 @@ const App: React.FC = () => {
         <AuthProvider>
           <Modal />
           <Nav />
-          <Box sx={{ marginTop: 4 }}> {/* Add marginTop to create space */}
+          <Box sx={{ marginTop: 2 }}> {/* Add marginTop to create space */}
           <UploadProgress />
           <Documents />
           </Box>

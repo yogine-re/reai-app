@@ -1,8 +1,7 @@
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
-// import Badge from '@mui/material';
 import { styled } from '@mui/system';
-import { Fab, InputBase, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -27,12 +26,6 @@ import { useAppData } from '../context/AppContext';
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
 });
-const Search = styled('div')(({ theme }) => ({
-  backgroundColor: 'lightgrey',
-  padding: '0 10px',
-  borderRadius: theme.shape.borderRadius,
-  width: '40%'
-}));
 const CustomLock = styled(Lock)(() => ({
   color: 'black', // Custom color
 }));
@@ -46,10 +39,6 @@ const Nav: React.FC = () => {
   };
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleAssistantClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log('Assistant clicked', event);
   };
 
   const { currentFirebaseUser, setModal, logout, setAlert } = useAuth();
@@ -83,27 +72,7 @@ const Nav: React.FC = () => {
         </Typography>
         <Pets sx={{ display: { xs: 'block', sm: 'none' }, marginRight: 4 }} />
         <UploadForm setFilesToUpload={setFilesToUpload} />
-        <Fab
-        variant='extended'
-        size='small'
-        onClick={handleAssistantClick}
-        sx={{
-          textTransform: 'none',
-          borderRadius: '8px',
-          fontSize: '0.70rem', // Smaller font size
-          backgroundColor: 'transparent', // No background color
-          // border: '1px solid', // Add border
-          marginLeft: '16px', // Move the button to the right
-          marginRight: '16px', 
-          marginTop: '16px', // Move the button down
-          marginBottom: '16px', // Move the button up
-        }}
-      >        
-        Assistant
-      </Fab>
-        <Search sx={{ width: '500px', marginRight: 4 }}> {/* Adjust the width and add marginRight */}
-          <InputBase placeholder='search...' />
-        </Search>
+      
         <Box sx={{ flexGrow: 1 }} /> {/* This Box will take up the remaining space */}
         <Box
           sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}
