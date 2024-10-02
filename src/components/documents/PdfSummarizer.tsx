@@ -3,6 +3,7 @@ import { getDocument, GlobalWorkerOptions, version as pdfjsVersion } from 'pdfjs
 import axios from 'axios';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useAppData } from '../../context/AppContext';
+import { getErrorMessage } from '@/utils';
 
 // Set workerSrc for pdfjs
 GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsVersion}/pdf.worker.js`;
@@ -36,19 +37,54 @@ const { currentDocument } = useAppData();
     }
   };
 
-  const summarizeText = async (text: string) => {
+  const CHUNK_SIZE = 1000; // Adjust the chunk size as needed
+  const MAX_RETRIES = 5; // Maximum number of retries
+  const INITIAL_DELAY = 1000; // Initial delay in milliseconds
+  
+  const splitTextIntoChunks = (text: string, chunkSize: number) => {
+    const chunks = [];
+    for (let i = 0; i < text.length; i += chunkSize) {
+      chunks.push(text.slice(i, i + chunkSize));
+    }
+    return chunks;
+  };
+  
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  const summarizeChunk = async (chunk: string, retries = 0): Promise<string> => {
     try {
-      setLoading(true);
       const response = await axios.post(
         'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
-        { inputs: text },
+        { inputs: chunk },
         {
           headers: {
             Authorization: `Bearer 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`,
           },
         }
       );
-      setSummary(response.data[0].summary_text);
+      return response.data[0].summary_text;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 429 && retries < MAX_RETRIES) {
+        const delayTime = INITIAL_DELAY * Math.pow(2, retries);
+        console.warn(`Rate limit hit. Retrying in ${delayTime} ms...`);
+        await delay(delayTime);
+        return summarizeChunk(chunk, retries + 1);
+      } else {
+        const message = getErrorMessage(error);
+        console.error(message);
+        console.error('Chunk:', chunk);
+        return '';
+      }
+    }
+  };
+  
+  const summarizeText = async (text: string) => {
+    try {
+      setLoading(true);
+      const chunks = splitTextIntoChunks(text, CHUNK_SIZE);
+      const summaries = await Promise.all(chunks.map(chunk => summarizeChunk(chunk)));
+      const finalSummary = summaries.join(' ');
+      setSummary(finalSummary);
     } catch (error) {
       console.error('Error summarizing text', error);
       setSummary('Unable to summarize document');
