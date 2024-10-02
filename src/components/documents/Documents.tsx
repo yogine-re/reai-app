@@ -29,6 +29,7 @@ import { DocumentProperties } from './types';
 import { useAppData } from '../../context/AppContext';
 import { MoreVertRounded } from '@mui/icons-material';
 import DocumentMenu from './DocumentsMenu';
+import PdfSummarizer from './PdfSummarizer';
 
 const Search = styled('div')(({ theme }) => ({
   backgroundColor: 'lightgrey',
@@ -41,7 +42,6 @@ export default function Documents() {
   const { project, currentDocument } = useAppData();
   const [documents, setDocuments] = useState<DocumentProperties[]>([]);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
-  const [summary] = useState<string | null>('No Summary Available');
 
   const db = getFirestore(app);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
@@ -192,21 +192,10 @@ export default function Documents() {
             {/* Adjust the width and add marginRight */}
             <InputBase placeholder='search...' />
           </Search>
-          {summary && (
-            <Box
-              sx={{
-                width: '400px',
-                padding: '16px',
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                backgroundColor: '#f9f9f9',
-                marginTop: '16px',
-              }}
-            >
-              <Typography variant='h6'>Summary</Typography>
-              <Typography variant='body2'>{summary}</Typography>
-            </Box>
-          )}
+          {currentDocument && (
+            <PdfSummarizer/>
+          )}  
+
           </Box>
         </Grid>
       )}

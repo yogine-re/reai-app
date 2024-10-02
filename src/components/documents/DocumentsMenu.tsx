@@ -30,9 +30,6 @@ interface DocumentMenuProps {
 }
 
 const DocumentMenu: React.FC<DocumentMenuProps> = ({ documents }) => {
-  console.log('DocumentMenu: documents: ', documents);
-  const documentsList = documents.map((doc) => doc.documentName);
-  console.log('DocumentMenu: documentsList: ', documentsList);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { setCurrentDocument } = useAppData();
   const open = Boolean(anchorEl);
@@ -46,7 +43,6 @@ const DocumentMenu: React.FC<DocumentMenuProps> = ({ documents }) => {
   const handleSelected = (documentName: string) => {
     const selectedDocument = documents.find((doc) => doc.documentName === documentName);
     if (selectedDocument) {
-        console.log('selectedDocument: ', selectedDocument);
         setCurrentDocument(selectedDocument);
     }
   };
