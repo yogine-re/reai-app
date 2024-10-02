@@ -4,7 +4,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import axios from 'axios';
 import {
   Tree,
   getBackendOptions,
@@ -42,7 +41,7 @@ export default function Documents() {
   const { project, currentDocument } = useAppData();
   const [documents, setDocuments] = useState<DocumentProperties[]>([]);
   const [documentURL, setDocumentURL] = useState<string | null>(null);
-  const [summary, setSummary] = useState<string | null>(null);
+  const [summary] = useState<string | null>('No Summary Available');
 
   const db = getFirestore(app);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
@@ -128,49 +127,6 @@ export default function Documents() {
       setDocumentURL(currentDocument.documentURL);
     }
   }, [currentDocument]);
-
-  useEffect(() => {
-    if (selectedDocument) {
-      fetchSummaryForDocument(selectedDocument.documentURL);
-    }
-  }, [selectedDocument]);
-
-  const fetchSummaryForDocument = async (documentURL: string) => {
-    // Example function to fetch summary for the selected document
-    // Replace with your actual logic to fetch summary using AI
-    const summaryText = await generateSummary(documentURL);
-    setSummary(summaryText);
-  };
-
-  const generateSummary = async (documentURL: string) => {
-    try {
-      // Fetch the document content from the URL
-      const response = await axios.get(documentURL);
-      const documentContent = response.data;
-  
-      // Call the OpenAI API to generate a summary
-      const openaiResponse = await axios.post(
-        'https://api.openai.com/v1/engines/davinci-codex/completions',
-        {
-          prompt: `Summarize the following document:\n\n${documentContent}`,
-          max_tokens: 150,
-          temperature: 0.7,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer YOUR_OPENAI_API_KEY`,
-          },
-        }
-      );
-  
-      const summary = openaiResponse.data.choices[0].text.trim();
-      return summary;
-    } catch (error) {
-      console.error('Error generating summary:', error);
-      return 'Failed to generate summary.';
-    }
-  };
 
   return (
     <Grid container>
