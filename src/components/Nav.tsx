@@ -1,8 +1,7 @@
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
-// import Badge from '@mui/material';
 import { styled } from '@mui/system';
-import { InputBase, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -26,26 +25,10 @@ import { useAppData } from '../context/AppContext';
 
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
-  // justifyContent: 'space-between',
-
 });
-const Search = styled('div')(({ theme }) => ({
-  backgroundColor: 'lightgrey',
-  padding: '0 10px',
-  borderRadius: theme.shape.borderRadius,
-  width: '40%'
-}));
 const CustomLock = styled(Lock)(() => ({
   color: 'black', // Custom color
 }));
-// const Icons = styled(Box)(({ theme }) => ({
-//   display: 'none',
-//   alignItems: 'center',
-//   gap: '20px',
-//   [theme.breakpoints.up('sm')]: {
-//     display: 'flex'
-//   }
-// }));
 
 const Nav: React.FC = () => {
   const { setFilesToUpload } = useAppData();
@@ -88,10 +71,8 @@ const Nav: React.FC = () => {
           REAI
         </Typography>
         <Pets sx={{ display: { xs: 'block', sm: 'none' }, marginRight: 4 }} />
-        <UploadForm setFiles={setFilesToUpload} />
-        <Search sx={{ width: '500px', marginRight: 4 }}> {/* Adjust the width and add marginRight */}
-          <InputBase placeholder='search...' />
-        </Search>
+        <UploadForm setFilesToUpload={setFilesToUpload} />
+      
         <Box sx={{ flexGrow: 1 }} /> {/* This Box will take up the remaining space */}
         <Box
           sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}

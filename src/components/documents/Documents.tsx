@@ -11,31 +11,48 @@ import {
   NodeModel,
 } from '@minoru/react-dnd-treeview';
 import { DndProvider } from 'react-dnd';
-// import useFirestore from '../../firebase/useFirestore';
 import { app } from '../../firebase/config';
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Grid from '@mui/material/Grid2';
-import { Box, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  InputBase,
+  styled,
+  Typography,
+} from '@mui/material';
 import styles from './Documents.module.css';
 import { CustomNode } from '../tree/CustomNode';
 import { CustomDragPreview } from '../tree/CustomDragPreview';
 import { DocumentProperties } from './types';
 import { useAppData } from '../../context/AppContext';
 import { MoreVertRounded } from '@mui/icons-material';
+import DocumentMenu from './DocumentsMenu';
+import PdfSummarizer from './PdfSummarizer';
+
+const Search = styled('div')(({ theme }) => ({
+  backgroundColor: 'lightgrey',
+  padding: '0 10px',
+  borderRadius: theme.shape.borderRadius,
+  width: '40%',
+}));
 
 export default function Documents() {
-  const { project } = useAppData();
+  const { project, currentDocument } = useAppData();
+  const [documents, setDocuments] = useState<DocumentProperties[]>([]);
+  const [documentURL, setDocumentURL] = useState<string | null>(null);
 
   const db = getFirestore(app);
-  const [documentURL, setDocumentURL] = useState<string | null>(null);
   const [treeData, setTreeData] = useState<NodeModel<DocumentProperties>[]>([]);
-  const [isTreeVisible, setIsTreeVisible] = useState<boolean>(true); // State to manage tree visibility
+  const [isTreeVisible, setIsTreeVisible] = useState<boolean>(false); 
+  const [selectedDocument, setSelectedDocument] = useState<DocumentProperties | null>(null);
   const [selectedNode, setSelectedNode] =
     useState<NodeModel<DocumentProperties> | null>(null);
   const handleDrop = (newTree: any) => setTreeData(newTree);
-  const handleSelect = (node: any) => {
+  const handleSelect = (node: NodeModel<DocumentProperties>) => {
     setSelectedNode(node);
+    if(node.data) setSelectedDocument(node.data);
     if (node.data?.documentURL) {
       setDocumentURL(node.data.documentURL);
     }
@@ -54,8 +71,6 @@ export default function Documents() {
     });
     setTreeData(newTree);
   };
-
-  console.log('treeData: ', treeData);
 
   useEffect(() => {
     console.log('useEffect');
@@ -82,8 +97,9 @@ export default function Documents() {
         }
       });
 
-      const documents = Array.from(uniqueDocsMap.values());
-      documents.unshift({
+      const documentNodes = Array.from(uniqueDocsMap.values());
+      setDocuments(Array.from(uniqueDocsMap.values()).map((doc) => doc.data));
+      documentNodes.unshift({
         id: 1,
         parent: 0,
         droppable: true,
@@ -91,8 +107,8 @@ export default function Documents() {
         data: {},
       });
 
-      setTreeData(documents);
-      console.log('documents: ', documents);
+      setTreeData(documentNodes);
+      console.log('documentNodes: ', documentNodes);
       console.log('documentURL: ', documentURL);
       if (documents.length <= 1) {
         setDocumentURL(null);
@@ -102,6 +118,15 @@ export default function Documents() {
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (currentDocument) {
+      // Perform any actions needed when currentDocument changes
+      console.log('Current document has changed:', currentDocument);
+      setSelectedDocument(currentDocument);
+      setDocumentURL(currentDocument.documentURL);
+    }
+  }, [currentDocument]);
 
   return (
     <Grid container>
@@ -152,11 +177,32 @@ export default function Documents() {
           </DndProvider>
         </Grid>
       ) : (
-        <Grid size={6}></Grid>
+        <Grid size={6}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column', // Arrange items in a column
+              // justifyContent: 'center', // Center items horizontally
+              alignItems: 'center', // Center items vertically
+              height: '100%', // Ensure the Box takes the full height of the Grid
+          }}
+          >
+          <Search sx={{ width: '400px' }}>
+            {' '}
+            {/* Adjust the width and add marginRight */}
+            <InputBase placeholder='search...' />
+          </Search>
+          {currentDocument && (
+            <PdfSummarizer/>
+          )}  
+
+          </Box>
+        </Grid>
       )}
-      <Grid size={5} container justifyContent='center'>
+      <Grid size={5} container justifyContent='left'>
+        <DocumentMenu documents={documents} />
         <Box>
-          {selectedNode && (
+          {selectedDocument && (
             <Typography
               variant='subtitle1'
               sx={{
@@ -166,19 +212,17 @@ export default function Documents() {
                 letterSpacing: 1.2,
               }}
             >
-              {selectedNode.text}
+              {selectedDocument.documentName}
             </Typography>
           )}
         </Box>
         {documentURL && (
-            
-              <iframe
-                src={documentURL}
-                style={{ width: '100%', height: '80vh', border: 'none' }}
-                title="Document Viewer"
-              />
-            
-          )}
+          <iframe
+            src={documentURL}
+            style={{ width: '100%', height: '80vh', border: 'none' }}
+            title='Document Viewer'
+          />
+        )}
       </Grid>
     </Grid>
   );
