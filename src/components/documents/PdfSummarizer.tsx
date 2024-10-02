@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getDocument, GlobalWorkerOptions, version as pdfjsVersion } from 'pdfjs-dist';
 import axios from 'axios';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+} from '@mui/material';
 import { useAppData } from '../../context/AppContext';
 import { getErrorMessage } from '@/utils';
 
@@ -13,14 +22,23 @@ const { currentDocument } = useAppData();
   const [summary, setSummary] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [lastDocumentURL, setLastDocumentURL] = useState<string | null>(null);
-  
+  const [warning, setWarning] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setWarning(null);
+  };
+
   const extractTextFromPDF = async (documentURL: string) => {
     console.log('Extracting text from PDF:', documentURL);
     try {
       // Fetch the PDF document from the URL
-      const response = await axios.get(documentURL, { responseType: 'arraybuffer' });
+      const response = await axios.get(documentURL, {
+        responseType: 'arraybuffer',
+      });
       const pdfBuffer = response.data;
-  
+
       // Extract text from the PDF document
       const pdf = await getDocument({ data: pdfBuffer }).promise;
       let text = '';
@@ -40,7 +58,7 @@ const { currentDocument } = useAppData();
   const CHUNK_SIZE = 1000; // Adjust the chunk size as needed
   const MAX_RETRIES = 5; // Maximum number of retries
   const INITIAL_DELAY = 1000; // Initial delay in milliseconds
-  
+
   const splitTextIntoChunks = (text: string, chunkSize: number) => {
     const chunks = [];
     for (let i = 0; i < text.length; i += chunkSize) {
@@ -48,10 +66,14 @@ const { currentDocument } = useAppData();
     }
     return chunks;
   };
-  
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  
-  const summarizeChunk = async (chunk: string, retries = 0): Promise<string> => {
+
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+  const summarizeChunk = async (
+    chunk: string,
+    retries = 0
+  ): Promise<string> => {
     try {
       const response = await axios.post(
         'https://api-inference.huggingface.co/models/facebook/bart-large-cnn',
@@ -64,9 +86,17 @@ const { currentDocument } = useAppData();
       );
       return response.data[0].summary_text;
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response && error.response.status === 429 && retries < MAX_RETRIES) {
+      if (
+        axios.isAxiosError(error) &&
+        error.response &&
+        error.response.status === 429 &&
+        retries < MAX_RETRIES
+      ) {
         const delayTime = INITIAL_DELAY * Math.pow(2, retries);
-        console.warn(`Rate limit hit. Retrying in ${delayTime} ms...`);
+        const warningMessage = `Rate limit hit. Retrying in ${delayTime} ms...`;
+        console.warn(warningMessage);
+        setWarning(warningMessage);
+        setIsDialogOpen(true);
         await delay(delayTime);
         return summarizeChunk(chunk, retries + 1);
       } else {
@@ -114,24 +144,35 @@ const { currentDocument } = useAppData();
   return (
     <div>
       {loading ? (
-            <CircularProgress />
-          ) : (
-            summary && (
-              <Box
-                sx={{
-                  width: '400px',
-                  padding: '16px',
-                  border: '1px solid #ccc',
-                  borderRadius: '8px',
-                  backgroundColor: '#f9f9f9',
-                  marginTop: '16px',
-                }}
-              >
-                <Typography variant='h6'>Summary</Typography>
-                <Typography variant='body2'>{summary}</Typography>
-              </Box>
-            )
-          )}
+        <CircularProgress />
+      ) : (
+        summary && (
+          <Box
+            sx={{
+              width: '400px',
+              padding: '16px',
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              backgroundColor: '#f9f9f9',
+              marginTop: '16px',
+            }}
+          >
+            <Typography variant='h6'>Summary</Typography>
+            <Typography variant='body2'>{summary}</Typography>
+          </Box>
+        )
+      )}
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle>Warning</DialogTitle>
+        <DialogContent>
+          <Typography>{warning}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color='primary'>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
