@@ -94,3 +94,19 @@ npm run build
 
 This script builds the application. The result is put in `.local/vite/dist`and `.local/express/dist` respectively.
 
+## Docker container
+Install Docker following instructions at https://docs.docker.com/engine/install/ 
+
+### build docker image
+```
+docker build -t reai-app . 
+```
+
+### run image
+```
+docker run -p 3001:9001 reai-app
+```
+
+### bring up app
+Goto https://localhost://3001
+
